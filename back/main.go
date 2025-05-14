@@ -29,6 +29,7 @@ func main() {
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_DATABASE")
 
+	// DSN生成
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		dbHost,
@@ -49,11 +50,28 @@ func main() {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
+	// ダミーデーターを挿入
+	db.Create(&User{
+		Name:  "テストユーザー",
+		Email: "test@example.com",
+	})
+
+	// ルーター設定
 	r := gin.Default()
+
 	r.GET("ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
 	})
+
+	// ユーザー取得API
+	r.GET("/users", func(c *gin.Context) {
+		var users []User
+		db.Find(&users)
+		c.JSON(200, users)
+	})
+
+	// サーバー起動
 	r.Run()
 }
