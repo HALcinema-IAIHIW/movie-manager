@@ -1,0 +1,62 @@
+
+div#accessMain{
+    height: 100%;
+    width: 100%;
+    background-color: #25283B;
+    color: #fff;
+}
+
+div#accessTitle{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+div#accessTitle h1{
+    font-size: 4.5rem;
+    margin: 0;
+}
+div#accessTitle p{
+    font-size: 1.25rem;
+    margin: -1.25rem 0 0 0;
+}
+
+/* アクセス部 */
+div.acContent{
+    display: flex;
+    flex-direction: row;
+}
+iframe#map{
+    display: inline-block;
+}
+
+/* 単元 */
+div.acInfo{
+    margin: 0 25px 50px 25px;
+}
+h2.infoTitle{
+    margin: 0 0 50px 0;
+    font-size: 1.5rem;
+    border: 2px white;
+    border-style: none none solid none;
+}
+
+/*　料金表feeList　*/
+table#feeList{
+    margin: 0 auto 50px auto;
+    width: 90%;
+    border: solid #fff 2px;
+    /*background-color: #1877F2;*/
+}
+
+table#feeList th{
+    border: solid #fff 2px;
+    width: calc(100vh/4);
+    padding: 10px 0;
+}
+table#feeList td{
+    border: solid #fff 2px;
+    text-align: center;
+    padding: 10px 0;
+
+}
