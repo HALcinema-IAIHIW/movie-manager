@@ -38,6 +38,10 @@ div.articles{
 /*　記事単体の設定　*/
 div.art{
     padding: 0 1.5rem;
+    transition: 0.1s;
+}
+div.art:hover{
+    text-shadow:0 0 15px #fff, 0 0 10px #fff;
 }
 /*　画像部分　imgタグに変わると思うのでクラスのみ　*/
 .artImg{

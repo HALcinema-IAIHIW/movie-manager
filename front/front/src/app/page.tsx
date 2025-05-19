@@ -1,5 +1,4 @@
 import Image from "next/image";
-import link from "next/link";
 import Link from "next/link";
 
 export default function Home() {
@@ -33,13 +32,6 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
             Deploy now
           </a>
           <a
