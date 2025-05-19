@@ -1,6 +1,14 @@
 cdでC:\IW31\movie-manager\front\frontまで移動して
  npm run dev　で起動
 
+使いたいフォント
+ヘッダー部
+Ittaliana
+英字
+Playfair Display
+日本語部
+NotoSerif JP
+
 今回の課題でいるページ
 トップページ
 Movie 映画の一覧表示
