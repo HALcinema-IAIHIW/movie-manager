@@ -45,8 +45,8 @@ div.art:hover{
 }
 /*　画像部分　imgタグに変わると思うのでクラスのみ　*/
 .artImg{
-    width: 300px;
-    height: 210px;
+    width: 240px;
+    height: 168px;
 }
 .artTitle{
     margin: 0 auto 2rem auto;
