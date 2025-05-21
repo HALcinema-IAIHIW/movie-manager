@@ -227,7 +227,7 @@ export default function Home() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Link href="/information" className="group">
+              <Link href="/news" className="group">
                 <div className="bg-dark p-6 h-full transition-transform hover:-translate-y-2">
                   <div className="flex justify-center mb-4">
                     <Info size={48} className="text-accent" />
