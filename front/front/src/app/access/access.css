@@ -1,8 +1,8 @@
 
 div#accessMain{
-    height: 100%;
     width: 100%;
     background-color: #25283B;
+    padding: 0 0 20px 0;
     color: #fff;
 }
 
@@ -21,19 +21,24 @@ div#accessTitle p{
     margin: -1.25rem 0 0 0;
 }
 
-/* アクセス部 */
+/* 全体 */
+div.acInfo{
+    margin: 0 25px 50px 25px;
+}
 div.acContent{
     display: flex;
     flex-direction: row;
+    margin: 0 0 0 25px;
 }
+
+/* アクセス部 */
+
 iframe#map{
     display: inline-block;
 }
 
 /* 単元 */
-div.acInfo{
-    margin: 0 25px 50px 25px;
-}
+
 h2.infoTitle{
     margin: 0 0 50px 0;
     font-size: 1.5rem;
@@ -41,12 +46,37 @@ h2.infoTitle{
     border-style: none none solid none;
 }
 
+/* 劇場設備 */
+div#equipList{
+    margin: 0 auto;
+}
+/*　写真・スクリーン番号の組　*/
+div.equip{
+    text-align: center;
+    padding: 0 10px;
+}
+div.equip img{
+    /*background-color: #1877F2;*/
+    border-radius: 5%;
+    object-fit: cover;
+    margin: 0 0 0.5rem 0;
+}
+div.equip h3{
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem 0;
+}
+div.equip p{
+    margin: 0 0 0.25rem 0;
+}
+
 /*　料金表feeList　*/
+div#acFee{
+
+}
 table#feeList{
     margin: 0 auto 50px auto;
     width: 90%;
     border: solid #fff 2px;
-    /*background-color: #1877F2;*/
 }
 
 table#feeList th{
