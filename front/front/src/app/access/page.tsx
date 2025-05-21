@@ -1,14 +1,14 @@
 'use client';
 import React from 'react';
 import './access.css'
-import Header from "@/app/components/header/page";
+// import Header from "@/app/components/header/page";
 import Image from "next/image";
-import Screen01 from "@/public/img/Screen01.png"
+// import Screen01 from "../../../public/images/Screen01.png"
 
 const Access = () =>{
     return(
         <>
-        <Header></Header>
+        {/*<Header></Header>*/}
             <div id={"accessMain"}>
                 <div id={"accessTitle"}>
                     <h1>Access</h1>
@@ -34,20 +34,20 @@ const Access = () =>{
 
                     <div className={'acContent flex-row justify-around'} id={"equipList"}>
                         <div className={'equip'}>
-                            <Image src={Screen01} alt={"Screen01"} width={300} height={200}></Image>
+                            <Image src={"/images/Screen01.png"} alt={"Screen01"} width={300} height={200}></Image>
                             <h3>大スクリーン 200席</h3>
                             <p>スクリーン1</p>
                             <p>スクリーン2</p>
                             <p>スクリーン3</p>
                         </div>
                         <div className={'equip'}>
-                            <Image src={Screen01} alt={"Screen01"} width={300} height={200}></Image>
+                            <Image src={"/images/Screen01.png"} alt={"Screen01"} width={300} height={200}></Image>
                             <h3>中スクリーン 120席</h3>
                             <p>スクリーン4</p>
                             <p>スクリーン5</p>
                         </div>
                         <div className={'equip'}>
-                            <Image src={Screen01} alt={"Screen01"} width={300} height={200}></Image>
+                            <Image src={"/images/Screen01.png"} alt={"Screen01"} width={300} height={200}></Image>
                             <h3>小スクリーン 70席</h3>
                             <p>スクリーン6</p>
                             <p>スクリーン7</p>

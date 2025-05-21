@@ -3,25 +3,57 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground: 255, 255, 255;
+  --background: 22, 27, 44;
+  --accent: 120, 120, 140; /* より落ち着いた差し色 */
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground));
+  background-color: rgb(var(--background));
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 md:px-6;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold mb-8 text-center font-playfair;
+  }
+
+  .section-subtitle {
+    @apply text-xl md:text-2xl font-semibold mb-6 font-playfair;
+  }
+
+  .accent-text {
+    @apply text-accent;
+  }
+
+  .btn-primary {
+    @apply bg-accent text-white px-4 py-2 rounded-none hover:bg-accent/80 transition-all;
+  }
+
+  .nav-link {
+    @apply hover:text-accent transition-colors duration-200 py-2 block;
+  }
+
+  /* 見出し要素にフォントを適用するクラスを追加 */
+  .heading {
+    @apply font-playfair;
+  }
+
+  /* 英字フォントクラス */
+  .font-en-playfair {
+    @apply font-playfair;
+  }
+
+  .font-en-italiana {
+    @apply font-italiana;
+  }
+
+  /* 日本語フォントクラス */
+  .font-jp {
+    @apply font-noto;
   }
 }

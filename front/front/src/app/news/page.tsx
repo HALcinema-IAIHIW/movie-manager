@@ -1,12 +1,12 @@
 'use client';
 import React from 'react';
 import "./news.css"
-import Header from "@/app/components/header/page";
+// import Header from "@/app/components/header/page";
 
 const News = ()=>{
     return(
         <>
-            <Header></Header>
+            {/*<Header></Header>*/}
         <div id={"wrapNews"}>
             <h2 id={"newsTitle"}>Information</h2>
 
