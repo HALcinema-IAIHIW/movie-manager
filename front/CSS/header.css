@@ -1,0 +1,320 @@
+body {
+    margin: 0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    background-color: black;
+    color: white;
+    height : 65px;
+    position: relative;
+}
+
+
+.menu-toggle {
+    width: 30px;
+    height: 24px;
+    position: relative;
+    top:5px;
+    left: 20px;
+    cursor: pointer;
+    margin-right: 20px;
+    transition: 0.3s ease;
+}
+
+.menu-container{
+    height: 100%;
+    width: 65px;
+    background-color: grey;
+}
+
+.menu-toggle .bar {
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    transition: 0.3s ease;
+    border-radius: 2px;
+}
+
+.bar.top {
+    top: 0;
+}
+
+.bar.middle {
+    top: 7px;
+}
+
+.bar.bottom {
+    top: 14px;
+}
+
+.menu-toggle.open .bar.top {
+    transform: rotate(45deg);
+    top: 10px;
+}
+
+.menu-toggle.open .bar.middle {
+    opacity: 0;
+}
+
+.menu-toggle.open .bar.bottom {
+    transform: rotate(-45deg);
+    top: 10px;
+}
+
+.menu-header{
+    padding-top: 25px;
+    font-size: 0.65rem;
+}
+
+.logo {
+    font-size: 40px;
+    margin-right: auto;
+    margin-left: 30px;
+    font-family: "Italiana", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.search-bar {
+    width: 400px;
+    padding: 13px 13px;
+    border-radius: 20px;
+    border: none;
+    margin-right: 40px;
+}
+
+
+.side-menu {
+    position: fixed;
+    top: 65px;
+    left: -350px;
+    width: 250px;
+    height: 100%;
+    background-color: gray;
+    color: white;
+    padding: 20px;
+    transition: 0.3s;
+    z-index: 1000;
+}
+
+.side-menu.open {
+    left: 0;
+    top:65px
+}
+
+.close-btn {
+    font-size: 24px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+}
+
+.side-menu li {
+    margin: 15px 0 15px 10px;
+    cursor: pointer;
+    font-family: "Italiana", sans-serif;
+    font-size: 1.2rem;
+}
+
+.main-content {
+    padding: 20px;
+}
+
+.member-btn {
+    font-family: "Italiana", sans-serif;
+    font-weight: 400;
+    font-size: 40px;
+    cursor: pointer;
+    padding-right: 40px;
+}
+
+
+/* スライドメニュー */
+
+.member-container {
+    position: relative;
+    display: inline-block;
+}
+
+.member-panel {
+    position: absolute;
+    top: 65px;
+    right: 40px;
+    width: 300px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    padding: 20px;
+    display: none;
+    animation: slideDown 0.3s ease forwards;
+    z-index: 1000;
+}
+
+.member-panel.open {
+    right: 0;
+}
+
+/* 三角マーク */
+.arrow-up {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white;
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    font-size: 20px;
+    font-family: "Italiana", sans-serif;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.tab {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab.active {
+    border-bottom: 2px solid orange;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+.tabs span {
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    padding: 5px;
+}
+
+.tabs span.active {
+    border-color: orange;
+}
+
+#loginTab{
+    margin-left: 10px;
+}
+
+#signupTab{
+    margin-left: 60px;
+}
+
+.form-group {
+    margin: 10px 0;
+}
+
+.form-group input {
+    width: 90%;
+    padding: 8px 15px;
+    border: 1px solid black;
+    border-radius: 20px;
+    font-family: "Italiana", sans-serif;
+    font-size: 14px;
+    outline: none;
+}
+
+.signup-btn {
+    background-color: #FFD966;
+    font-family: "Italiana", sans-serif;
+    border: 1px solid black;
+    border-radius: 20px;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.forgot{
+    font-family: "Italiana", sans-serif;
+}
+
+.forgot a{
+    text-decoration: none;
+}
+
+
+.icon {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
+
+.bar {
+    position: absolute;
+    width: 2px;
+    height: 16px;
+    background-color: white;
+    top: 0;
+    transition: all 0.3s ease;
+    transform-origin: center;
+
+}
+
+.bar.left {
+    left: 8px;
+    height: 14px;
+    transform: translateY(-50%) rotate(-45deg);
+}
+
+.bar.right {
+    right: -3px;
+    height: 14px;
+    transform: translateY(-50%) rotate(45deg);
+}
+
+/* 展開時：棒を長くして×に */
+.icon.open .bar.left {
+    height: 28px;
+    left: 12px;
+    top: 5px;
+}
+
+.icon.open .bar.right {
+    height: 28px;
+    right: 2px;
+    top: 5px;
+}
+
+.member-text{
+    position: relative;
+    top:0
+}
+
+.main-content.open{
+    opacity: 50%;
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
