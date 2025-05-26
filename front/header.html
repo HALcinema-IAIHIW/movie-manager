@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>HALCINEMA</title>
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <div class="menu-container">
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span class="bar top"></span>
+                <span class="bar middle"></span>
+                <span class="bar bottom"></span>
+                <p class="menu-header">MENU</p>
+            </div>
+        </div>
+        <div class="logo">HALCINEMA</div>
+        <input type="text" class="search-bar" placeholder="">
+        <div class="member-btn" onclick="togglePanel()" id="memberToggleBtn">
+            <span class="member-text">MEMBER</span>
+            <span class="icon" id="toggleIcon">
+                <span class="bar left"></span>
+                <span class="bar right"></span>
+            </span>
+        </div>
+    </header>
+    
+    <nav id="sideMenu" class="side-menu">
+        <ul>
+            <li>Top Page</li>
+            <li>Information</li>
+            <li>Movies</li>
+            <li>access</li>
+            <li>My Page</li>
+            <li>Q & A</li>
+        </ul>
+    </nav>
+
+    <div class="member-panel" id="memberPanel">
+        <div class="arrow-up"></div> <!-- ▲ 吹き出し三角 -->
+        <div class="tabs">
+            <div class="tabs">
+                <span id="loginTab" class="tab active" onclick="showTab('login')">Login</span>
+                <span id="signupTab" class="tab" onclick="showTab('signup')">Sign-Up</span>
+            </div>
+        </div>
+        <div id="loginForm" class="form-section">
+            <div class="form-group"><input type="email" placeholder="Email"></div>
+            <div class="form-group"><input type="password" placeholder="Password"></div>
+            <div class="form-group"><button class="signup-btn">Login</button></div>
+            <div class="forgot"><a href="#">Email/Passwordを忘れた方</a></div>
+        </div>
+        <div id="signupForm" class="form-section hidden">
+            <div class="form-group"><input type="text" placeholder="Full Name"></div>
+            <div class="form-group"><input type="text" placeholder="Gender"></div>
+            <div class="form-group"><input type="email" placeholder="Email"></div>
+            <div class="form-group"><input type="password" placeholder="Password"></div>
+            <div class="form-group"><input type="tel" placeholder="Phone"></div>
+            <div class="form-group"><button class="signup-btn">Sign Up</button></div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <!-- コンテンツ -->
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("sideMenu").classList.toggle("open");
+            document.querySelector(".menu-toggle").classList.toggle("open");
+            document.getElementById("main").classList.toggle("open");
+        }
+        function togglePanel() {
+            const panel = document.getElementById('memberPanel');
+            const icon = document.getElementById('toggleIcon');
+
+            const isOpen = panel.style.display === 'block';
+
+            if (isOpen) {
+                panel.style.display = 'none';
+                icon.classList.remove('open');
+            } else {
+                panel.style.display = 'block';
+                icon.classList.add('open');
+            }
+        }
+        function showTab(tabName) {
+            const loginTab = document.getElementById('loginTab');
+            const signupTab = document.getElementById('signupTab');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+
+            if (tabName === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                loginTab.classList.remove('active');
+                signupTab.classList.add('active');
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+            }
+        }
+    </script>
+
+</body>
+</html>
