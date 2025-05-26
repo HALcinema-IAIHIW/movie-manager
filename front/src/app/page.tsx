@@ -45,6 +45,42 @@ const moviesData = {
 }
 
 export default function Home() {
+  // カルーセルの状態管理
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+
+  // タブの状態管理
+  const [activeTab, setActiveTab] = useState("nowShowing")
+
+  // カルーセルの自動再生
+  useEffect(() => {
+    if (!isAutoPlaying) return
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev === carouselData.length - 1 ? 0 : prev + 1))
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [isAutoPlaying])
+
+  // 前のスライドへ
+  const prevSlide = () => {
+    setIsAutoPlaying(false)
+    setCurrentSlide((prev) => (prev === 0 ? carouselData.length - 1 : prev - 1))
+  }
+
+  // 次のスライドへ
+  const nextSlide = () => {
+    setIsAutoPlaying(false)
+    setCurrentSlide((prev) => (prev === carouselData.length - 1 ? 0 : prev + 1))
+  }
+
+  // スライドを選択
+  const goToSlide = (index: number) => {
+    setIsAutoPlaying(false)
+    setCurrentSlide(index)
+  }
+
   return (
       <div>
         {/* カルーセルセクション */}
