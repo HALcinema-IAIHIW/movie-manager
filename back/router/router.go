@@ -16,6 +16,6 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	// r.GET("/users", handler.GetUsers(db))
 	// r.POST("/register", handler.Register(db))
 
-	handler.RegisterRoutes(r, db)
+	handler.CreateUserRequest(r, db)
 	return r
 }
