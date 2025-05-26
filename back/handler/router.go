@@ -15,3 +15,8 @@ func GetUsers(db *gorm.DB) gin.HandlerFunc {
 		c.JSON(http.StatusOK, users)
 	}
 }
+
+func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
+	r.GET("/users", GetUsers(db))
+	r.POST("/register", Register(db))
+}
