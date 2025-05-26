@@ -6,6 +6,7 @@ cdでC:\IW31\movie-manager\front\frontまで移動して
 Ittaliana
 英字
 Playfair Display
+
 日本語部
 NotoSerif JP
 
