@@ -5,7 +5,7 @@ import "./news.css"
 
 const News = ()=>{
     return(
-        <>
+        <div>
             {/*<Header></Header>*/}
         <div id={"wrapNews"}>
             <h2 id={"newsTitle"}>Information</h2>
@@ -46,7 +46,7 @@ const News = ()=>{
 
             </div>
         </div>
-        </>
+        </div>
     );
 }
 
