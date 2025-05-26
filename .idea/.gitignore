@@ -6,3 +6,6 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/**/movie-manager.iml
