@@ -2,6 +2,7 @@
 import React from "react";
 import "./article.css"
 import Image from "next/image";
+import Link from "next/link";
 
 const Article = () =>{
     return(
@@ -14,9 +15,9 @@ const Article = () =>{
         <h2 id={"infoArtTitle"} className={"mb-5"}>入場者プレゼントに関するお知らせ</h2>
         <p id={"infoArtMain"}>
             ここに本文が入ります。<br/>
-            <br/>
-
+            ここに本文が入ります。
         </p>
+        <p id={"toNews"}><Link href={"/news"} >戻る</Link></p>
     </div>
     );
 }
