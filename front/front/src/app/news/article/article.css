@@ -14,7 +14,7 @@ h1#infoPageTitle{
 
 img#infoArtImg{
     object-fit: inherit;
-    margin: 0 auto;
+    margin: 0 auto 50px auto;
 }
 
 p#infoArtDate{
