@@ -3,8 +3,9 @@ import type { Metadata } from "next"
 import { Playfair_Display, Italiana } from "next/font/google"
 import { Noto_Serif_JP } from "next/font/google"
 import "./globals.css"
-import Header from "@/app/components/header/page"
-// import Footer from "@/components/footer"
+// import Header from "@/app/components/header/page"
+import Header from "@/app/components/Header"
+import Footer from "@/app/components/Footer"
 
 // 英字フォント
 const playfair = Playfair_Display({
@@ -45,7 +46,7 @@ export default function RootLayout({
       >
       <Header />
       <main className="flex-1">{children}</main>
-      {/*<Footer />*/}
+      <Footer />
       </body>
       </html>
   )
