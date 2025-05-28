@@ -46,6 +46,10 @@ div.art:hover{
 .artImg{
     width: 240px;
     height: 168px;
+    transition: 0.1s;
+}
+div.art:hover .artImg{
+    opacity: 0.8;
 }
 .artTitle{
     margin: 0 auto 2rem auto;
