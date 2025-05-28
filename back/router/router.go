@@ -12,6 +12,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pomg"})
 	})
-	r.GET("/users", handler.GetUsers(db))
+
+	handler.RegisterRoutes(r, db)
 	return r
 }
