@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Play, Info, ChevronLeft, ChevronRight } from "lucide-react"
+import { PingStatus, pingStatus } from "./components/PingStatus"
 
 // カルーセルのデータ
 const carouselData = [
@@ -83,6 +85,9 @@ export default function Home() {
 
   return (
       <div>
+        {/* API応答確認 */}
+        < PingStatus/ >
+
         {/* カルーセルセクション */}
         <section className="relative h-[80vh]">
           {/* スライド */}
