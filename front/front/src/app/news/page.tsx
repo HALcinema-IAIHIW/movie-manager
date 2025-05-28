@@ -17,7 +17,7 @@ const News = ()=>{
                 <Link href={"news/article"}>
                     <div className={"art"}>
                         <div className={"artImg mb-3  bg-amber-300"}>
-                            <Image src={"/images/prov.png"} alt={"prov"} width={240} height={168}></Image>
+                            <Image  src={"/images/provimg.jpg"} alt={"prov"} width={240} height={168}></Image>
                         </div>
                         <p className={"artTitle"}>タイトル</p>
                     </div>
@@ -25,7 +25,7 @@ const News = ()=>{
                 <Link href={"news/article"}>
                     <div className={"art"}>
                         <div className={"artImg mb-3  bg-pink-300"}>
-                            <Image  src={"/images/prov.png"} alt={"prov"} width={240} height={168}></Image>
+                            <Image  src={"/images/provimg.jpg"} alt={"prov"} width={240} height={168}></Image>
                         </div>
                         <p className={"artTitle"}>タイトル</p>
                     </div>
