@@ -26,33 +26,8 @@ h2#MovieTitle{
 
 }
 
-div.articles{
-    width: 80%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
-    margin: 0 auto;
-}
 
-/*　記事単体の設定　*/
-div.art{
-    padding: 0 1.5rem;
-    transition: 0.1s;
-}
+
 div.art:hover{
     text-shadow:0 0 15px #fff, 0 0 10px #fff;
-}
-/*　画像部分　imgタグに変わると思うのでクラスのみ　*/
-.artImg{
-    width: 250px;
-    height: 400px;
-    padding: 5px;
-}
-.artTitle{
-    margin: 0 auto 2rem auto;
-    font-size: 1.5rem;
-    text-align: center;
-    padding:5px;
 }
