@@ -12,6 +12,8 @@ import (
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
+	handler.RegisterRoutes(r, db)
+
 	// CORS許可
 	r.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -25,7 +27,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			"message": "pong",
 		})
 	})
-	r.GET("/users", handler.GetUsers(db))
+	// r.GET("/users", handler.GetUsers(db))
 
 	return r
 }
