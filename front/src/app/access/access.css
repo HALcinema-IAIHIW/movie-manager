@@ -2,8 +2,9 @@
 
 
 div#accessMain{
-    width: 100%;
-    background-color: #25283B;
+    width: 80%;
+    margin: 0 auto;
+    /*background-color: #25283B;*/
     padding: 0 0 20px 0;
     color: #fff;
     font-family: "Noto Serif JP" !important;
