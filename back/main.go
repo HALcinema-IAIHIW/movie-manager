@@ -1,37 +1,30 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"modules/config"
+
+	// "modules/database"
 	"modules/database/model"
 	"modules/router"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func main() {
 
 	env := config.LoadEnv()
 
-	// DSN生成
-	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		env.DBHost,
-		env.DBUser,
-		env.DBPassword,
-		env.DBName,
-		env.DBPort,
-	)
-
 	// DB接続
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := model.NewDB(env)
 	if err != nil {
 		log.Fatalf("DB接続エラー: %v", err)
 	}
 
-	if err := db.AutoMigrate(&model.User{}, &model.Movie{}); err != nil {
+	// マイグレーション
+	if err := db.AutoMigrate(
+		&model.User{},
+		&model.Movie{},
+		&model.SeatType{},
+	); err != nil {
 		log.Fatalf("マイグレーションエラー: %v", err)
 	}
 
