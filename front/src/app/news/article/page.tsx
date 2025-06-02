@@ -8,7 +8,7 @@ const Article = () =>{
     return(
     <div className={"infoArt"}>
         <h1 id={"infoPageTitle"} className={"mb-5"}>Information</h1>
-        <Image id={"infoArtImg"} src={"/images/prov.jpg"} alt={"main"} width={600} height={400}></Image>
+        <Image id={"infoArtImg"} src={"/images/prov.png"} alt={"main"} width={600} height={400}></Image>
 
 
         <p id={"infoArtDate"}>2025/06/01</p>
