@@ -31,7 +31,11 @@ func main() {
 		log.Fatalf("DB接続エラー: %v", err)
 	}
 
-	if err := db.AutoMigrate(&model.User{}, &model.Movie{}); err != nil {
+	if err := db.AutoMigrate(
+		&model.User{},
+		&model.Movie{},
+		&model.SeatType{},
+	); err != nil {
 		log.Fatalf("マイグレーションエラー: %v", err)
 	}
 
