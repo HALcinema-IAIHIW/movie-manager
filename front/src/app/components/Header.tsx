@@ -1,430 +1,274 @@
 "use client"
 
-import {useState} from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { User, ChevronDown } from "lucide-react"
 
 export default function Header() {
+    // メニューとメンバーパネルの状態管理
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isMemberPanelOpen, setIsMemberPanelOpen] = useState(false)
     const [activeTab, setActiveTab] = useState("login")
+    const [isScrolled, setIsScrolled] = useState(false)
 
+    // スクロール時のヘッダー背景変更
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50)
+        }
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
+
+    // メニューの開閉
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen)
+        // メニューが開いている時は背景スクロールを無効化
+        document.body.style.overflow = !isMenuOpen ? "hidden" : "auto"
     }
 
+    // メンバーパネルの開閉
     const toggleMemberPanel = () => {
         setIsMemberPanelOpen(!isMemberPanelOpen)
     }
 
-    const showTab = (tabName: string) => {
-        setActiveTab(tabName)
-    }
+    // コンポーネントのアンマウント時にスクロールを有効化
+    useEffect(() => {
+        return () => {
+            document.body.style.overflow = "auto"
+        }
+    }, [])
 
     return (
         <>
-            <style jsx>{`
-              .header {
-                display: flex;
-                align-items: center;
-                background-color: black;
-                color: white;
-                height: 65px;
-                position: relative;
-              }
+            {/* ヘッダー本体 */}
+            <header
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+                    isScrolled ? "bg-darkest/95 backdrop-blur-md shadow-luxury" : "bg-transparent"
+                }`}
+            >
+                <div className="container-luxury">
+                    <div className="flex items-center justify-between h-20">
+                        {/* メニューボタン */}
+                        <div className="flex-1 flex items-center">
+                            <button
+                                onClick={toggleMenu}
+                                className="flex flex-col items-center justify-center w-16 h-16 hover:bg-accent/30 transition-all duration-300 group"
+                                aria-label="メニューを開く"
+                            >
+                                <div className="relative w-6 h-6">
+                  <span
+                      className={`absolute block w-6 h-0.5 bg-text-primary transition-all duration-300 
+                      ${isMenuOpen ? "rotate-45 top-3" : "top-1"}`}
+                  />
+                                    <span
+                                        className={`absolute block w-6 h-0.5 bg-text-primary transition-all duration-300 
+                      ${isMenuOpen ? "opacity-0" : "top-3"}`}
+                                    />
+                                    <span
+                                        className={`absolute block w-6 h-0.5 bg-text-primary transition-all duration-300 
+                      ${isMenuOpen ? "-rotate-45 top-3" : "top-5"}`}
+                                    />
+                                </div>
+                                <span className="text-xs text-text-muted mt-1 font-en">MENU</span>
+                            </button>
+                        </div>
 
-              .menu-container {
-                height: 100%;
-                width: 65px;
-                background-color: grey;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-              }
+                        {/* ロゴ */}
+                        <div className="flex-1 flex justify-center">
+                            <Link
+                                href="/"
+                                className="text-4xl md:text-5xl text-gold hover:text-gold-light
+                  transition-colors duration-300 tracking-wider font-en"
+                            >
+                                HAL cinema
+                            </Link>
+                        </div>
 
-              .menu-toggle {
-                width: 30px;
-                height: 24px;
-                position: relative;
-                cursor: pointer;
-                transition: 0.3s ease;
-              }
+                        {/* メンバーボタン */}
+                        <div className="flex-1 flex justify-end">
+                            <div className="relative">
+                                <button
+                                    onClick={toggleMemberPanel}
+                                    className="flex items-center gap-2 px-4 py-2 text-text-secondary
+                  hover:text-gold transition-colors duration-300 group"
+                                    aria-label="メンバーメニューを開く"
+                                >
+                                    <User size={20} />
+                                    <span className="text-lg hidden sm:block font-en">Member</span>
+                                    <ChevronDown
+                                        size={16}
+                                        className={`transition-transform duration-300 ${isMemberPanelOpen ? "rotate-180" : ""}`}
+                                    />
+                                </button>
 
-              .menu-toggle .bar {
-                height: 3px;
-                width: 100%;
-                background-color: white;
-                position: absolute;
-                transition: 0.3s ease;
-                border-radius: 2px;
-              }
+                                {/* メンバーパネル */}
+                                {isMemberPanelOpen && (
+                                    <div
+                                        className="absolute top-full right-0 mt-2 w-80 bg-dark-lighter
+                  border border-accent/20 rounded-lg shadow-luxury-lg animate-scale-in"
+                                    >
+                                        {/* 矢印 */}
+                                        <div
+                                            className="absolute -top-2 right-6 w-4 h-4 bg-dark-lighter
+                    border-l border-t border-accent/20 rotate-45"
+                                        />
 
-              .bar.top {
-                top: 0;
-              }
+                                        <div className="p-6">
+                                            {/* タブナビゲーション */}
+                                            <div className="flex border-b border-accent/20 mb-6">
+                                                <button
+                                                    className={`flex-1 py-3 text-center text-lg transition-colors font-en ${
+                                                        activeTab === "login"
+                                                            ? "text-gold border-b-2 border-gold"
+                                                            : "text-text-muted hover:text-text-secondary"
+                                                    }`}
+                                                    onClick={() => setActiveTab("login")}
+                                                >
+                                                    Login
+                                                </button>
+                                                <button
+                                                    className={`flex-1 py-3 text-center text-lg transition-colors font-en ${
+                                                        activeTab === "signup"
+                                                            ? "text-gold border-b-2 border-gold"
+                                                            : "text-text-muted hover:text-text-secondary"
+                                                    }`}
+                                                    onClick={() => setActiveTab("signup")}
+                                                >
+                                                    Sign Up
+                                                </button>
+                                            </div>
 
-              .bar.middle {
-                top: 7px;
-              }
+                                            {/* ログインフォーム */}
+                                            {activeTab === "login" && (
+                                                <div className="space-y-4">
+                                                    <input
+                                                        type="email"
+                                                        placeholder="メールアドレス"
+                                                        className="w-full px-4 py-3 bg-darker border border-accent/30
+                            rounded-lg text-text-primary placeholder-text-muted
+                            focus:border-gold focus:outline-none transition-colors font-shippori font-jp"
+                                                    />
+                                                    <input
+                                                        type="password"
+                                                        placeholder="パスワード"
+                                                        className="w-full px-4 py-3 bg-darker border border-accent/30
+                            rounded-lg text-text-primary placeholder-text-muted
+                            focus:border-gold focus:outline-none transition-colors font-shippori font-jp"
+                                                    />
+                                                    <button className="w-full btn-luxury font-shippori font-jp">ログイン</button>
+                                                    <Link
+                                                        href="/forgot-password"
+                                                        className="block text-center text-sm text-text-muted hover:text-gold
+                            transition-colors font-shippori font-jp"
+                                                    >
+                                                        パスワードを忘れた方
+                                                    </Link>
+                                                </div>
+                                            )}
 
-              .bar.bottom {
-                top: 14px;
-              }
-
-              .menu-toggle.open .bar.top {
-                transform: rotate(45deg);
-                top: 10px;
-              }
-
-              .menu-toggle.open .bar.middle {
-                opacity: 0;
-              }
-
-              .menu-toggle.open .bar.bottom {
-                transform: rotate(-45deg);
-                top: 10px;
-              }
-
-              .menu-header {
-                font-size: 0.65rem;
-                margin-top: 5px;
-                text-align: center;
-              }
-
-              .logo {
-                font-size: 40px;
-                margin-left: 30px;
-                font-family: "Italiana", sans-serif;
-                font-weight: 400;
-                font-style: normal;
-                text-decoration: none;
-                color: white;
-                //letter-spacing: 1px;
-              }
-
-              .right-section {
-                margin-left: auto;
-                display: flex;
-                align-items: center;
-                gap: 20px;
-                margin-right: 40px;
-              }
-
-              .search-bar {
-                width: 400px;
-                padding: 8px 13px; /* 高さを狭くしました */
-                border-radius: 50px; /* 角丸を最大にしました */
-                border: none;
-                color: black;
-                background-color: white;
-              }
-
-              .search-bar::placeholder {
-                color: #999;
-              }
-
-              .side-menu {
-                position: fixed;
-                top: 65px;
-                left: -350px;
-                width: 250px;
-                height: 100%;
-                background-color: gray;
-                color: white;
-                padding: 20px;
-                transition: 0.3s;
-                z-index: 1000;
-              }
-
-              .side-menu.open {
-                left: 0;
-              }
-
-              .side-menu ul {
-                list-style: none;
-                padding: 0;
-              }
-
-              .side-menu li {
-                margin: 15px 0 15px 10px;
-                cursor: pointer;
-                font-family: "Italiana", sans-serif;
-                font-size: 1.2rem;
-                transition: opacity 0.3s ease;
-              }
-
-              .side-menu li:hover {
-                opacity: 0.6;
-              }
-
-              .side-menu a {
-                color: white;
-                text-decoration: none;
-              }
-
-              .member-btn {
-                font-family: "Italiana", sans-serif;
-                font-weight: 400;
-                font-size: 40px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-              }
-
-              .member-panel {
-                position: absolute;
-                top: 65px;
-                right: 40px;
-                width: 300px;
-                background-color: white;
-                border-radius: 10px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-                padding: 20px;
-                display: ${isMemberPanelOpen ? "block" : "none"};
-                animation: slideDown 0.3s ease forwards;
-                z-index: 1000;
-              }
-
-              .arrow-up {
-                position: absolute;
-                top: -10px;
-                right: 20px;
-                width: 0;
-                height: 0;
-                border-left: 10px solid transparent;
-                border-right: 10px solid transparent;
-                border-bottom: 10px solid white;
-              }
-
-              .tabs {
-                display: flex;
-                justify-content: space-around;
-                font-size: 20px;
-                font-family: "Italiana", sans-serif;
-                margin-bottom: 10px;
-                position: relative;
-              }
-
-              .tab {
-                padding: 5px 10px;
-                cursor: pointer;
-                border-bottom: 2px solid transparent;
-                transition: all 0.3s;
-                color: black;
-              }
-
-              .tab.active {
-                border-bottom: 2px solid orange;
-              }
-
-              .form-section {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-              }
-
-              .hidden {
-                display: none;
-              }
-
-              #loginTab {
-                margin-left: 10px;
-              }
-
-              #signupTab {
-                margin-left: 60px;
-              }
-
-              .form-group {
-                margin: 10px 0;
-              }
-
-              .form-group input {
-                width: 90%;
-                padding: 8px 15px;
-                border: 1px solid black;
-                border-radius: 20px;
-                font-family: "Italiana", sans-serif;
-                font-size: 14px;
-                outline: none;
-                color: black;
-              }
-
-              .signup-btn {
-                background-color: #ffd966;
-                font-family: "Italiana", sans-serif;
-                border: 1px solid black;
-                border-radius: 20px;
-                width: 100%;
-                padding: 10px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                color: black;
-              }
-
-              .forgot {
-                font-family: "Italiana", sans-serif;
-              }
-
-              .forgot a {
-                text-decoration: none;
-                color: black;
-              }
-
-              .arrow-icon {
-                width: 0;
-                height: 0;
-                border-left: 8px solid transparent;
-                border-right: 8px solid transparent;
-                border-top: 8px solid white;
-                transition: transform 0.3s ease;
-                transform: ${isMemberPanelOpen ? "rotate(180deg)" : "rotate(0deg)"};
-              }
-
-              .member-text {
-                position: relative;
-              }
-
-              @keyframes slideDown {
-                0% {
-                  opacity: 0;
-                  transform: translateY(-20px);
-                }
-                100% {
-                  opacity: 1;
-                  transform: translateY(0);
-                }
-              }
-
-              @media (max-width: 768px) {
-                .search-bar {
-                  width: 200px;
-                }
-
-                .logo {
-                  font-size: 36px;
-                  margin-left: 15px;
-                }
-
-                .member-btn {
-                  font-size: 28px;
-                }
-
-                .right-section {
-                  margin-right: 20px;
-                }
-
-                .member-panel {
-                  right: 20px;
-                  width: 280px;
-                }
-              }
-            `}</style>
-
-            <header className="header">
-                <div className="menu-container">
-                    <div className={`menu-toggle ${isMenuOpen ? "open" : ""}`} onClick={toggleMenu}>
-                        <span className="bar top"></span>
-                        <span className="bar middle"></span>
-                        <span className="bar bottom"></span>
-                    </div>
-                    <p className="menu-header">MENU</p>
-                </div>
-
-                <div className={"logo "}>
-                    <Link href="/">
-                        HALCINEMA
-                    </Link>
-                </div>
-
-
-                <div className="right-section">
-                    <input type="text" className="search-bar" placeholder=""/>
-                    <div className="member-btn" onClick={toggleMemberPanel}>
-                        <span className="member-text">MEMBER</span>
-                        <div className="arrow-icon"></div>
+                                            {/* サインアップフォーム */}
+                                            {activeTab === "signup" && (
+                                                <div className="space-y-4">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="お名前"
+                                                        className="w-full px-4 py-3 bg-darker border border-accent/30
+                            rounded-lg text-text-primary placeholder-text-muted
+                            focus:border-gold focus:outline-none transition-colors font-shippori font-jp"
+                                                    />
+                                                    <input
+                                                        type="email"
+                                                        placeholder="メールアドレス"
+                                                        className="w-full px-4 py-3 bg-darker border border-accent/30
+                            rounded-lg text-text-primary placeholder-text-muted
+                            focus:border-gold focus:outline-none transition-colors font-shippori font-jp"
+                                                    />
+                                                    <input
+                                                        type="password"
+                                                        placeholder="パスワード"
+                                                        className="w-full px-4 py-3 bg-darker border border-accent/30
+                            rounded-lg text-text-primary placeholder-text-muted
+                            focus:border-gold focus:outline-none transition-colors font-shippori font-jp"
+                                                    />
+                                                    <input
+                                                        type="tel"
+                                                        placeholder="電話番号"
+                                                        className="w-full px-4 py-3 bg-darker border border-accent/30
+                            rounded-lg text-text-primary placeholder-text-muted
+                            focus:border-gold focus:outline-none transition-colors font-shippori font-jp"
+                                                    />
+                                                    <button className="w-full btn-luxury font-shippori font-jp">新規登録</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
 
-            <nav className={`side-menu ${isMenuOpen ? "open" : ""}`}>
-                <ul>
-                    <li>
-                        <Link href="/">Top Page</Link>
-                    </li>
-                    <li>
-                        <Link href="/news">Information</Link>
-                    </li>
-                    <li>
-                        <Link href="/movies">Movies</Link>
-                    </li>
-                    <li>
-                        <Link href="/access">Access</Link>
-                    </li>
-                    <li>
-                        <Link href="/mypage">My Page</Link>
-                    </li>
-                    <li>
-                        <Link href="/faq">Q & A</Link>
-                    </li>
-                </ul>
-            </nav>
+            {/* サイドメニュー */}
+            <div
+                className={`fixed inset-0 z-40 transition-opacity duration-300 ${
+                    isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+            >
+                {/* オーバーレイ */}
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={toggleMenu} />
 
-            <div className="member-panel">
-                <div className="arrow-up"></div>
-                <div className="tabs">
-          <span
-              id="loginTab"
-              className={`tab ${activeTab === "login" ? "active" : ""}`}
-              onClick={() => showTab("login")}
-          >
-            Login
-          </span>
-                    <span
-                        id="signupTab"
-                        className={`tab ${activeTab === "signup" ? "active" : ""}`}
-                        onClick={() => showTab("signup")}
-                    >
-            Sign-Up
-          </span>
-                </div>
-                <div className={`form-section ${activeTab === "login" ? "" : "hidden"}`}>
-                    <div className="form-group">
-                        <input type="email" placeholder="Email"/>
+                {/* メニューパネル */}
+                <nav
+                    className={`absolute left-0 top-0 h-full w-80 bg-darker border-r border-accent/20 
+            shadow-luxury-lg transform transition-transform duration-300 ${
+                        isMenuOpen ? "translate-x-0" : "-translate-x-full"
+                    }`}
+                >
+                    <div className="p-8 pt-24">
+                        {/* メニュータイトル */}
+                        <h2 className="text-2xl font-playfair text-gold mb-8 text-center">NAVIGATION</h2>
+
+                        {/* メニューリスト */}
+                        <ul className="space-y-6">
+                            <li>
+                                <Link href="/" className="nav-link block text-lg py-2 font-en" onClick={toggleMenu}>
+                                    Top Page
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/movies" className="nav-link block text-lg py-2 font-en" onClick={toggleMenu}>
+                                    Movies
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/news" className="nav-link block text-lg py-2 font-jp" onClick={toggleMenu}>
+                                    インフォメーション
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/access" className="nav-link block text-lg font-shippori py-2" onClick={toggleMenu}>
+                                    アクセス
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/mypage" className="nav-link block text-lg font-shippori py-2" onClick={toggleMenu}>
+                                    マイページ
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/faq" className="nav-link block text-lg font-shippori py-2" onClick={toggleMenu}>
+                                    よくある質問
+                                </Link>
+                            </li>
+                        </ul>
                     </div>
-                    <div className="form-group">
-                        <input type="password" placeholder="Password"/>
-                    </div>
-                    <div className="form-group">
-                        <button className="signup-btn">Login</button>
-                    </div>
-                    <div className="forgot">
-                        <a href="#">Email/Passwordを忘れた方</a>
-                    </div>
-                </div>
-                <div className={`form-section ${activeTab === "signup" ? "" : "hidden"}`}>
-                    <div className="form-group">
-                        <input type="text" placeholder="Full Name"/>
-                    </div>
-                    <div className="form-group">
-                        <input type="text" placeholder="Gender"/>
-                    </div>
-                    <div className="form-group">
-                        <input type="email" placeholder="Email"/>
-                    </div>
-                    <div className="form-group">
-                        <input type="password" placeholder="Password"/>
-                    </div>
-                    <div className="form-group">
-                        <input type="tel" placeholder="Phone"/>
-                    </div>
-                    <div className="form-group">
-                        <button className="signup-btn">Sign Up</button>
-                    </div>
-                </div>
+                </nav>
             </div>
+
+            {/* メンバーパネル外クリック時の閉じる処理 */}
+            {isMemberPanelOpen && <div className="fixed inset-0 z-30" onClick={() => setIsMemberPanelOpen(false)} />}
         </>
     )
 }

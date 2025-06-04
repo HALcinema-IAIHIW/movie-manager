@@ -2,58 +2,147 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS変数の定義 */
 :root {
+  --background: 10, 13, 20;
   --foreground: 255, 255, 255;
-  --background: 22, 27, 44;
-  --accent: 120, 120, 140; /* より落ち着いた差し色 */
+  --card: 22, 27, 44;
+  --card-foreground: 255, 255, 255;
+  --popover: 22, 27, 44;
+  --popover-foreground: 255, 255, 255;
+  --primary: 212, 175, 55;
+  --primary-foreground: 10, 13, 20;
+  --secondary: 30, 37, 56;
+  --secondary-foreground: 255, 255, 255;
+  --muted: 30, 37, 56;
+  --muted-foreground: 148, 163, 184;
+  --accent: 107, 107, 125;
+  --accent-foreground: 255, 255, 255;
+  --destructive: 239, 68, 68;
+  --destructive-foreground: 255, 255, 255;
+  --border: 30, 37, 56;
+  --input: 30, 37, 56;
+  --ring: 212, 175, 55;
+}
+
+/* ベーススタイル */
+* {
+  font-family: var(--font-shippori), serif;
 }
 
 body {
   color: rgb(var(--foreground));
-  background-color: rgb(var(--background));
+  background: linear-gradient(135deg, #0a0d14 0%, #0f131e 100%);
+  min-height: 100vh;
+  font-family: var(--font-shippori), serif;
 }
 
+/* 英語テキスト用のクラス */
+.font-en {
+  font-family: var(--font-playfair), serif !important;
+}
+
+/* 日本語テキスト用のクラス */
+.font-jp {
+  font-family: var(--font-shippori), serif !important;
+}
+
+/* スクロールバーのカスタマイズ（高級感演出） */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #161b2c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e5c76b;
+}
+
+/* 共通コンポーネントクラス */
 @layer components {
-  .container-custom {
-    @apply container mx-auto px-4 md:px-6;
+  /* コンテナ */
+  .container-luxury {
+    @apply container mx-auto px-4 md:px-6 lg:px-8;
   }
 
+  /* セクションタイトル */
   .section-title {
-    @apply text-3xl md:text-4xl font-bold mb-8 text-center font-playfair;
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-center;
+    @apply bg-gradient-to-r from-gold to-gold-light bg-clip-text text-transparent;
+    font-family: var(--font-playfair), serif !important;
   }
 
   .section-subtitle {
-    @apply text-xl md:text-2xl font-semibold mb-6 font-playfair;
+    @apply text-xl md:text-2xl font-semibold text-text-secondary;
+    font-family: var(--font-playfair), serif !important;
   }
 
-  .accent-text {
-    @apply text-accent;
+  /* ボタンスタイル */
+  .btn-luxury {
+    @apply px-6 py-3 bg-gradient-to-r from-gold to-gold-light text-darkest;
+    @apply font-semibold rounded-none transition-all duration-300;
+    @apply hover:shadow-gold-glow hover:scale-105 active:scale-95;
+    font-family: var(--font-shippori), serif !important;
   }
 
-  .btn-primary {
-    @apply bg-accent text-white px-4 py-2 rounded-none hover:bg-accent/80 transition-all;
+  .btn-outline-luxury {
+    @apply px-6 py-3 border-2 border-gold text-gold;
+    @apply font-semibold rounded-none transition-all duration-300;
+    @apply hover:bg-gold hover:text-darkest hover:shadow-gold-glow;
+    font-family: var(--font-shippori), serif !important;
   }
 
+  /* カードスタイル */
+  .card-luxury {
+    @apply bg-dark-lighter border border-accent/20 rounded-lg;
+    @apply shadow-luxury transition-all duration-300;
+    @apply hover:shadow-luxury-lg hover:-translate-y-1;
+  }
+
+  /* ナビゲーションリンク */
   .nav-link {
-    @apply hover:text-accent transition-colors duration-200 py-2 block;
+    @apply text-text-secondary hover:text-gold transition-colors duration-300;
+    @apply relative after:absolute after:bottom-0 after:left-0 after:w-0;
+    @apply after:h-0.5 after:bg-gold after:transition-all after:duration-300;
+    @apply hover:after:w-full;
   }
 
-  /* 見出し要素にフォントを適用するクラスを追加 */
-  .heading {
-    @apply font-playfair;
+  /* テキストスタイル */
+  .text-luxury {
+    @apply text-text-primary;
+    font-family: var(--font-shippori), serif !important;
   }
 
-  /* 英字フォントクラス */
-  .font-en-playfair {
-    @apply font-playfair;
+  .text-luxury-muted {
+    @apply text-text-muted;
+    font-family: var(--font-shippori), serif !important;
   }
 
-  .font-en-italiana {
-    @apply font-italiana;
+  /* アニメーション付きホバー効果 */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-2;
   }
 
-  /* 日本語フォントクラス */
-  .font-jp {
-    @apply font-noto;
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-gold-glow;
   }
+}
+
+/* フォーカス時のアウトライン（アクセシビリティ） */
+*:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
+}
+
+/* 選択時のハイライト色 */
+::selection {
+  background-color: rgba(212, 175, 55, 0.3);
+  color: #ffffff;
 }
