@@ -1,12 +1,17 @@
-'use client';
-import React from 'react';
+'use client'
 import './movies.css'
-// import Header from "@/app/components/header/page";
+import AllMovies from "@/app/components/allMovies/AllMovies";
+//import Header from "@/app/components/header/page";
 
-const Movies = () =>{
-    return(
-        // <Header></Header>
-        <></>
+const Movies = () => {
+    return (
+        <>
+            {/*<Header></Header>*/}
+            <div id={"Movie"}>
+                <h2 id={"MovieTitle"}>Movies</h2>
+                <AllMovies/>
+            </div>
+        </>
     );
 }
 
