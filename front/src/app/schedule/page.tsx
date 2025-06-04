@@ -67,11 +67,30 @@ const Schedule = () =>{
                         <h2>Movie01</h2>
                         <div className={"Movie-TL"}>
                             <div className={"Poster bg-gray-500"}>ここにポスター</div>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
+                            <div className={"TLbuttons"}>
+                                <button className={"Time"}>
+                                    スクリーン1<br/>
+                                    <span>9:30</span><br/>
+                                    空席◎
+                                </button>
+                                <button className={"Time"}>
+                                    スクリーン1<br/>
+                                    <span>9:30</span><br/>
+                                    空席◎
+                                </button>
+                                <button className={"Time"}>
+                                    スクリーン1<br/>
+                                    <span>9:30</span><br/>
+                                    空席◎
+                                </button>
+                                <button className={"Time"}>
+                                    スクリーン1<br/>
+                                    <span>9:30</span><br/>
+                                    空席◎
+                                </button>
+
+
+                            </div>
                         </div>
                     </div>
                 </div>
