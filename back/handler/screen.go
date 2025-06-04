@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
-	"modules/database/model"
-
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
+	"modules/database/model"
 )
 
 type CreateScreenRequest struct {
@@ -31,6 +32,14 @@ func CreateScreen(db *gorm.DB) gin.HandlerFunc {
 
 		// データベースにスクリーン情報を保存
 		if err := db.Create(&screen).Error; err != nil {
+			var pgErr *pq.Error
+
+			if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+				c.JSON(http.StatusConflict, gin.H{"error": "指定されたMaxRowとMaxColumnの組み合わせはすでに存在します"})
+				return
+			}
+
+			// その他のデータベースエラー
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "スクリーンの登録に失敗しました"})
 			return
 		}
