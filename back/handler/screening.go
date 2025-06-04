@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"errors"
+	"github.com/lib/pq"
 	"modules/database/model"
 	"net/http"
 	"time"
@@ -24,31 +26,41 @@ type CreateScreeningRequest struct {
 func CreateScreening(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req CreateScreeningRequest
+		// JSONリクエストボディを構造体にバインドし、バリデーションを実行
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		// 上映情報の作成
+		// 新規上映スケジュール作成
 		screening := model.Screening{
-			MovieID:     req.MovieId,
-			ScreenID:    req.ScreenId,
-			StartTime:   req.StartTime,
-			Duration:    req.Duration,
-			Language:    req.Language,
-			IsSubtitled: req.IsSubtitled,
-			IsDubbed:    req.IsDubbed,
-			IsActive:    req.IsActive,
-			Status:      req.Status,
+			ScreenID:  req.ScreenId,
+			MovieID:   req.MovieId,
+			StartTime: req.StartTime,
 		}
 
+		// データベースに上映スケジュール情報を保存
 		if err := db.Create(&screening).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "上映情報の登録に失敗しました"})
+			var pgErr *pq.Error
+
+			// エラータイプに応じた条件分岐
+			if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+				c.JSON(http.StatusConflict, gin.H{"error": "指定されたスクリーンと開始時間の上映スケジュールはすでに存在します。"})
+				return
+			}
+			if errors.As(err, &pgErr) && pgErr.Code == "23503" {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "存在しないスクリーンまたは映画IDが指定されました。"})
+				return
+			}
+
+			// その他のデータベースエラー
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "上映スケジュールの登録に失敗しました。"})
 			return
 		}
 
+		// 成功レスポンスを返す
 		c.JSON(http.StatusCreated, gin.H{
-			"message":      "上映情報を登録しました",
+			"message":      "上映スケジュールが登録されました",
 			"screening_id": screening.ID,
 		})
 	}
