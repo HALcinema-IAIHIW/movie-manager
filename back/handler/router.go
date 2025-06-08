@@ -18,10 +18,10 @@ func GetUsers(db *gorm.DB) gin.HandlerFunc {
 
 func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.GET("/users", GetUsers(db))
-	r.POST("/register", Register(db))
+	r.POST("/users", CreateUser(db))
 	r.POST("/movies", CreateMovie(db))
-	r.GET("/movies", GetMovies(db))
 	r.POST("/seattype", CreateSeatType(db))
 	r.POST("/screenings", CreateScreening(db))
 	r.GET("/screenings", CreateScreening(db))
+	r.POST("/tickets", CreateTicket(db))
 }
