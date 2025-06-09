@@ -26,6 +26,7 @@ func main() {
 		&model.SeatType{},
 		&model.Screening{},
 		&model.Screen{},
+		&model.Purchase{},
 		
 	); err != nil {
 		log.Fatalf("マイグレーションエラー: %v", err)
