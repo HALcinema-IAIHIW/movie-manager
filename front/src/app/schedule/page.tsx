@@ -30,6 +30,7 @@ const MovieSchedule = [
     }
 ]
 
+// 条件付きレンダーでtimeListの中身を切り替える
 
 const Schedule = () =>{
     return(
