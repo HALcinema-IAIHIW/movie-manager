@@ -35,6 +35,7 @@ button.dateSlide{
     background-color: #1877F2;
     color: #fff;
     font-size:2rem;
+    height: 68px;
 }
 button.dateSlide#left{
     position: absolute;
@@ -52,6 +53,7 @@ div#dateList{
     flex-wrap: nowrap;
     overflow: hidden;
     width: 90%;
+    height: 68px;
 }
 
 button.scDate{
@@ -62,18 +64,19 @@ button.scDate{
 }
 
 /* 時間表示部分 */
-div#TL{
+div#timeList{
     margin: 0 auto 50px auto;
-    padding: 10px;
 
 }
+
+/* 以下コンポーネント化検討中 */
 
 div.CinemaTL{
     display: flex;
     flex-direction: column;
-    border: 1px solid #fff;
-    padding: 25px;
+    padding: 0 25px 25px 25px;
 }
+
 /* ポスターが入る空間 */
 div.CinemaTL div.Poster{
     display: block;
@@ -84,14 +87,14 @@ div.CinemaTL div.Poster{
 div.CinemaTL h2{
     display: inline-block;
     font-size: 1.5rem;
-    margin: 0 0 1rem 25px;
+    margin: 15px 0 1rem 0;
 }
 
 div.Movie-TL{
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    margin: 0 0 0 30px;
+    margin: 0 0 0 0;
 }
 /* ボタン部分のdiv */
 div.TLbuttons{

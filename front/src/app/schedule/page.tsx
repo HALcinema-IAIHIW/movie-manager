@@ -1,6 +1,7 @@
 'use client';
 import React from "react";
 import "./schedule.css"
+import MovieTL from "@/app/components/MovieTL/page";
 
 const MovieSchedule = [
     {
@@ -61,40 +62,71 @@ const Schedule = () =>{
 
                 <button className={"dateSlide"} id={"right"}>&gt;</button>
             </div>
-
+            <hr/>
             <div id={"timeList"}>
-                <div className={"TL"}>
-                    <div className={"CinemaTL"}>
-                        <h2>Movie01</h2>
-                        <div className={"Movie-TL"}>
-                            <div className={"Poster bg-gray-500"}>ここにポスター</div>
-                            <div className={"TLbuttons"}>
-                                <button className={"Time"}>
-                                    スクリーン1<br/>
-                                    <span>9:30</span><br/>
-                                    空席◎
-                                </button>
-                                <button className={"Time"}>
-                                    スクリーン1<br/>
-                                    <span>9:30</span><br/>
-                                    空席◎
-                                </button>
-                                <button className={"Time"}>
-                                    スクリーン1<br/>
-                                    <span>9:30</span><br/>
-                                    空席◎
-                                </button>
-                                <button className={"Time"}>
-                                    スクリーン1<br/>
-                                    <span>9:30</span><br/>
-                                    空席◎
-                                </button>
+                <div className={"CinemaTL"}>
+                    <h2>Movie01</h2>
+                    <div className={"Movie-TL"}>
+                        <div className={"Poster bg-gray-500"}>ここにポスター</div>
+                        <div className={"TLbuttons"}>
+                            <button className={"Time"}>
+                                スクリーン1<br/>
+                                <span>9:30</span><br/>
+                                空席◎
+                            </button>
+                            <button className={"Time"}>
+                                スクリーン1<br/>
+                                <span>9:30</span><br/>
+                                空席◎
+                            </button>
+                            <button className={"Time"}>
+                                スクリーン1<br/>
+                                <span>9:30</span><br/>
+                                空席◎
+                            </button>
+                            <button className={"Time"}>
+                                スクリーン1<br/>
+                                <span>9:30</span><br/>
+                                空席◎
+                            </button>
 
 
-                            </div>
                         </div>
                     </div>
                 </div>
+                <hr/>
+                <div className={"CinemaTL"}>
+                    <h2>Movie02</h2>
+                    <div className={"Movie-TL"}>
+                        <div className={"Poster bg-gray-500"}>ここにポスター</div>
+                        <div className={"TLbuttons"}>
+                            <button className={"Time"}>
+                                スクリーン1<br/>
+                                <span>9:30</span><br/>
+                                空席◎
+                            </button>
+                            <button className={"Time"}>
+                                スクリーン1<br/>
+                                <span>9:30</span><br/>
+                                空席◎
+                            </button>
+                            <button className={"Time"}>
+                                スクリーン1<br/>
+                                <span>9:30</span><br/>
+                                空席◎
+                            </button>
+                            <button className={"Time"}>
+                                スクリーン1<br/>
+                                <span>9:30</span><br/>
+                                空席◎
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <MovieTL/>
+
             </div>
 
 

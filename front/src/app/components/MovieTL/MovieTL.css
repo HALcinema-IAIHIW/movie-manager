@@ -1,0 +1,51 @@
+div.CinemaTL{
+    display: flex;
+    flex-direction: column;
+    padding: 0 25px 25px 25px;
+}
+
+/* ポスターが入る空間 */
+div.CinemaTL div.Poster{
+    display: block;
+    margin: 0 20px 0 0;
+    width: 130px;
+    height: 175px;
+}
+div.CinemaTL h2{
+    display: inline-block;
+    font-size: 1.5rem;
+    margin: 15px 0 1rem 0;
+}
+
+div.Movie-TL{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 0 0 0 0;
+}
+/* ボタン部分のdiv */
+div.TLbuttons{
+    flex-wrap: wrap;
+    width: 80%;
+}
+
+button.Time{
+    margin: 0 20px 20px 0;
+    text-align: left;
+    font-size: 1rem;
+    padding: 0 15px;
+    border-radius: 5%;
+    background-color: #1877F2;
+    color: #fff;
+    transition: 0.2s;
+}
+button.Time:hover{
+    opacity: 0.8;
+}
+/* 時刻部分 */
+button.Time span{
+    text-align: center;
+    font-size:1.25rem;
+    font-weight: bold;
+}
+
