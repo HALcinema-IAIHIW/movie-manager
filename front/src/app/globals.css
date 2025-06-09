@@ -74,7 +74,7 @@ body {
 
   /* セクションタイトル */
   .section-title {
-    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-center;
+    @apply text-3xl md:text-4xl lg:text-5xl text-center;
     @apply bg-gradient-to-r from-gold to-gold-light bg-clip-text text-transparent;
     font-family: var(--font-playfair), serif !important;
   }
@@ -103,7 +103,8 @@ body {
   .card-luxury {
     @apply bg-dark-lighter border border-accent/20 rounded-lg;
     @apply shadow-luxury transition-all duration-300;
-    @apply hover:shadow-luxury-lg hover:-translate-y-1;
+    @apply hover:shadow-luxury-lg;
+    /*@apply hover:shadow-luxury-lg hover:-translate-y-1;*/
   }
 
   /* ナビゲーションリンク */

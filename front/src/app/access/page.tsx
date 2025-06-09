@@ -135,7 +135,7 @@ const Access = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* 大スクリーン */}
-                        <div className="card-luxury p-0 overflow-hidden hover-lift">
+                        <div className="card-luxury p-0 overflow-hidden">
                             <div className="relative aspect-video">
                                 <Image src="/images/theater-interior-1.png" alt="大スクリーン" fill className="object-cover" />
                             </div>
@@ -153,7 +153,7 @@ const Access = () => {
                         </div>
 
                         {/* 中スクリーン */}
-                        <div className="card-luxury p-0 overflow-hidden hover-lift">
+                        <div className="card-luxury p-0 overflow-hidden">
                             <div className="relative aspect-video">
                                 <Image src="/images/theater-interior-1.png" alt="中スクリーン" fill className="object-cover" />
                             </div>
@@ -170,7 +170,7 @@ const Access = () => {
                         </div>
 
                         {/* 小スクリーン */}
-                        <div className="card-luxury p-0 overflow-hidden hover-lift">
+                        <div className="card-luxury p-0 overflow-hidden">
                             <div className="relative aspect-video">
                                 <Image src="/images/theater-interior-1.png" alt="小スクリーン" fill className="object-cover" />
                             </div>
