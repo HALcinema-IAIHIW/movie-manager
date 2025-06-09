@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Play, Info, ChevronLeft, ChevronRight } from "lucide-react"
-import { PingStatus, pingStatus } from "./components/PingStatus"
+import { PingStatus } from "./components/PingStatus"
 
 // カルーセルのデータ
 const carouselData = [
@@ -86,7 +86,7 @@ export default function Home() {
   return (
       <div>
         {/* API応答確認 */}
-        < PingStatus/ >
+        <PingStatus/>
 
         {/* カルーセルセクション */}
         <section className="relative h-[80vh]">
@@ -143,7 +143,7 @@ export default function Home() {
             {/* タブナビゲーション */}
             <div className="flex border-b border-gray-800 mb-8">
               <button
-                  className={`px-6 py-3 font-playfair text-lg font-medium transition-colors ${
+                  className={`px-6 py-3 text-lg font-medium transition-colors ${
                       activeTab === "nowShowing" ? "border-b-2 border-accent text-white" : "text-gray-400 hover:text-white"
                   }`}
                   onClick={() => setActiveTab("nowShowing")}
@@ -151,7 +151,7 @@ export default function Home() {
                 NOW SHOWING
               </button>
               <button
-                  className={`px-6 py-3 font-playfair text-lg font-medium transition-colors ${
+                  className={`px-6 py-3 text-lg font-medium transition-colors ${
                       activeTab === "comingSoon" ? "border-b-2 border-accent text-white" : "text-gray-400 hover:text-white"
                   }`}
                   onClick={() => setActiveTab("comingSoon")}
@@ -237,7 +237,7 @@ export default function Home() {
                   <div className="flex justify-center mb-4">
                     <Info size={48} className="text-accent" />
                   </div>
-                  <h3 className="text-xl text-center mb-2 font-playfair">Information</h3>
+                  <h3 className="text-xl text-center mb-2">Information</h3>
                   <p className="text-gray-400 text-center text-sm">最新情報をご確認いただけます</p>
                 </div>
               </Link>
@@ -247,7 +247,7 @@ export default function Home() {
                   <div className="aspect-video relative mb-4 overflow-hidden">
                     <Image src="/images/Screen01.png?height=200&width=300" alt="劇場案内" fill className="object-cover" />
                   </div>
-                  <h3 className="text-xl text-center mb-2 font-playfair">施設案内</h3>
+                  <h3 className="text-xl text-center mb-2">施設案内</h3>
                   <p className="text-gray-400 text-center text-sm">最高級の設備をご用意しております</p>
                 </div>
               </Link>
@@ -257,7 +257,7 @@ export default function Home() {
                   <div className="aspect-video relative mb-4 overflow-hidden">
                     <Image src="/images/interstellar.jpg?height=200&width=300" alt="映画一覧" fill className="object-cover" />
                   </div>
-                  <h3 className="text-xl text-center mb-2 font-playfair">映画一覧</h3>
+                  <h3 className="text-xl text-center mb-2">映画一覧</h3>
                   <p className="text-gray-400 text-center text-sm">上映中・公開予定の作品一覧</p>
                 </div>
               </Link>

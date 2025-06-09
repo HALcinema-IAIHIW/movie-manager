@@ -14,6 +14,18 @@ services:
       - ./app/database/init:/docker-entrypoint-initdb.d
     ports:
       - ${DB_PORT}:5432
+  mongodb:
+    image: mongo
+    container_name: "mongodb"
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb/initdb.d:/docker-entrypoint-initdb.d
+      - ./mongodb/data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
 
 volumes:
   db-store:

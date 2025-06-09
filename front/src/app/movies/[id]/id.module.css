@@ -1,0 +1,121 @@
+/* id.module.css */
+.row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.container {
+  display: flex  ;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 70px 20px 20px 20px;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 8px;
+  align-items: flex-start;
+  gap: 40px;
+  max-width: 1200px;
+}
+
+.h1 {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.img {
+  display: block;
+  margin: 0 auto;
+  width: 500px;     /* 例：横幅300pxに縮小 */
+  height: auto;     /* 高さは自動で調整 */
+  border-radius: 8px;
+  margin-bottom: 40px;
+  object-fit: contain; /* 画像の切り取りなし */
+  /*padding: 0 100px 0 0;*/
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
+/* テキスト側のラッパー */
+.textWrapper {
+  flex: 1;                 /* 残りの横幅を占める */
+  min-width: 400px;
+  max-width: 900px;        
+}
+
+.infoRow {
+  flex-grow: 1;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  padding: 0 0 0 50px;
+  line-height: 1.8;
+  
+}
+
+.backButton {
+  align-self: flex-start;
+  margin-top: auto;
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 10px 30px;
+  background-color: #1877F2;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+.backButton:hover {
+  background-color: #7aa8e4;
+}
+
+.summary-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 0.5em;
+}
+
+.summary-content{
+  font-size: 2rem;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 0.5em;
+}
+
+.textContent{
+  font-size: 1.3rem;
+  line-height: 1.6;
+  
+}
+
+.label{
+  font-size: 1.4em;
+  border-left: 5px solid #f67280;
+  padding-left: 10px;
+  color: #f8f8f8;
+  margin-bottom: 1em;
+  font-weight: bold;
+}
+
+
+
+
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .textWrapper {
+    max-width: 100%;
+  }
+}
