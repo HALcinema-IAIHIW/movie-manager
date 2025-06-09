@@ -25,4 +25,6 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.GET("/screenings", GetScreenings(db))
 	r.POST("/screens", CreateScreen(db))
 	r.GET("/screens", GetScreens(db))
+	r.POST("/purchases", CreatePurchase(db))
+	r.GET("/purchases", GetPurchase(db))
 }
