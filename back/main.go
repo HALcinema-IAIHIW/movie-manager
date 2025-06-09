@@ -27,7 +27,6 @@ func main() {
 		&model.Screening{},
 		&model.Screen{},
 		&model.Purchase{},
-		
 	); err != nil {
 		log.Fatalf("マイグレーションエラー: %v", err)
 	}
