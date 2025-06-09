@@ -11,7 +11,7 @@ const heroMovies = [
     id: 1,
     title: "インターステラー",
     subtitle: "時空を超えた愛の物語",
-    image: "/images/hero-movie-1.jpg",
+    image: "/images/movie-poster-1.jpg",
     description: "人類の未来をかけた壮大な宇宙の旅。愛が時空を超える感動の物語。",
     rating: 4.8,
     genre: "SF・ドラマ",
@@ -20,7 +20,7 @@ const heroMovies = [
     id: 2,
     title: "ブレードランナー 2049",
     subtitle: "未来への問いかけ",
-    image: "/images/hero-movie-2.jpg",
+    image: "/images/movie-poster-2.jpg",
     description: "人間とは何かを問う、美しく哲学的なSF傑作の続編。",
     rating: 4.7,
     genre: "SF・スリラー",
@@ -29,7 +29,7 @@ const heroMovies = [
     id: 3,
     title: "ラ・ラ・ランド",
     subtitle: "夢と愛のミュージカル",
-    image: "/images/hero-movie-3.jpg",
+    image: "/images/movie-poster-3.jpg",
     description: "ロサンゼルスを舞台に繰り広げられる、夢と愛の美しい物語。",
     rating: 4.6,
     genre: "ミュージカル・ロマンス",
@@ -526,7 +526,7 @@ export default function Home() {
                 <div className="card-luxury p-6">
                   <h3 className="text-xl font-playfair text-text-primary mb-4 font-jp">劇場案内</h3>
                   <div className="aspect-video relative mb-4 overflow-hidden rounded">
-                  <Image src="/images/theater-interior.jpg" alt="劇場内観" fill className="object-cover" />
+                  <Image src="/images/theater-interior-1.png" alt="劇場内観" fill className="object-cover" />
                   </div>
                   <p className="text-text-muted text-sm mb-4 font-shippori font-jp">
                     最高級の設備と洗練された空間で、特別な映画体験をお楽しみください。

@@ -11,7 +11,7 @@ export const MovieData = [
     {id: 4, name: "サマーウォーズ", moviePicture: "/images/summer.jpg",summary: "", cast:[""]},
     {id: 5, name: "BEETLE JUICE", moviePicture: "/images/bee.jpg",summary: "", cast:[""]},
     {id: 6, name: "名探偵コナン", moviePicture: "/images/konan.jpg",summary: "", cast:[""]},
-    {id: 7, name: "インターステラー", moviePicture: "/images/interstellar.jpg",summary: "", cast:[""]},
+    {id: 7, name: "インターステラー", moviePicture: "/images/movie-poster-1.jpg",summary: "", cast:[""]},
     {id: 8, name: "名探偵コナン", moviePicture: "/images/konan2.jpg",summary: "", cast:[""]},
 ]
 

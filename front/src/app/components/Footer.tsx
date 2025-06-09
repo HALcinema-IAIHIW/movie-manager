@@ -8,7 +8,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
                     {/* ブランド情報 */}
                     <div className="lg:col-span-1">
-                        <h3 className="text-3xl text-gold mb-4 font-en">HAL cinema</h3>
+                        <h3 className="text-3xl text-gold mb-4 font-en">HAL CINEMA</h3>
                         <p className="text-text-muted leading-relaxed mb-6 font-jp">
                             最高級の設備と洗練された空間で、
                             <br />
@@ -178,7 +178,7 @@ export default function Footer() {
                 <div className="border-t border-accent/20 mt-12 pt-8">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-text-muted text-sm font-jp">
-                            &copy; {new Date().getFullYear()} HAL cinema. All Rights Reserved.
+                            &copy; {new Date().getFullYear()} HAL CINEMA. All Rights Reserved.
                         </p>
                         <div className="flex gap-6 text-sm">
                             <Link href="/privacy" className="text-text-muted hover:text-gold transition-colors font-shippori font-jp">

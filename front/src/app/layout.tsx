@@ -23,10 +23,10 @@ const shipporiMincho = Shippori_Mincho({
 })
 
 export const metadata: Metadata = {
-    title: "HAL cinema | 最高級の映画体験",
+    title: "HAL CINEMA | 最高級の映画体験",
     description: "洗練された空間で最高の映画体験をお届けする高級映画館",
     keywords: ["映画館", "高級", "シネマ", "映画", "エンターテイメント"],
-    authors: [{ name: "HAL cinema" }],
+    authors: [{ name: "HAL CINEMA" }],
     viewport: "width=device-width, initial-scale=1",
 }
 

@@ -81,7 +81,7 @@ export default function Header() {
                                 className="text-4xl md:text-5xl text-gold hover:text-gold-light
                   transition-colors duration-300 tracking-wider font-en"
                             >
-                                HAL cinema
+                                HAL CINEMA
                             </Link>
                         </div>
 
@@ -234,12 +234,12 @@ export default function Header() {
                         <ul className="space-y-6">
                             <li>
                                 <Link href="/" className="nav-link block text-lg py-2 font-en" onClick={toggleMenu}>
-                                    Top Page
+                                    トップページ
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/movies" className="nav-link block text-lg py-2 font-en" onClick={toggleMenu}>
-                                    Movies
+                                    作品案内
                                 </Link>
                             </li>
                             <li>
