@@ -17,7 +17,10 @@ type CreateUserRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
+// Todo: 責務分離しっかりしよか～
+// DB登録←登録のための整形←フロントからのバリデーションで処理を分けるイメージ
 func Register(db *gorm.DB) gin.HandlerFunc {
+	// Todo: gin.HandlerFuncって実際どうなの？
 	return func(c *gin.Context) {
 		var req CreateUserRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -27,7 +30,7 @@ func Register(db *gorm.DB) gin.HandlerFunc {
 
 		// Emailを小文字化して統一
 		email := strings.ToLower(req.Email)
-
+		// Todo:これ多分登録できないよ
 		// 既に同じEmailのユーザーがいるかチェック
 		var existingUser model.User
 		if err := db.Where("email = ?", email).First(&existingUser).Error; err == nil {
