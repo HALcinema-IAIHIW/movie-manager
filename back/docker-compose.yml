@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # postgresql
   db:
     image: postgres:15-alpine
     container_name: ${DB_HOST}
@@ -21,11 +20,11 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./mongodb/initdb.d:/docker-entrypoint-initdb.d
-      - ./mongodb/data:/data/db
+      - mongo-data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
 
 volumes:
   db-store:
+  mongo-data:
