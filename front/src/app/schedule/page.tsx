@@ -1,11 +1,13 @@
 'use client';
 import React from "react";
-import "./schedule.css"
 // Swiper導入
 import {Swiper,SwiperSlide} from "swiper/react";
 import {Navigation} from "swiper/modules";
 import "swiper/css"
 import "swiper/css/navigation"
+
+// CSS
+import "./schedule.css"
 
 // コンポーネント
 import MovieTL from "@/app/components/MovieTL/page";
@@ -35,7 +37,7 @@ const ViewDate = [
     },
 ]
 
-const MovieSchedule = [
+const MovieList = [
     {
         id:1,
         date:"0615",
@@ -63,6 +65,8 @@ const MovieSchedule = [
     }
 ]
 
+
+
 // 条件付きレンダーでtimeListの中身を切り替える
 
 const Schedule = () =>{
@@ -71,23 +75,38 @@ const Schedule = () =>{
             <h1 id={"scheduleTitle"} className={"mb-5"}>上映スケジュール</h1>
             {/*　日付　*/}
             <div id={"dateSlider"}>
+                <button className={"dateSlide"} id={"left"}>&lt;</button>
                 <Swiper
                     modules={[Navigation]}
-                    navigation={true}
-                    spaceBetween={50}
-                    slidesPerView={3}
-                    >
-                    {ViewDate.map((day)=>(
+                    navigation={{
+                        prevEl:"#left",
+                        nextEl:"#right",
+                    }}
+                    spaceBetween={0}
+                    breakpoints={{
+                        0:{slidesPerView:1},
+                        350:{slidesPerView:2},
+                        550:{slidesPerView:3},
+                        750:{slidesPerView:4},
+                        980:{slidesPerView:5},
+                        1200:{slidesPerView:6},
+                        1500:{slidesPerView:7}
+
+                    }}
+                >
+                    {ViewDate.map((day) => (
                         <SwiperSlide key={day.id}>
 
-                            <button className={"scDate"} >
-                                    {day.date}
+                            <button className={"scDate"}>
+                                {day.date}
                             </button>
-                    </SwiperSlide>
-                ))
-                }
+                        </SwiperSlide>
+                    ))
+                    }
 
-            </Swiper>
+                </Swiper>
+                <button className={"dateSlide"} id={"right"}>&gt;</button>
+
             </div>
 
             <hr/>
