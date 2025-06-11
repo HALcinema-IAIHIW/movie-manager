@@ -95,7 +95,7 @@ export default function Header() {
                                     aria-label="メンバーメニューを開く"
                                 >
                                     <User size={20} />
-                                    <span className="text-lg hidden sm:block font-en">Member</span>
+                                    <span className="text-lg hidden sm:block font-en">MEMBER</span>
                                     <ChevronDown
                                         size={16}
                                         className={`transition-transform duration-300 ${isMemberPanelOpen ? "rotate-180" : ""}`}
