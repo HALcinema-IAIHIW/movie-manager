@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Play, Info, ChevronLeft, ChevronRight, Star, Calendar, MapPin } from "lucide-react"
+import { Play, Info, ChevronLeft, ChevronRight, Calendar, MapPin } from "lucide-react"
 
 // カルーセルのデータ（実際の映画データに置き換え可能）
 const heroMovies = [
@@ -11,27 +11,24 @@ const heroMovies = [
     id: 1,
     title: "インターステラー",
     subtitle: "時空を超えた愛の物語",
-    image: "/images/movie-poster-1.jpg",
+    image: "/images/hero-movie-1.jpg",
     description: "人類の未来をかけた壮大な宇宙の旅。愛が時空を超える感動の物語。",
-    rating: 4.8,
     genre: "SF・ドラマ",
   },
   {
     id: 2,
     title: "ブレードランナー 2049",
     subtitle: "未来への問いかけ",
-    image: "/images/movie-poster-2.jpg",
+    image: "/images/hero-movie-1.jpg",
     description: "人間とは何かを問う、美しく哲学的なSF傑作の続編。",
-    rating: 4.7,
     genre: "SF・スリラー",
   },
   {
     id: 3,
     title: "ラ・ラ・ランド",
     subtitle: "夢と愛のミュージカル",
-    image: "/images/movie-poster-3.jpg",
+    image: "/images/hero-movie-1.jpg",
     description: "ロサンゼルスを舞台に繰り広げられる、夢と愛の美しい物語。",
-    rating: 4.6,
     genre: "ミュージカル・ロマンス",
   },
 ]
@@ -43,47 +40,41 @@ const moviesData = {
       id: 1,
       title: "インターステラー",
       image: "/images/movie-poster-1.jpg",
-      rating: 4.8,
       genre: "SF・ドラマ",
       duration: "169分",
     },
     {
       id: 2,
       title: "ブレードランナー 2049",
-      image: "/images/movie-poster-2.jpg",
-      rating: 4.7,
+      image: "/images/movie-poster-1.jpg",
       genre: "SF・スリラー",
       duration: "164分",
     },
     {
       id: 3,
       title: "ラ・ラ・ランド",
-      image: "/images/movie-poster-3.jpg",
-      rating: 4.6,
+      image: "/images/movie-poster-1.jpg",
       genre: "ミュージカル",
       duration: "128分",
     },
     {
       id: 4,
       title: "ダンケルク",
-      image: "/images/movie-poster-4.jpg",
-      rating: 4.5,
+      image: "/images/movie-poster-1.jpg",
       genre: "戦争・ドラマ",
       duration: "106分",
     },
     {
       id: 5,
       title: "アバター",
-      image: "/images/movie-poster-5.jpg",
-      rating: 4.4,
+      image: "/images/movie-poster-1.jpg",
       genre: "SF・アドベンチャー",
       duration: "162分",
     },
     {
       id: 6,
       title: "トップガン マーヴェリック",
-      image: "/images/movie-poster-6.jpg",
-      rating: 4.9,
+      image: "/images/movie-poster-1.jpg",
       genre: "アクション",
       duration: "131分",
     },
@@ -140,21 +131,18 @@ const newsData = [
     id: 1,
     title: "新プレミアムシート導入のお知らせ",
     date: "2024.02.15",
-    category: "施設情報",
     excerpt: "より快適な映画鑑賞体験のため、最新のプレミアムシートを導入いたします。",
   },
   {
     id: 2,
     title: "春の特別上映会開催決定",
     date: "2024.02.10",
-    category: "イベント",
     excerpt: "名作映画の特別上映会を開催。限定グッズの販売も予定しております。",
   },
   {
     id: 3,
     title: "メンバーシップ制度リニューアル",
     date: "2024.02.05",
-    category: "サービス",
     excerpt: "より充実した特典をご用意した新しいメンバーシップ制度がスタートします。",
   },
 ]
@@ -221,18 +209,14 @@ export default function Home() {
                 </div>
 
                 {/* コンテンツ */}
-                <div className="relative h-full flex items-center">
-                  <div className="container-luxury pl-24">
+                <div className="relative h-full flex items-center ml-24">
+                  <div className="container-luxury">
                     <div className="max-w-2xl animate-fade-in">
-                      {/* ジャンル・評価 */}
+                      {/* ジャンル */}
                       <div className="flex items-center gap-4 mb-4">
                     <span className="px-3 py-1 bg-gold/20 text-gold text-sm font-medium rounded-full font-shippori">
                       {movie.genre}
                     </span>
-                        <div className="flex items-center gap-1">
-                          <Star size={16} className="text-gold fill-gold" />
-                          <span className="text-text-secondary font-medium font-playfair">{movie.rating}</span>
-                        </div>
                       </div>
 
                       {/* タイトル */}
@@ -389,12 +373,6 @@ export default function Home() {
                             <span className="font-shippori font-jp">{movie.genre}</span>
                             <span className="font-shippori font-jp">{movie.duration}</span>
                           </div>
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-1">
-                              <Star size={14} className="text-gold fill-gold" />
-                              <span className="text-sm text-text-secondary font-playfair">{movie.rating}</span>
-                            </div>
-                          </div>
                           <Link
                               href={`/tickets/buy/${movie.id}`}
                               className="block w-full text-center py-2 bg-gold/10 hover:bg-gold/20
@@ -489,14 +467,6 @@ export default function Home() {
                   {newsData.map((news) => (
                       <Link key={news.id} href={`/news/${news.id}`} className="block card-luxury p-6 hover-glow">
                         <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                        <span
-                            className="inline-block px-3 py-1 bg-gold/20 text-gold
-                          text-xs font-medium rounded-full font-shippori font-jp"
-                        >
-                          {news.category}
-                        </span>
-                          </div>
                           <div className="flex-1">
                             <h4
                                 className="text-lg font-medium text-text-primary mb-2
@@ -522,17 +492,22 @@ export default function Home() {
 
               {/* サイドバー */}
               <div className="space-y-8">
-                {/* 劇場案内 */}
+              <h3 className="text-2xl font-playfair text-text-primary mb-8 font-jp">インフォメーション</h3>
+
+              {/* 劇場案内・アクセス情報 */}
                 <div className="card-luxury p-6">
-                  <h3 className="text-xl font-playfair text-text-primary mb-4 font-jp">劇場案内</h3>
+                <div className="space-y-6">
+                  {/* 劇場案内セクション */}
+                  <div>
+                    <h4 className="text-xl font-medium text-gold mb-4 font-jp">劇場案内</h4>
                   <div className="aspect-video relative mb-4 overflow-hidden rounded">
-                  <Image src="/images/theater-interior-1.png" alt="劇場内観" fill className="object-cover" />
+                      <Image src="/images/theater-interior-1.png" alt="劇場内観" fill className="object-cover" />
                   </div>
                   <p className="text-text-muted text-sm mb-4 font-shippori font-jp">
                     最高級の設備と洗練された空間で、特別な映画体験をお楽しみください。
                   </p>
                   <Link
-                      href="/access#"
+                      href="/access"
                       className="text-gold hover:text-gold-light
                   transition-colors text-sm font-medium font-shippori font-jp"
                   >
@@ -540,9 +515,12 @@ export default function Home() {
                   </Link>
                 </div>
 
-                {/* アクセス情報 */}
-                <div className="card-luxury p-6">
-                  <h3 className="text-xl font-playfair text-text-primary mb-4 font-jp">アクセス</h3>
+                  {/* 区切り線 */}
+                  <div className="border-t border-accent/20"></div>
+
+                  {/* アクセス情報セクション */}
+                  <div>
+                    <h4 className="text-xl font-medium text-gold mb-4 font-jp">アクセス</h4>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <MapPin size={16} className="text-gold mt-1 flex-shrink-0" />
@@ -570,6 +548,8 @@ export default function Home() {
                   >
                     詳細を見る →
                   </Link>
+                  </div>
+                </div>
                 </div>
               </div>
             </div>
