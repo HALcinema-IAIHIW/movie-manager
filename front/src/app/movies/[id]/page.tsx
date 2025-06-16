@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { use } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Star, Clock, Calendar, User, Play, Ticket } from "lucide-react"
+import { ArrowLeft, Clock, Calendar, User, Play, Ticket } from "lucide-react"
 import { MovieData, type Movie } from "@/app/components/AllMovies"
 
 const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -65,10 +65,6 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
                 <span className="px-3 py-1 bg-gold/20 text-gold text-sm font-medium rounded-full font-jp">
                   {movie.genre}
                 </span>
-                  <div className="flex items-center gap-1">
-                    <Star size={16} className="text-gold fill-gold" />
-                    <span className="text-text-secondary font-medium font-playfair">{movie.rating}</span>
-                  </div>
                 </div>
 
                 <h1 className="text-4xl md:text-6xl font-bold text-text-primary mb-4 font-jp">{movie.name}</h1>

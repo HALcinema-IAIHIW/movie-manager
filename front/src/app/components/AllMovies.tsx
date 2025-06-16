@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Star, Calendar, Play, Info } from "lucide-react"
+import { Calendar, Play, Info } from 'lucide-react'
 
 // 映画データの型定義
 export type Movie = {
@@ -14,7 +14,6 @@ export type Movie = {
     cast: string[]
     genre: string
     duration: string
-    rating: number
     releaseDate: string
     director: string
 }
@@ -30,7 +29,6 @@ export const MovieData: Movie[] = [
         cast: ["マシュー・マコノヒー", "アン・ハサウェイ", "ジェシカ・チャステイン", "マイケル・ケイン"],
         genre: "SF・ドラマ",
         duration: "169分",
-        rating: 4.8,
         releaseDate: "2014.11.22",
         director: "クリストファー・ノーラン",
     },
@@ -43,7 +41,6 @@ export const MovieData: Movie[] = [
         cast: ["ライアン・ゴズリング", "ハリソン・フォード", "アナ・デ・アルマス", "ジャレッド・レト"],
         genre: "SF・スリラー",
         duration: "164分",
-        rating: 4.7,
         releaseDate: "2017.10.27",
         director: "ドゥニ・ヴィルヌーヴ",
     },
@@ -56,7 +53,6 @@ export const MovieData: Movie[] = [
         cast: ["ライアン・ゴズリング", "エマ・ストーン", "ジョン・レジェンド", "ローズマリー・デウィット"],
         genre: "ミュージカル・ロマンス",
         duration: "128分",
-        rating: 4.6,
         releaseDate: "2017.02.24",
         director: "デイミアン・チャゼル",
     },
@@ -69,7 +65,6 @@ export const MovieData: Movie[] = [
         cast: ["フィオン・ホワイトヘッド", "トム・グリン＝カーニー", "ジャック・ローデン", "ハリー・スタイルズ"],
         genre: "戦争・ドラマ",
         duration: "106分",
-        rating: 4.5,
         releaseDate: "2017.09.09",
         director: "クリストファー・ノーラン",
     },
@@ -82,7 +77,6 @@ export const MovieData: Movie[] = [
         cast: ["サム・ワーシントン", "ゾーイ・サルダナ", "シガーニー・ウィーバー", "スティーヴン・ラング"],
         genre: "SF・アドベンチャー",
         duration: "162分",
-        rating: 4.4,
         releaseDate: "2009.12.23",
         director: "ジェームズ・キャメロン",
     },
@@ -94,7 +88,6 @@ export const MovieData: Movie[] = [
         cast: ["トム・クルーズ", "マイルズ・テラー", "ジェニファー・コネリー", "ジョン・ハム"],
         genre: "アクション・ドラマ",
         duration: "131分",
-        rating: 4.9,
         releaseDate: "2022.05.27",
         director: "ジョセフ・コシンスキー",
     },
@@ -176,11 +169,7 @@ export default function AllMovies() {
                                     <span className="font-jp">{movie.genre}</span>
                                     <span className="font-jp">{movie.duration}</span>
                                 </div>
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-1">
-                                        <Star size={14} className="text-gold fill-gold" />
-                                        <span className="text-sm text-text-secondary font-playfair">{movie.rating}</span>
-                                    </div>
+                                <div className="flex items-center justify-end mb-3">
                                     <div className="flex items-center gap-1 text-xs text-text-muted">
                                         <Calendar size={12} />
                                         <span className="font-playfair">{movie.releaseDate}</span>
