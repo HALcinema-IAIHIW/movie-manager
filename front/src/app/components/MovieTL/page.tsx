@@ -61,19 +61,27 @@ export default function MovieTL({Day, Movie}) {
                     <div className={"Poster bg-gray-500"}>poster</div>
                     <div className={"TlButtons"}>
                         {MovieList.map((scList)=> (
-                            <button className={"Time"} key={scList.id}>
+                            // グレー差分作る奴どっか行ったふざけんなよボケが
+                            <div className={"inline"} key={scList.id}>
 
-                                {scList.screen}<br/>
-                                <span>{scList.stTime}</span><br/>
                                 {scList.restSeat === 0 ?(
-                                    <p id={"soldout"}>売り切れ</p>
-                                ):scList.restSeat <=50 ?(
-                                    <p>空席△</p>
-                                ): (
-                                    <p>空席◎</p>
+                                    <button className={"Time"} id={"soldout"}>
+                                        {scList.screen}<br/>
+                                        <span>{scList.stTime}</span><br/>
+                                        <p>売り切れ</p>
+                                    </button>
+                                ):(
+                                    <button className={"Time"}>
+                                        {scList.screen}<br/>
+                                        <span>{scList.stTime}</span><br/>
+                                        {scList.restSeat <= 50 ?(
+                                            <p>空席△</p>
+                                        ):(
+                                            <p>空席◎</p>
+                                        )}
+                                    </button>
                                 )}
-
-                            </button>
+                            </div>
 
                         ))
                         }

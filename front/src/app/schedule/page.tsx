@@ -54,7 +54,7 @@ const getNow = () =>{
 const Schedule = () =>{
     // 今表示している日付
     // useState使うか・・・
-    const [ShowDate, changeDate] = React.useState(getNow());
+    const [ShowDate, changeDate] = useState(getNow());
 
 
     return(
