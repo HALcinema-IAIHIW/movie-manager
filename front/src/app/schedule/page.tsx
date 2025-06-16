@@ -38,13 +38,13 @@ const ViewDate = [
     },
 ]
 
-
+// 日付取得して過ぎた日付を消す
 var Now = Date();
 
-// 今表示している日付
+// 今表示している日付　この値を元に表示切替
 var ShowDate = "0615"
 
-// 条件付きレンダーでtimeListの中身を切り替える
+// timeListの中身をどうにか切り替える
 function changeDate(newDate:string){
     console.log(newDate);
 }
@@ -53,7 +53,7 @@ const Schedule = () =>{
     return(
         <div id={"scheduleBody"}>
             <h1 id={"scheduleTitle"} className={"mb-5"}>上映スケジュール</h1>
-            {/*　日付　*/}
+            {/*　日付　更新日から一週間　*/}
             <div id={"dateSlider"}>
                 <button className={"dateSlide"} id={"left"}>&lt;</button>
                 <Swiper
@@ -91,6 +91,7 @@ const Schedule = () =>{
 
             <hr/>
             {/*<p>{Now}</p>*/}
+            {/*　　*/}
             <div id={"timeList"}>
                 <MovieTL Movie={"Movie01"} Day={ShowDate}/>
                 <hr/>

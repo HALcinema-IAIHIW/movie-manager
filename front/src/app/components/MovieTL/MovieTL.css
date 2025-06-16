@@ -49,7 +49,9 @@ button.Time span{
     font-weight: bold;
 }
 
-p#soldout{
-
-
+button.Time#soldout{
+    background-color:#888
+}
+button.Time#soldout:hover{
+    opacity: 1;
 }
