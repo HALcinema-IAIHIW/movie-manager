@@ -2,6 +2,7 @@ package handler
 
 import (
 	"modules/database/model"
+	"modules/dto"
 	"net/http"
 	"time"
 
@@ -9,17 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type CreateMovieRequest struct {
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description"`
-	ReleaseDate string `json:"release_date" binding:"required"`
-	Genre       string `json:"genre"`
-	Director    string `json:"director"`
-}
-
 func CreateMovie(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var req CreateMovieRequest
+		var req dto.CreateMovieRequest
 
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "入力形式が間違っています"})
