@@ -2,34 +2,81 @@
 import React from "react";
 import "./MovieTL.css";
 
-export default function MovieTL() {
+
+export default function MovieTL({Day, Movie}) {
+    // Day,Movieを基にリストを編集
+    const MovieList = [
+        {
+            id: 1,
+            date: "0615",
+            moive: "Movie01",
+            stTime: "9:30",
+            screen:"スクリーン1",
+            restSeat:60
+
+        }, {
+            id: 2,
+            date:"0615",
+            moive:"Movie02",
+            stTime:"10:50",
+            screen: "スクリーン3",
+            restSeat: 5
+        },{
+            id:3,
+            date:"0615",
+            moive:"Movie03",
+            stTime:"9:20",
+            screen:"スクリーン2",
+            restSeat:80
+        },{
+            id:4,
+            date:"0616",
+            moive:"Movie01",
+            stTime:"12:00",
+            screen: "スクリーン5",
+            restSeat:80
+        },{
+            id:5,
+            date:"0616",
+            moive:"Movie02",
+            stTime:"12:40",
+            screen: "スクリーン7",
+            restSeat:0
+        },{
+            id:6,
+            date:"0616",
+            moive:"Movie03",
+            stTime:"11:50",
+            screen: "スクリーン3",
+            restSeat:80
+        }
+    ]
+
     return(
         <>
             <div className={"CinemaTL"}>
-                <h2>title</h2>
+                {/*{Day}*/}
+                <h2>{Movie}</h2>
                 <div className={"Movie-TL"}>
                     <div className={"Poster bg-gray-500"}>poster</div>
-                    <div className={"TLbuttons"}>
-                        <button className={"Time"}>
-                            スクリーン1<br/>
-                            <span>9:30</span><br/>
-                            空席◎
-                        </button>
-                        <button className={"Time"}>
-                            スクリーン1<br/>
-                            <span>9:30</span><br/>
-                            空席◎
-                        </button>
-                        <button className={"Time"}>
-                            スクリーン1<br/>
-                            <span>9:30</span><br/>
-                            空席◎
-                        </button>
-                        <button className={"Time"}>
-                            スクリーン1<br/>
-                            <span>9:30</span><br/>
-                            空席◎
-                        </button>
+                    <div className={"TlButtons"}>
+                        {MovieList.map((scList)=> (
+                            <button className={"Time"} key={scList.id}>
+
+                                {scList.screen}<br/>
+                                <span>{scList.stTime}</span><br/>
+                                {scList.restSeat === 0 ?(
+                                    <p id={"soldout"}>売り切れ</p>
+                                ):scList.restSeat <=50 ?(
+                                    <p>空席△</p>
+                                ): (
+                                    <p>空席◎</p>
+                                )}
+
+                            </button>
+
+                        ))
+                        }
 
                     </div>
                 </div>

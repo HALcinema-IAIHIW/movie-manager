@@ -11,6 +11,7 @@ import "./schedule.css"
 
 // コンポーネント
 import MovieTL from "@/app/components/MovieTL/page";
+import Movies from "@/app/movies/page";
 
 const ViewDate = [
     {
@@ -37,39 +38,18 @@ const ViewDate = [
     },
 ]
 
-const MovieList = [
-    {
-        id:1,
-        date:"0615",
-        moive:"Movie01",
-    },{
-        id:2,
-        date:"0615",
-        moive:"Movie02",
-    },{
-        id:3,
-        date:"0615",
-        moive:"Movie03",
-    },{
-        id:4,
-        date:"0616",
-        moive:"Movie01",
-    },{
-        id:5,
-        date:"0616",
-        moive:"Movie02",
-    },{
-        id:6,
-        date:"0616",
-        moive:"Movie03",
-    }
-]
 
+var Now = Date();
 
+// 今表示している日付
+var ShowDate = "0615"
 
 // 条件付きレンダーでtimeListの中身を切り替える
-
+function changeDate(newDate:string){
+    console.log(newDate);
+}
 const Schedule = () =>{
+
     return(
         <div id={"scheduleBody"}>
             <h1 id={"scheduleTitle"} className={"mb-5"}>上映スケジュール</h1>
@@ -110,69 +90,13 @@ const Schedule = () =>{
             </div>
 
             <hr/>
+            {/*<p>{Now}</p>*/}
             <div id={"timeList"}>
-                <div className={"CinemaTL"}>
-                    <h2>Movie01</h2>
-                    <div className={"Movie-TL"}>
-                        <div className={"Poster bg-gray-500"}>ここにポスター</div>
-                        <div className={"TLbuttons"}>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
-
-
-                        </div>
-                    </div>
-                </div>
+                <MovieTL Movie={"Movie01"} Day={ShowDate}/>
                 <hr/>
-                <div className={"CinemaTL"}>
-                    <h2>Movie02</h2>
-                    <div className={"Movie-TL"}>
-                        <div className={"Poster bg-gray-500"}>ここにポスター</div>
-                        <div className={"TLbuttons"}>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
-                            <button className={"Time"}>
-                                スクリーン1<br/>
-                                <span>9:30</span><br/>
-                                空席◎
-                            </button>
-
-                        </div>
-                    </div>
-                </div>
+                <MovieTL Movie={"Movie02"} Day={ShowDate}/>
                 <hr/>
-                <MovieTL/>
+                <MovieTL Movie={"Movie03"} Day={ShowDate} />
 
             </div>
 

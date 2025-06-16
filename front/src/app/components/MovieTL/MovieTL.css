@@ -24,7 +24,7 @@ div.Movie-TL{
     margin: 0 0 0 0;
 }
 /* ボタン部分のdiv */
-div.TLbuttons{
+div.TlButtons{
     flex-wrap: wrap;
     width: 80%;
 }
@@ -49,3 +49,7 @@ button.Time span{
     font-weight: bold;
 }
 
+p#soldout{
+
+
+}
