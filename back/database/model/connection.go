@@ -12,11 +12,11 @@ import (
 func NewDB(env config.Env) (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		env.DBHost,
-		env.DBUser,
-		env.DBPassword,
-		env.DBName,
-		env.DBPort,
+		env.PostgresHost,
+		env.PostgresUser,
+		env.PostgresPassword,
+		env.PostgresName,
+		env.PostgresPort,
 	)
 	return connectWithRetry(postgres.Open(dsn), 5)
 }
