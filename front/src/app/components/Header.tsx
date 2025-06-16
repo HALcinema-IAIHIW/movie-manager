@@ -244,7 +244,7 @@ export default function Header() {
                             </li>
                             <li>
                                 <Link href="/news" className="nav-link block text-lg py-2 font-jp" onClick={toggleMenu}>
-                                    インフォメーション
+                                    ニュース
                                 </Link>
                             </li>
                             <li>

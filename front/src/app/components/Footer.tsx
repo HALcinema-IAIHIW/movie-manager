@@ -77,7 +77,7 @@ export default function Footer() {
                       className="w-2 h-2 bg-gold rounded-full mr-3 opacity-0
                     group-hover:opacity-100 transition-opacity"
                   />
-                                    インフォメーション
+                                    ニュース
                                 </Link>
                             </li>
                             <li>

@@ -10,7 +10,7 @@ const Movies = () => {
             <section className="relative h-[40vh] md:h-[50vh] overflow-hidden">
                 {/* 背景画像 */}
                 <div className="absolute inset-0">
-                    <Image src="/images/theater-interior.jpg" alt="映画館内観" fill className="object-cover" priority />
+                    <Image src="/images/theater-interior-1.png" alt="映画館内観" fill className="object-cover" priority />
                     {/* グラデーションオーバーレイ */}
                     <div className="absolute inset-0 bg-gradient-to-r from-darkest/90 via-darkest/60 to-transparent" />
                     <div className="absolute inset-0 bg-gradient-to-t from-darkest/80 via-transparent to-darkest/40" />

@@ -532,7 +532,7 @@ export default function Home() {
                     最高級の設備と洗練された空間で、特別な映画体験をお楽しみください。
                   </p>
                   <Link
-                      href="/access"
+                      href="/access#"
                       className="text-gold hover:text-gold-light
                   transition-colors text-sm font-medium font-shippori font-jp"
                   >
@@ -568,7 +568,7 @@ export default function Home() {
                       className="inline-block mt-4 text-gold
                   hover:text-gold-light transition-colors text-sm font-medium font-shippori font-jp"
                   >
-                    アクセス詳細 →
+                    詳細を見る →
                   </Link>
                 </div>
               </div>
