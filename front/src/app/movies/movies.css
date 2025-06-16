@@ -21,13 +21,11 @@ h2#MovieTitle{
   font-weight: bold;
   font-size: 5rem;
   color: #fff;
-  text-shadow: 0 0 20px #fff, 0 0 15px #1877F2, 0 0 10px #1877F2;
-
-
+  text-shadow: 0 0 20px #fff, 0 0 15px;
 }
 
 
 
 div.art:hover{
-  text-shadow:0 0 15px #fff, 0 0 10px #fff;
+  text-shadow:0 0 15px #0056b3, 0 0 10px #0056b3;
 }

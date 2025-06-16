@@ -86,12 +86,20 @@
   box-sizing: border-box;
 }
 
-.disabled-button {
-  background-color: #ccc;
-  color: #666;
+.submit-button {
+  background-color: #007bff;
+  color: white;
   padding: 12px 24px;
+  /*width: 100%;*/
   font-size: 16px;
   border: none;
   border-radius: 8px;
-  cursor: not-allowed;
+  cursor: pointer;
+  font-weight: bold;
 }
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+

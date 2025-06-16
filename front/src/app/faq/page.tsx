@@ -63,7 +63,7 @@ export default function faq() {
       <textarea id="message" name="message" rows="5"></textarea>
     </div>
 
-    <button type="button" className={styles["disabled-button"]} disabled>
+    <button className={styles["submit-button"]}>
       送信
     </button>
   </form>
