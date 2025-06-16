@@ -80,6 +80,7 @@ button.scDate{
 /* 時間表示部分 */
 div#timeList{
     margin: 0 auto 50px auto;
+    transition: 1s;
 
 }
 

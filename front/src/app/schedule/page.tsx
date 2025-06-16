@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import {useState} from "react";
 // Swiper導入
 import {Swiper,SwiperSlide} from "swiper/react";
 import {Navigation} from "swiper/modules";
@@ -38,20 +39,27 @@ const ViewDate = [
     },
 ]
 
-// 日付取得して過ぎた日付を消す
-var Now = Date();
+// 日付取得して過ぎた日付を選択できないようにする
+const getNow = () =>{
+    const today = new Date();
 
-// 今表示している日付　この値を元に表示切替
-var ShowDate = "0615"
-
-// timeListの中身をどうにか切り替える
-function changeDate(newDate:string){
-    console.log(newDate);
+    const month =  ('0' + (today.getMonth() + 1)).slice(-2)
+    const day = ('0'+today.getDate()).slice(-2);
+    return month+day;
 }
+
+
+
+
 const Schedule = () =>{
+    // 今表示している日付
+    // useState使うか・・・
+    const [ShowDate, changeDate] = React.useState(getNow());
+
 
     return(
         <div id={"scheduleBody"}>
+            {ShowDate}
             <h1 id={"scheduleTitle"} className={"mb-5"}>上映スケジュール</h1>
             {/*　日付　更新日から一週間　*/}
             <div id={"dateSlider"}>
@@ -77,7 +85,8 @@ const Schedule = () =>{
                     {ViewDate.map((day) => (
                         <SwiperSlide key={day.id}>
 
-                            <button className={"scDate"}>
+                            <button className={"scDate"} onClick={(e)=>
+                                changeDate(day.date)}>
                                 {day.date}
                             </button>
                         </SwiperSlide>
@@ -90,8 +99,7 @@ const Schedule = () =>{
             </div>
 
             <hr/>
-            {/*<p>{Now}</p>*/}
-            {/*　　*/}
+            {/* MovieTLの切り替えどうしような・・・*/}
             <div id={"timeList"}>
                 <MovieTL Movie={"Movie01"} Day={ShowDate}/>
                 <hr/>
