@@ -9,7 +9,8 @@ div#wrapNews{
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #25283B;
+    align-items: center;
+    /*background-color: #25283B;*/
     font-family: "Noto Sans JP",serif;
     color: white;
 }
@@ -26,13 +27,11 @@ h2#newsTitle{
 }
 
 div.articles{
-    width: 80%;
+    /*margin: 0 5%;*/
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
-    margin: 0 auto;
+    justify-content: center;
 }
 
 /*　記事単体の設定　*/
@@ -47,6 +46,14 @@ div.art:hover{
 .artImg{
     width: 240px;
     height: 168px;
+    transition: 0.1s;
+}
+.artImg img{
+    scale: 1;
+    object-fit: cover;
+}
+div.art:hover .artImg{
+    opacity: 0.8;
 }
 .artTitle{
     margin: 0 auto 2rem auto;
