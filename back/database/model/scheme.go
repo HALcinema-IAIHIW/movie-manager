@@ -21,6 +21,7 @@ type Movie struct {
 	ReleaseDate time.Time
 	Genre       string
 	Director    string
+	PosterPath  string
 }
 
 type Screening struct {
