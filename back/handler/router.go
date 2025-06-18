@@ -9,6 +9,7 @@ import (
 func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.GET("/users", GetUsers(db))
 	r.POST("/users", CreateUser(db))
+	r.PUT("/users/:id", UpdateUser(db))
 	r.POST("/movies", CreateMovie(db))
 	r.GET("/movies", GetMovies(db))
 	r.POST("/seat-type", CreateSeatType(db))
