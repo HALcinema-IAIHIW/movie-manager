@@ -14,6 +14,7 @@ import "./schedule.css"
 import MovieTL from "@/app/components/MovieTL/page";
 import Movies from "@/app/movies/page";
 
+// 日付のリスト
 const ViewDate = [
     {
         id:1,
@@ -39,7 +40,19 @@ const ViewDate = [
     },
 ]
 
-// 日付取得して過ぎた日付を選択できないようにする
+//日付と映画の組み合わせリスト
+const DayMovieList = [
+    {id:1, date:"0615",movie:"Movie01"},
+    {id:2, date:"0615",movie:"Movie02"},
+    {id:3, date:"0615",movie:"Movie03"},
+    {id:4, date:"0616",movie:"Movie01"},
+    {id:5, date:"0616",movie:"Movie02"},
+    {id:6, date:"0616",movie:"Movie03"},
+    {id:7, date:"0617",movie:"Movie01"},
+    {id:8, date:"0618",movie:"Movie02"},
+]
+
+// 日付取得して初期値を設定
 const getNow = () =>{
     const today = new Date();
 
@@ -50,11 +63,12 @@ const getNow = () =>{
 
 
 
-
 const Schedule = () =>{
     // 今表示している日付
     // useState使うか・・・
     const [ShowDate, changeDate] = useState(getNow());
+    // 日付でmapする用の配列
+    const MoviePerDay = DayMovieList.filter(DayMovieList => DayMovieList.date === ShowDate);
 
 
     return(
@@ -99,13 +113,20 @@ const Schedule = () =>{
             </div>
 
             <hr/>
-            {/* MovieTLの切り替えどうしような・・・*/}
+
             <div id={"timeList"}>
-                <MovieTL Movie={"Movie01"} Day={ShowDate}/>
-                <hr/>
-                <MovieTL Movie={"Movie02"} Day={ShowDate}/>
-                <hr/>
-                <MovieTL Movie={"Movie03"} Day={ShowDate} />
+
+                {MoviePerDay.map((MPD) =>(
+                    <div key={MPD.id}>
+                    <MovieTL  Movie={MPD.movie} Day={ShowDate}/>
+                    <hr/>
+                    </div>
+                ))}
+                {/*<MovieTL Movie={"Movie01"} Day={ShowDate}/>*/}
+                {/*<hr/>*/}
+                {/*<MovieTL Movie={"Movie02"} Day={ShowDate}/>*/}
+                {/*<hr/>*/}
+                {/*<MovieTL Movie={"Movie03"} Day={ShowDate} />*/}
 
             </div>
 

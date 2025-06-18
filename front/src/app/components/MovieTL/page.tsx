@@ -4,7 +4,7 @@ import "./MovieTL.css";
 
 
 export default function MovieTL({Day, Movie}) {
-    // Day,Movieを基にリストを編集
+    // Day,Movieを元にリスト取得
     const MovieList = [
         {
             id: 1,
@@ -49,8 +49,30 @@ export default function MovieTL({Day, Movie}) {
             stTime:"11:50",
             screen: "スクリーン3",
             restSeat:80
+        },{
+            id:7,
+            date:"0617",
+            moive:"Movie01",
+            stTime:"11:50",
+            screen: "スクリーン5",
+            restSeat:80
+        },{
+            id:8,
+            date:"0618",
+            moive:"Movie02",
+            stTime:"11:50",
+            screen: "スクリーン3",
+            restSeat:80
+        },{
+            id:9,
+            date:"0616",
+            moive:"Movie02",
+            stTime:"11:50",
+            screen: "スクリーン6",
+            restSeat:80
         }
     ]
+    const Dairy = MovieList.filter(MovieList => MovieList.date === Day)
 
     return(
         <>
@@ -60,7 +82,7 @@ export default function MovieTL({Day, Movie}) {
                 <div className={"Movie-TL"}>
                     <div className={"Poster bg-gray-500"}>poster</div>
                     <div className={"TlButtons"}>
-                        {MovieList.map((scList)=> (
+                        {Dairy.map((scList)=> (
                             // グレー差分作る奴どっか行ったふざけんなよボケが
                             <div className={"inline"} key={scList.id}>
 
