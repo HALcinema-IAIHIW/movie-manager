@@ -29,6 +29,7 @@ func main() {
 		&model.Purchase{},
 		&model.Ticket{},
 		&model.Seat{},
+		&model.ReservationSeat{},
 	); err != nil {
 		log.Fatalf("マイグレーションエラー: %v", err)
 	}

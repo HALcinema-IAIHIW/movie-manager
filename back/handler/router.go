@@ -23,4 +23,5 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.GET("/tickets", GetTicket(db))
 	r.POST("/seats", CreateSeat(db))
 	r.GET("/seats", GetSeat(db))
+	r.POST("/reservationseat", CreateReservationSeat(db))
 }
