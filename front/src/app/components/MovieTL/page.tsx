@@ -4,7 +4,7 @@ import "./MovieTL.css";
 
 
 export default function MovieTL({Day, Movie}) {
-    // Day,Movieを元にリスト取得
+    // Day,Movieを元にリスト取得　今回は日付をfilterでやってますが対象のデータだけ取得する
     const MovieList = [
         {
             id: 1,
@@ -72,6 +72,7 @@ export default function MovieTL({Day, Movie}) {
             restSeat:80
         }
     ]
+    // のでここは実際にデータ入ってるときは要らなくなる
     const Dairy = MovieList.filter(MovieList => MovieList.date === Day)
 
     return(

@@ -12,9 +12,9 @@ import "./schedule.css"
 
 // コンポーネント
 import MovieTL from "@/app/components/MovieTL/page";
-import Movies from "@/app/movies/page";
 
-// 日付のリスト
+
+// 表示できる日付のリスト
 const ViewDate = [
     {
         id:1,
@@ -65,7 +65,6 @@ const getNow = () =>{
 
 const Schedule = () =>{
     // 今表示している日付
-    // useState使うか・・・
     const [ShowDate, changeDate] = useState(getNow());
     // 日付でmapする用の配列
     const MoviePerDay = DayMovieList.filter(DayMovieList => DayMovieList.date === ShowDate);
@@ -73,7 +72,7 @@ const Schedule = () =>{
 
     return(
         <div id={"scheduleBody"}>
-            {ShowDate}
+            {/*{ShowDate}*/}
             <h1 id={"scheduleTitle"} className={"mb-5"}>上映スケジュール</h1>
             {/*　日付　更新日から一週間　*/}
             <div id={"dateSlider"}>
