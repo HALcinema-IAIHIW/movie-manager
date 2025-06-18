@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Todo:ルートを共通化する movieはmoviehandlerに内包する感じ
+
 func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.GET("/users", GetUsers(db))
 	r.POST("/users", CreateUser(db))
