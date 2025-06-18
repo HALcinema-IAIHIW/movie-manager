@@ -3,6 +3,7 @@ import React from "react";
 import "./MovieTL.css";
 
 
+
 export default function MovieTL({Day, Movie}) {
     // Day,Movieを元にリスト取得　今回は日付をfilterでやってますが対象のデータだけ取得する
     const MovieList = [
@@ -74,20 +75,33 @@ export default function MovieTL({Day, Movie}) {
     ]
     // のでここは実際にデータ入ってるときは要らなくなる
     const Dairy = MovieList.filter(MovieList => MovieList.date === Day)
+    // 現在時刻取得
+    const NowTime = () =>{
+        const today = new Date();
 
+        const hour =  ('0' + (today.getHours() + 1)).slice(-2)
+        const sec = ('0'+today.getSeconds()).slice(-2);
+        return hour+":"+sec;
+    }
+
+    //日本時間じゃないので調整必要
+    // オート更新も付ける
+    const Now = NowTime()
     return(
         <>
             <div className={"CinemaTL"}>
                 {/*{Day}*/}
+                {Now}
                 <h2>{Movie}</h2>
                 <div className={"Movie-TL"}>
                     <div className={"Poster bg-gray-500"}>poster</div>
                     <div className={"TlButtons"}>
                         {Dairy.map((scList)=> (
-                            // グレー差分作る奴どっか行ったふざけんなよボケが
+                            // 販売期間外差分も足す これ数字に一回変換しないとダメか　:でスライスして数字にしてから比較？
                             <div className={"inline"} key={scList.id}>
 
-                                {scList.restSeat === 0 ?(
+                                {
+                                    scList.restSeat === 0 ?(
                                     <button className={"Time"} id={"soldout"}>
                                         {scList.screen}<br/>
                                         <span>{scList.stTime}</span><br/>
