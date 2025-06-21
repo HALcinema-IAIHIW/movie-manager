@@ -20,7 +20,7 @@ func GetUsers(db *gorm.DB) gin.HandlerFunc {
 // Todo:ルートを共通化する movieはmoviehandlerに内包する感じ
 func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.GET("/users", GetUsers(db))
-	r.POST("/register", Register(db))
+	r.POST("/register", CreateUser(db))
 	r.POST("/movies", CreateMovie(db))
 	r.GET("/movies", GetMovies(db))
 	r.POST("/seat-type", CreateSeatType(db))

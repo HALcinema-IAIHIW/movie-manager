@@ -17,9 +17,8 @@ type CreateUserRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
-// Todo: 責務分離しっかりしよか～
 // DB登録←登録のための整形←フロントからのバリデーションで処理を分けるイメージ
-func Register(db *gorm.DB) gin.HandlerFunc {
+func CreateUser(db *gorm.DB) gin.HandlerFunc {
 	// Todo: gin.HandlerFuncって実際どうなの？
 	return func(c *gin.Context) {
 		var req CreateUserRequest
