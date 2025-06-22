@@ -1,4 +1,4 @@
-package dto
+package request
 
 type CreateMovieRequest struct {
 	Title       string `json:"title" binding:"required"`

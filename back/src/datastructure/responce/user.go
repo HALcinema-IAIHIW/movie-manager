@@ -1,8 +1,7 @@
-package request
+package response
 
 type UserResponse struct {
-	ID    int    `json:"id"`
+	ID    uint   `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
-	Role  string `json:"role"`
 }

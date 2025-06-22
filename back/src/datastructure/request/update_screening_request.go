@@ -1,4 +1,4 @@
-package dto
+package request
 
 type UpdateScreeningRequest struct {
 	StartTime   *string `json:"start_time,omitempty" binding:"omitempty,datetime=2006-01-02T15:04:05Z07:00"`

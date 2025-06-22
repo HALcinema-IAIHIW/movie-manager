@@ -1,4 +1,4 @@
-package dto
+package request
 
 type CreateTicketRequest struct {
 	Type     string `json:"type" binding:"required"`

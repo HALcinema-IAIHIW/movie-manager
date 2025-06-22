@@ -1,18 +1,17 @@
 package router
 
 import (
-	handler "modules/src/adapters/controller"
-
+	"modules/src/adapters/controller"
+	"modules/src/di"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func SetupRouter(db *gorm.DB) *gin.Engine {
+func SetupRouter(h *di.Handlers) *gin.Engine {
 	r := gin.Default()
 
-	handler.RegisterRoutes(r, db)
+	controller.RegisterRoutes(r, h.User)
 
 	// CORS許可
 	r.Use(func(c *gin.Context) {

@@ -1,4 +1,4 @@
-package dto
+package request
 
 type CreateSeatRequest struct {
 	ScreenID   uint   `json:"screen_id" binding:"required"`

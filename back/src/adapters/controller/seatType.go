@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 
 	"modules/src/database/model"
-	dto "modules/src/datastructure/request"
+	"modules/src/datastructure/request"
 )
 
 // interfaceでおおもとのmodelsとかの型を定義し、そこから選ぶ
@@ -23,7 +23,7 @@ import (
 
 func CreateSeatType(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var req dto.CreateSeatTypeRequest
+		var req request.CreateSeatTypeRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

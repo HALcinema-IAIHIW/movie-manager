@@ -3,10 +3,9 @@ package main
 import (
 	"log"
 	"modules/src/config"
-
-	// "modules/database"
 	"modules/src/database/model"
-	"modules/src/frameworks/db"
+	"modules/src/di"
+	frameworks "modules/src/frameworks/db"
 	"modules/src/router"
 )
 
@@ -32,7 +31,9 @@ func main() {
 		log.Fatalf("マイグレーションエラー: %v", err)
 	}
 
-	r := router.SetupRouter(db)
+	handlers := di.NewHandlers(db)
+
+	r := router.SetupRouter(handlers)
 
 	// サーバー起動
 	r.Run()

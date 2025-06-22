@@ -1,4 +1,4 @@
-package dto
+package request
 
 type CancelReservationSeatRequest struct {
 	// キャンセル対象の予約 ID など

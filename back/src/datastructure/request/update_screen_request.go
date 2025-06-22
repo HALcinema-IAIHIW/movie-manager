@@ -1,4 +1,4 @@
-package dto
+package request
 
 type UpdateScreenRequest struct {
 	MaxRow    *int    `json:"max_row,omitempty,gte=1"`

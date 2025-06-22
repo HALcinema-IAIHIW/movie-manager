@@ -1,4 +1,4 @@
-package dto
+package request
 
 type UpdateTicketRequest struct {
 	Type     *string `json:"type,omitempty"`

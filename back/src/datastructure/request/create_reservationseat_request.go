@@ -1,4 +1,4 @@
-package dto
+package request
 
 type CreateReservationSeatRequest struct {
 	UserID      uint `json:"user_id" binding:"required"`

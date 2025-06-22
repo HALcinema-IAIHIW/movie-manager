@@ -1,4 +1,4 @@
-package dto
+package request
 
 type MovieResponse struct {
 	ID          uint   `json:"id"`

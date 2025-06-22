@@ -1,4 +1,4 @@
-package dto
+package request
 
 type UpdateUserRequest struct {
 	Name  *string `json:"name,omitempty"`

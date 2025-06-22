@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"modules/src/database/model"

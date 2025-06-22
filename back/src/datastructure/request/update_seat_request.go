@@ -1,4 +1,4 @@
-package dto
+package request
 
 type UpdateSeatRequest struct {
 	Row        *string `json:"row,omitempty"`

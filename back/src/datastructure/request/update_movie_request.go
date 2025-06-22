@@ -1,4 +1,4 @@
-package dto
+package request
 
 type UpdateMovieRequest struct {
 	Title       *string `json:"title,omitempty" binding:"required"`
