@@ -1,8 +1,9 @@
 package user
 
 import (
+	"modules/src/adapters/presenter"
 	"modules/src/datastructure/request"
-	response "modules/src/datastructure/responce"
+	"modules/src/datastructure/response"
 	"modules/src/usecases"
 	"net/http"
 
@@ -56,15 +57,7 @@ func (h *UserHandler) GetUser() gin.HandlerFunc {
 			return
 		}
 
-		var res []response.UserResponse
-		for _, u := range users {
-			res = append(res, response.UserResponse{
-				ID:    u.ID,
-				Name:  u.Name,
-				Email: u.Email,
-			})
-		}
-
+		res := presenter.ToUserResponseList(users)
 		c.JSON(http.StatusOK, res)
 	}
 }

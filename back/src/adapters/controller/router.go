@@ -1,7 +1,9 @@
 package controller
 
 import (
-	user "modules/src/adapters/controller/user"
+	"modules/src/adapters/controller/movie"
+	"modules/src/adapters/controller/screen"
+	"modules/src/adapters/controller/user"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,8 +18,14 @@ import (
 // }
 
 // Todo:ルートを共通化する movieはmoviehandlerに内包する感じ
-func RegisterRoutes(r *gin.Engine, userHandler *user.UserHandler) {
+func RegisterRoutes(r *gin.Engine,
+	userHandler *user.UserHandler,
+	movieHandler *movie.MovieHandler,
+	screenHandler *screen.ScreenHandler,
+) {
 	user.RegisterUserRoutes(r.Group("/users"), userHandler)
+	movie.RegisterMovieRoutes(r.Group("/movies"), movieHandler)
+	screen.RegisterScreenRoutes(r.Group("/screens"), screenHandler)
 	// r.POST("/", CreateUser(db))
 	// r.POST("/movies", CreateMovie(db))
 	// r.GET("/movies", GetMovies(db))
