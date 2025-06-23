@@ -223,7 +223,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-
+        <Link href={"/schedule"} className={"bg-darker text-center"}>ここに上映スケジュール入れたいです</Link>
         {/* ニュースセクション */}
         <section className="py-16 bg-darker">
           <div className="container-custom">
