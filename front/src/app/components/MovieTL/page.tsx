@@ -6,12 +6,13 @@ import "./MovieTL.css";
 
 export default function MovieTL({Day, Movie}) {
     // Day,Movieを元にリスト取得　今回は日付をfilterでやってますが対象のデータだけ取得する
+    // 開始時間がTime型になっていないので導入時注意
     const MovieList = [
         {
             id: 1,
             date: "0615",
             moive: "Movie01",
-            stTime: "9:30",
+            stTime: "930",
             screen:"スクリーン1",
             restSeat:60
 
@@ -19,56 +20,56 @@ export default function MovieTL({Day, Movie}) {
             id: 2,
             date:"0615",
             moive:"Movie02",
-            stTime:"10:50",
+            stTime:"1050",
             screen: "スクリーン3",
             restSeat: 5
         },{
             id:3,
             date:"0615",
             moive:"Movie03",
-            stTime:"9:20",
+            stTime:"920",
             screen:"スクリーン2",
             restSeat:80
         },{
             id:4,
             date:"0616",
             moive:"Movie01",
-            stTime:"12:00",
+            stTime:"1200",
             screen: "スクリーン5",
             restSeat:80
         },{
             id:5,
             date:"0616",
             moive:"Movie02",
-            stTime:"12:40",
+            stTime:"1240",
             screen: "スクリーン7",
             restSeat:0
         },{
             id:6,
             date:"0616",
             moive:"Movie03",
-            stTime:"11:50",
+            stTime:"1150",
             screen: "スクリーン3",
             restSeat:80
         },{
             id:7,
             date:"0617",
             moive:"Movie01",
-            stTime:"11:50",
+            stTime:"1150",
             screen: "スクリーン5",
             restSeat:80
         },{
             id:8,
             date:"0618",
             moive:"Movie02",
-            stTime:"11:50",
+            stTime:"1150",
             screen: "スクリーン3",
             restSeat:80
         },{
             id:9,
             date:"0616",
             moive:"Movie02",
-            stTime:"11:50",
+            stTime:"1150",
             screen: "スクリーン6",
             restSeat:80
         }
@@ -79,14 +80,16 @@ export default function MovieTL({Day, Movie}) {
     const NowTime = () =>{
         const today = new Date();
 
-        const hour =  ('0' + (today.getHours() + 1)).slice(-2)
-        const sec = ('0'+today.getSeconds()).slice(-2);
-        return hour+":"+sec;
+        const hour =  ('0' + (today.getHours())).slice(-2)
+        const min = ('0'+today.getMinutes()).slice(-2);
+        // return hour+":"+sec;
+        return hour+min;
     }
 
     //日本時間じゃないので調整必要
     // オート更新も付ける
-    const Now = NowTime()
+    const Now = "1100"
+    // const Now = NowTime()
     return(
         <>
             <div className={"CinemaTL"}>
@@ -99,6 +102,7 @@ export default function MovieTL({Day, Movie}) {
                         {Dairy.map((scList)=> (
                             // 販売期間外差分も足す これ数字に一回変換しないとダメか　:でスライスして数字にしてから比較？
                             <div className={"inline"} key={scList.id}>
+                                {scList.stTime}
 
                                 {
                                     scList.restSeat === 0 ?(
@@ -107,7 +111,14 @@ export default function MovieTL({Day, Movie}) {
                                         <span>{scList.stTime}</span><br/>
                                         <p>売り切れ</p>
                                     </button>
-                                ):(
+                                ):Number(scList.stTime) <= Number(Now)?(
+                                    <button className={"Time"} id={"soldout"}>
+                                        {scList.screen}<br/>
+                                        <span>{scList.stTime}</span><br/>
+
+                                        <p>販売時間外</p>
+                                    </button>
+                                        ):(
                                     <button className={"Time"}>
                                         {scList.screen}<br/>
                                         <span>{scList.stTime}</span><br/>
