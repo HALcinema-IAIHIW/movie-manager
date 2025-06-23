@@ -6,4 +6,5 @@ type CreateMovieRequest struct {
 	ReleaseDate string `json:"release_date" binding:"required"`
 	Genre       string `json:"genre"`
 	Director    string `json:"director"`
+	Duration    int    `json:"duration" binding:"required"`
 }

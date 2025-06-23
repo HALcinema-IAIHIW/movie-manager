@@ -11,7 +11,7 @@ import (
 func SetupRouter(h *di.Handlers) *gin.Engine {
 	r := gin.Default()
 
-	controller.RegisterRoutes(r, h.User, h.Movie, h.Screen)
+	controller.RegisterRoutes(r, h.User, h.Movie, h.Screen, h.SeatType, h.Screening)
 
 	// CORS許可
 	r.Use(func(c *gin.Context) {

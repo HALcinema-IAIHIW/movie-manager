@@ -41,6 +41,7 @@ func (h *MovieHandler) CreateMovie() gin.HandlerFunc {
 			ReleaseDate: releaseDate,
 			Genre:       req.Genre,
 			Director:    req.Director,
+			Duration:    req.Duration,
 		}
 
 		if err := h.Usecase.CreateMovie(movie); err != nil {

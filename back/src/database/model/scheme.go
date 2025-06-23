@@ -22,22 +22,31 @@ type Movie struct {
 	Genre       string
 	Director    string
 	PosterPath  string
+	Duration    int
 }
 
-type Screening struct {
+// 上映期間
+type ScreeningPlan struct {
 	gorm.Model
-	MovieID     uint      `gorm:"not null"`
-	ScreenID    uint      `gorm:"not null"`
-	StartTime   time.Time `gorm:"not null"`
-	Duration    int       `gorm:"not null"`
-	Language    string
-	IsSubtitled bool
-	IsDubbed    bool
-	IsActive    bool   `gorm:"default:true"`
-	Status      string `gorm:"default:'scheduled'"` // "scheduled", "cancelled", "delayed"
+	MovieID   uint      `gorm:"not null"`
+	ScreenID  uint      `gorm:"not null"`
+	StartDate time.Time `gorm:"not null"`
+	EndDate   time.Time `gorm:"not null"`
 
 	Movie  Movie  `gorm:"foreignKey:MovieID"`
 	Screen Screen `gorm:"foreignKey:ScreenID"`
+}
+
+// 上映スクリーン
+type Screening struct {
+	gorm.Model
+	PlanID    uint      `gorm:"not null"`
+	StartTime time.Time `gorm:"not null"`
+	Duration  int       `gorm:"not null"`
+
+	Plan   ScreeningPlan `gorm:"foreignKey:PlanID"`
+	Movie  Movie         `gorm:"foreignKey:MovieID"`
+	Screen Screen        `gorm:"foreignKey:ScreenID"`
 }
 
 type Screen struct {
