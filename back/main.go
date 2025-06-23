@@ -3,14 +3,11 @@ package main
 import (
 	"log"
 	"modules/config"
-
-	// "modules/database"
 	"modules/database/model"
 	"modules/router"
 )
 
 func main() {
-
 	env := config.LoadEnv()
 
 	// DB接続
