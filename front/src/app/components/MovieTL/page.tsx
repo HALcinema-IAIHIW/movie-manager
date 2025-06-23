@@ -5,8 +5,9 @@ import "./MovieTL.css";
 
 
 export default function MovieTL({Day, Movie}) {
-    // Day,Movieを元にリスト取得　今回は日付をfilterでやってますが対象のデータだけ取得する
-    // 開始時間がTime型になっていないので導入時注意
+    // Day,Movieを元にリスト取得
+    // 開始時間がTime型になっていないので導入時比較処理も修正する
+    // 登録が必ず時系列順というわけでは無いなら並べ変え処理も入れた方が良いか？
     const MovieList = [
         {
             id: 1,
@@ -74,7 +75,7 @@ export default function MovieTL({Day, Movie}) {
             restSeat:80
         }
     ]
-    // のでここは実際にデータ入ってるときは要らなくなる
+    // filterが不要なようにデータ取得時に絞り込む予定
     const Dairy = MovieList.filter(MovieList => MovieList.date === Day)
     // 現在時刻取得
     const NowTime = () =>{
@@ -88,13 +89,14 @@ export default function MovieTL({Day, Movie}) {
 
     //日本時間じゃないので調整必要
     // オート更新も付ける
-    const Now = "1100"
+    // 仮時間
+    const Now = "1150"
     // const Now = NowTime()
     return(
         <>
             <div className={"CinemaTL"}>
                 {/*{Day}*/}
-                {Now}
+                {/*{Now}*/}
                 <h2>{Movie}</h2>
                 <div className={"Movie-TL"}>
                     <div className={"Poster bg-gray-500"}>poster</div>
@@ -102,7 +104,7 @@ export default function MovieTL({Day, Movie}) {
                         {Dairy.map((scList)=> (
                             // 販売期間外差分も足す これ数字に一回変換しないとダメか　:でスライスして数字にしてから比較？
                             <div className={"inline"} key={scList.id}>
-                                {scList.stTime}
+                                {/*{scList.stTime}*/}
 
                                 {
                                     scList.restSeat === 0 ?(
