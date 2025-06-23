@@ -101,7 +101,7 @@ body {
 
   /* カードスタイル */
   .card-luxury {
-    @apply bg-dark-lighter border border-accent/20 rounded-lg;
+    @apply bg-dark-lighter rounded-lg;
     @apply shadow-luxury transition-all duration-300;
     @apply hover:shadow-luxury-lg;
     /*@apply hover:shadow-luxury-lg hover:-translate-y-1;*/
