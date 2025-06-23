@@ -44,9 +44,9 @@ type Screening struct {
 	StartTime time.Time `gorm:"not null"`
 	Duration  int       `gorm:"not null"`
 
-	Plan   ScreeningPlan `gorm:"foreignKey:PlanID"`
-	Movie  Movie         `gorm:"foreignKey:MovieID"`
-	Screen Screen        `gorm:"foreignKey:ScreenID"`
+	Plan ScreeningPlan `gorm:"foreignKey:PlanID"`
+	// Movie  Movie         `gorm:"foreignKey:MovieID"`
+	// Screen Screen        `gorm:"foreignKey:ScreenID"`
 }
 
 type Screen struct {
