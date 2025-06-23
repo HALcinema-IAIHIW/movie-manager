@@ -355,6 +355,9 @@ export default function Header() {
                         <Link href="/">Top Page</Link>
                     </li>
                     <li>
+                        <Link href="/schedule">Schedule</Link>
+                    </li>
+                    <li>
                         <Link href="/news">Information</Link>
                     </li>
                     <li>
