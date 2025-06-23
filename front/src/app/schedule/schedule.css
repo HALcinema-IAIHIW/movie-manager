@@ -34,8 +34,11 @@ div#dateSlider button{
     transition: 0.2s;
 
 }
-div#dateSlider button:hover{
+div#dateSlider button.scDate:hover{
     opacity: 0.8;
+}
+div#dateSlider button.disableDate:hover{
+    opacity: 1;
 }
 
 
@@ -73,6 +76,10 @@ button.scDate{
     margin: 0 15px;
     background-color: #fff;
     color: #25283B;
+}
+button.disableDate{
+    background-color: #555;
+    color: #aaa;
 }
 
 

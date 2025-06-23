@@ -65,14 +65,17 @@ const getNow = () =>{
 
 const Schedule = () =>{
     // 今表示している日付
-    const [ShowDate, changeDate] = useState(getNow());
+    // const [ShowDate, changeDate] = useState(getNow());
+    // 処理用の仮日付
+    const TestToday = "0616"
+    const [ShowDate, changeDate] = useState(TestToday);
     // 日付でmapする用の配列
     const MoviePerDay = DayMovieList.filter(DayMovieList => DayMovieList.date === ShowDate);
 
 
     return(
         <div id={"scheduleBody"}>
-            {/*{ShowDate}*/}
+            {ShowDate}
             <h1 id={"scheduleTitle"} className={"mb-5"}>上映スケジュール</h1>
             {/*　日付　更新日から一週間　*/}
             <div id={"dateSlider"}>
@@ -97,11 +100,19 @@ const Schedule = () =>{
                 >
                     {ViewDate.map((day) => (
                         <SwiperSlide key={day.id}>
+                            {
+                                Number(day.date)<Number(TestToday)?(
+                                    <button className={"scDate disableDate"}>
+                                        {day.date}
+                                    </button>
+                                ): (
+                                    <button className={"scDate"} onClick={(e) =>
+                                        changeDate(day.date)}>
+                                        {day.date}
+                                    </button>
+                                )
+                            }
 
-                            <button className={"scDate"} onClick={(e)=>
-                                changeDate(day.date)}>
-                                {day.date}
-                            </button>
                         </SwiperSlide>
                     ))
                     }
