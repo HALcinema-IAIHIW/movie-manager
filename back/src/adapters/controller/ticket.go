@@ -3,8 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"modules/database/model"
-
+	"modules/src/database/model"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

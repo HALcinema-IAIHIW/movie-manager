@@ -5,9 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-
-	"modules/database/model"
-
+	"modules/src/database/model"
+)
 
 // 座席予約の作成API
 func CreateReservationSeat(db *gorm.DB) gin.HandlerFunc {
