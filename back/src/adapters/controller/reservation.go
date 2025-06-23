@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm"
 
 	"modules/database/model"
-	"modules/dto"
 )
 
 // 座席予約の作成API
