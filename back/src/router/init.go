@@ -1,21 +1,19 @@
 package router
 
 import (
-	"modules/src/adapters/controller/movie"
-	"modules/src/adapters/controller/screen"
-	"modules/src/adapters/controller/screening"
-	"modules/src/adapters/controller/seatType"
-	"modules/src/adapters/controller/user"
 	"modules/src/di"
 	"modules/src/module"
+	"reflect"
 )
 
 func InitRoutes(h *di.Handlers) []module.Route {
-	return []module.Route{
-		user.NewUserRoutes(h.User),
-		movie.NewMovieRoutes(h.Movie),
-		screen.NewScreenRoutes(h.Screen),
-		seatType.NewSeatTypeRoutes(h.SeatType),
-		screening.NewScreeningRoutes(h.Screening),
+	var routes []module.Route
+
+	v := reflect.ValueOf(*h)
+	for i := 0; i < v.NumField(); i++ {
+		if rp, ok := v.Field(i).Interface().(module.RouteProvider); ok {
+			routes = append(routes, rp.Routes())
+		}
 	}
+	return routes
 }

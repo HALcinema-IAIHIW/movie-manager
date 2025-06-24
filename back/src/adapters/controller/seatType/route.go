@@ -2,13 +2,14 @@ package seatType
 
 import (
 	"github.com/gin-gonic/gin"
+	"modules/src/module"
 )
 
 type SeatTypeRouter struct {
 	handler *SeatTypeHandler
 }
 
-func NewSeatTypeRoutes(handler *SeatTypeHandler) *SeatTypeRouter {
+func NewSeatTypeRoutes(handler *SeatTypeHandler) module.Route {
 	return &SeatTypeRouter{handler: handler}
 }
 

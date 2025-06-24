@@ -4,6 +4,7 @@ import (
 	"modules/src/adapters/presenter"
 	"modules/src/datastructure/request"
 	"modules/src/datastructure/response"
+	"modules/src/module"
 	"modules/src/usecases"
 	"net/http"
 
@@ -18,6 +19,10 @@ type UserHandler struct {
 
 func NewUserHandler(uc *usecases.UserUsecase) *UserHandler {
 	return &UserHandler{UserUC: uc}
+}
+
+func (h *UserHandler) Routes() module.Route {
+	return NewUserRoutes(h)
 }
 
 func (h *UserHandler) CreateUser() gin.HandlerFunc {
