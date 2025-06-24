@@ -43,7 +43,6 @@ func (uc *UserUsecase) RegisterUser(input RegisterUserInput) (*model.User, error
 		Name:     input.Name,
 		Email:    email,
 		Password: string(hash),
-		Role:     "user",
 	}
 	if err := uc.UserRepo.Create(user); err != nil {
 		return nil, err

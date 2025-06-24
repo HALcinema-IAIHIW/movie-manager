@@ -5,7 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"modules/src/database/model"
+
+	"modules/database/model"
 )
 
 // 座席予約の作成API

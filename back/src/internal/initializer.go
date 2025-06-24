@@ -2,13 +2,14 @@
 package internal
 
 import (
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"modules/src/config"
 	"modules/src/database/model"
 	"modules/src/di"
 	frameworks "modules/src/frameworks/db"
 	"modules/src/router"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type Initializer struct {
