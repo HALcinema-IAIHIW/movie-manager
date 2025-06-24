@@ -2,6 +2,7 @@ package router
 
 import (
 	"modules/src/di"
+
 	"modules/src/module"
 	"reflect"
 )
@@ -14,6 +15,7 @@ func InitRoutes(h *di.Handlers) []module.Route {
 		if rp, ok := v.Field(i).Interface().(module.RouteProvider); ok {
 			routes = append(routes, rp.Routes())
 		}
+
 	}
 	return routes
 }
