@@ -1,12 +1,15 @@
 package user
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"modules/src/module"
+)
 
 type UserRouter struct {
 	handler *UserHandler
 }
 
-func NewUserRoutes(handler *UserHandler) *UserRouter {
+func NewUserRoutes(handler *UserHandler) module.Route {
 	return &UserRouter{handler: handler}
 }
 
