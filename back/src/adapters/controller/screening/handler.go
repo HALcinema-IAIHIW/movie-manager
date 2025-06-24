@@ -29,7 +29,7 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 		}
 
 		screening := &model.Screening{
-			PlanID:    req.PlanId,
+			// PlanID:    req.PlanId,
 			StartTime: req.StartTime,
 			Duration:  req.Duration,
 		}
@@ -42,7 +42,7 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 
 		endTime := result.StartTime.Add(time.Duration(result.Duration) * time.Minute)
 		c.JSON(http.StatusCreated, response.ScreeningResponse{
-			PlanID:    result.PlanID,
+			// PlanID:    result.PlanID,
 			StartTime: result.StartTime,
 			EndTime:   endTime,
 		})

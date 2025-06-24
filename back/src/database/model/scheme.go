@@ -11,7 +11,8 @@ type User struct {
 	Name     string
 	Email    string `gorm:"unique"`
 	Password string
-	RoleID   Role `gorm:"foreignKey:RoleID"`
+	RoleID   int
+	Role     Role `gorm:"foreignKey:RoleID"`
 }
 
 type Role struct {
@@ -31,6 +32,13 @@ type Movie struct {
 	Duration    int
 }
 
+// スクリーン自体
+type Screen struct {
+	gorm.Model
+	MaxRow    int
+	MaxColumn string
+}
+
 // 上映期間
 type ScreeningPeriod struct {
 	gorm.Model
@@ -46,34 +54,12 @@ type ScreeningPeriod struct {
 // 上映スクリーン
 type Screening struct {
 	gorm.Model
-	ScreeningPlanID uint      `gorm:"not null"`
-	Date            time.Time `gorm:"not null"`
-	StartTime       time.Time `gorm:"not null"`
-	Duration        int       `gorm:"not null"`
+	ScreeningPeriodID uint      `gorm:"not null"`
+	Date              time.Time `gorm:"not null"`
+	StartTime         time.Time `gorm:"not null"`
+	Duration          int       `gorm:"not null"`
 
-	ScreeningPeriod ScreeningPeriod `gorm:"foreignKey:PlanID"`
-}
-
-type Screen struct {
-	gorm.Model
-	MaxRow    int
-	MaxColumn string
-}
-
-type Seat struct {
-	gorm.Model
-	ScreenID   uint   `gorm:"not null"`
-	Row        string `gorm:"not null"`
-	Column     int    `gorm:"not null"`
-	SeatTypeID uint   `gorm:"not null"`
-
-	Screen   Screen   `gorm:"foreignKey:ScreenID"`
-	SeatType SeatType `gorm:"foreignKey:SeatTypeID"`
-}
-
-type SeatType struct {
-	gorm.Model
-	Name string `gorm:"not null"`
+	ScreeningPeriod ScreeningPeriod `gorm:"foreignKey:ScreeningPeriodID"`
 }
 
 // 1回の購入トランザクション
@@ -112,4 +98,20 @@ type PurchaseDetail struct {
 	Subtotal   int // Quantity * PriceYen
 
 	Role Role `gorm:"foreignKey:RoleID"`
+}
+
+type Seat struct {
+	gorm.Model
+	ScreenID   uint   `gorm:"not null"`
+	Row        string `gorm:"not null"`
+	Column     int    `gorm:"not null"`
+	SeatTypeID uint   `gorm:"not null"`
+
+	Screen   Screen   `gorm:"foreignKey:ScreenID"`
+	SeatType SeatType `gorm:"foreignKey:SeatTypeID"`
+}
+
+type SeatType struct {
+	gorm.Model
+	Name string `gorm:"not null"`
 }
