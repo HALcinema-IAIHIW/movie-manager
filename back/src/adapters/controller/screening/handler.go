@@ -4,6 +4,7 @@ import (
 	"modules/src/database/model"
 	"modules/src/datastructure/request"
 	"modules/src/datastructure/response"
+	"modules/src/module"
 	"modules/src/usecases"
 
 	"net/http"
@@ -18,6 +19,10 @@ type ScreeningHandler struct {
 
 func NewScreeningHandler(uc *usecases.ScreeningUsecase) *ScreeningHandler {
 	return &ScreeningHandler{Usecase: uc}
+}
+
+func (h *ScreeningHandler) Routes() module.Route {
+	return NewScreeningRoutes(h)
 }
 
 func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
