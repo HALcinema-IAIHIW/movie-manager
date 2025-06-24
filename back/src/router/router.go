@@ -1,7 +1,6 @@
 package router
 
 import (
-	"modules/src/adapters/controller"
 	"modules/src/di"
 	"net/http"
 
@@ -11,7 +10,12 @@ import (
 func SetupRouter(h *di.Handlers) *gin.Engine {
 	r := gin.Default()
 
-	controller.RegisterRoutes(r, h.User, h.Movie, h.Screen, h.SeatType, h.Screening)
+
+	routes := InitRoutes(h)
+
+	for _, route := range routes {
+		route.RegisterRoutes(r)
+	}
 
 	// CORS許可
 	r.Use(func(c *gin.Context) {

@@ -2,8 +2,18 @@ package seatType
 
 import (
 	"github.com/gin-gonic/gin"
+	"modules/src/module"
 )
 
-func RegisterSeatTypeRoutes(r *gin.RouterGroup, handler *SeatTypeHandler) {
-	r.POST("/", handler.CreateSeatType())
+type SeatTypeRouter struct {
+	handler *SeatTypeHandler
+}
+
+func NewSeatTypeRoutes(handler *SeatTypeHandler) module.Route {
+	return &SeatTypeRouter{handler: handler}
+}
+
+func (r *SeatTypeRouter) RegisterRoutes(engine *gin.Engine) {
+	group := engine.Group("/seat-types")
+	group.POST("/", r.handler.CreateSeatType())
 }

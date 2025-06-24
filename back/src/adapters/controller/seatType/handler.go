@@ -4,6 +4,7 @@ package seatType
 import (
 	"modules/src/datastructure/request"
 	"modules/src/datastructure/response"
+	"modules/src/module"
 	"modules/src/usecases"
 	"net/http"
 
@@ -16,6 +17,10 @@ type SeatTypeHandler struct {
 
 func NewSeatTypeHandler(uc *usecases.SeatTypeUsecase) *SeatTypeHandler {
 	return &SeatTypeHandler{UC: uc}
+}
+
+func (h *SeatTypeHandler) Routes() module.Route {
+	return NewSeatTypeRoutes(h)
 }
 
 func (h *SeatTypeHandler) CreateSeatType() gin.HandlerFunc {
