@@ -10,7 +10,9 @@ import (
 func SetupRouter(h *di.Handlers) *gin.Engine {
 	r := gin.Default()
 
+
 	routes := InitRoutes(h)
+
 	for _, route := range routes {
 		route.RegisterRoutes(r)
 	}
