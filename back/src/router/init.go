@@ -7,11 +7,13 @@ import (
 	"modules/src/adapters/controller/seatType"
 	"modules/src/adapters/controller/user"
 	"modules/src/di"
+
 	"modules/src/module"
 )
 
 func InitRoutes(h *di.Handlers) []module.Route {
 	return []module.Route{
+
 		user.NewUserRoutes(h.User),
 		movie.NewMovieRoutes(h.Movie),
 		screen.NewScreenRoutes(h.Screen),
