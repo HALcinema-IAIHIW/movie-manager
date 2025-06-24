@@ -11,7 +11,13 @@ type User struct {
 	Name     string
 	Email    string `gorm:"unique"`
 	Password string
-	Role     string `gorm:"default:'user'"` // "user", "admin"
+	RoleID   Role `gorm:"foreignKey:RoleID"`
+}
+
+type Role struct {
+	ID       uint   `gorm:"primaryKey"`
+	RoleName string `gorm:"unique;not null"` // "一般", "大学生", "中学生～高校生", "小学生、幼児"
+	PriceYen int    `gorm:"not null"`        // チケット価格
 }
 
 type Movie struct {
@@ -26,7 +32,7 @@ type Movie struct {
 }
 
 // 上映期間
-type ScreeningPlan struct {
+type ScreeningPeriod struct {
 	gorm.Model
 	MovieID   uint      `gorm:"not null"`
 	ScreenID  uint      `gorm:"not null"`
@@ -40,13 +46,12 @@ type ScreeningPlan struct {
 // 上映スクリーン
 type Screening struct {
 	gorm.Model
-	PlanID    uint      `gorm:"not null"`
-	StartTime time.Time `gorm:"not null"`
-	Duration  int       `gorm:"not null"`
+	ScreeningPlanID uint      `gorm:"not null"`
+	Date            time.Time `gorm:"not null"`
+	StartTime       time.Time `gorm:"not null"`
+	Duration        int       `gorm:"not null"`
 
-	Plan ScreeningPlan `gorm:"foreignKey:PlanID"`
-	// Movie  Movie         `gorm:"foreignKey:MovieID"`
-	// Screen Screen        `gorm:"foreignKey:ScreenID"`
+	ScreeningPeriod ScreeningPeriod `gorm:"foreignKey:PlanID"`
 }
 
 type Screen struct {
@@ -71,46 +76,40 @@ type SeatType struct {
 	Name string `gorm:"not null"`
 }
 
-type Ticket struct {
+// 1回の購入トランザクション
+type Purchase struct {
 	gorm.Model
-	Type     string `gorm:"not null"`
-	PriceYen int    `gorm:"not null"`
+	UserID       uint `gorm:"not null" json:"user_id"`
+	ScreeningID  uint `gorm:"not null" json:"screening_id"`
+	PurchaseTime time.Time
+	TotalPrice   int
+
+	User            User             `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	Screening       Screening        `gorm:"foreignKey:ScreeningID"`
+	PurchaseDetails []PurchaseDetail `gorm:"foreignKey:PurchaseID"`
 }
 
+// どの座席を押さえたか
 type ReservationSeat struct {
 	gorm.Model
-	UserID      uint `gorm:"not null;index:idx_seat_screening,unique"`
-	ScreeningID uint `gorm:"not null;index:idx_seat_screening,unique"`
-	SeatID      uint `gorm:"not null;index:idx_seat_screening,unique"`
-	TicketID    uint `gorm:"not null"`
 	PurchaseID  uint `gorm:"not null"`
+	SeatID      uint `gorm:"not null"`
 	IsCancelled bool `gorm:"default:false"`
 	CancelledAt *time.Time
 
-	User      User      `gorm:"foreignKey:UserID"`
+	Purchase  Purchase  `gorm:"foreignKey:PurchaseID"`
 	Seat      Seat      `gorm:"foreignKey:SeatID"`
 	Screening Screening `gorm:"foreignKey:ScreeningID"`
-	Ticket    Ticket    `gorm:"foreignKey:TicketID"`
-	Purchase  Purchase  `gorm:"foreignKey:PurchaseID"`
 }
 
-type PaymentStatus string
-
-const (
-	Pending PaymentStatus = "pending"
-	Paid    PaymentStatus = "paid"
-	Failed  PaymentStatus = "failed"
-)
-
-type Purchase struct {
+// どのRoleを何枚購入したか
+type PurchaseDetail struct {
 	gorm.Model
-	UserID        uint              `gorm:"not null" json:"user_id"`
-	ScreeningID   uint              `gorm:"not null" json:"screening_id"`
-	TotalPrice    int               `gorm:"not null" json:"total_price"`
-	PaymentStatus PaymentStatus     `gorm:"type:varchar(20)" json:"payment_status"`
-	PurchaseTime  time.Time         `gorm:"not null" json:"purchase_time"`
-	Reservations  []ReservationSeat `gorm:"foreignKey:PurchaseID" json:"reservations,omitempty"` // 1つのPurchaseに複数のReservationを持たせる
+	PurchaseID uint
+	RoleID     uint // ロール別にチケット購入
+	Quantity   int
+	PriceYen   int // Roleの単価をコピーして保存
+	Subtotal   int // Quantity * PriceYen
 
-	User      User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
-	Screening Screening `gorm:"foreignKey:ScreeningID" json:"screening,omitempty"`
+	Role Role `gorm:"foreignKey:RoleID"`
 }
