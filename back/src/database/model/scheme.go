@@ -35,8 +35,8 @@ type Movie struct {
 // スクリーン自体
 type Screen struct {
 	gorm.Model
-	MaxRow    int
-	MaxColumn string
+	MaxRow    string
+	MaxColumn int
 }
 
 // 上映期間
@@ -83,9 +83,8 @@ type ReservationSeat struct {
 	IsCancelled bool `gorm:"default:false"`
 	CancelledAt *time.Time
 
-	Purchase  Purchase  `gorm:"foreignKey:PurchaseID"`
-	Seat      Seat      `gorm:"foreignKey:SeatID"`
-	Screening Screening `gorm:"foreignKey:ScreeningID"`
+	Purchase Purchase `gorm:"foreignKey:PurchaseID"`
+	Seat     Seat     `gorm:"foreignKey:SeatID"`
 }
 
 // どのRoleを何枚購入したか
