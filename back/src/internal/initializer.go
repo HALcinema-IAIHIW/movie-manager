@@ -11,10 +11,6 @@ import (
 	"modules/src/router"
 )
 
-type Route interface {
-	RegisterRoutes(engin *gin.Engine)
-}
-
 type Initializer struct {
 	DB       *gorm.DB
 	Handlers *di.Handlers
