@@ -2,39 +2,17 @@ package main
 
 import (
 	"log"
-	"modules/src/config"
-	"modules/src/database/model"
-	"modules/src/di"
-	frameworks "modules/src/frameworks/db"
-	"modules/src/router"
+	"modules/src/internal"
 )
 
 func main() {
 
-	env := config.LoadEnv()
-
-	// DB接続
-	db, err := frameworks.NewDB(env)
+	initializer, err := internal.NewInitializer()
 	if err != nil {
-		log.Fatalf("DB接続エラー: %v", err)
+		log.Fatalf("初期化失敗: %v", err)
 	}
 
-	// マイグレーション
-	if err := db.AutoMigrate(
-		&model.User{},
-		&model.Movie{},
-		&model.SeatType{},
-		&model.Screening{},
-		&model.Screen{},
-		&model.Purchase{},
-	); err != nil {
-		log.Fatalf("マイグレーションエラー: %v", err)
-	}
-
-	handlers := di.NewHandlers(db)
-
-	r := router.SetupRouter(handlers)
-
+	r := initializer.SetupRouter()
 	// サーバー起動
 	r.Run()
 }

@@ -1,11 +1,18 @@
 package user
 
-import (
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
-func RegisterUserRoutes(r *gin.RouterGroup, handler *UserHandler) {
-	r.POST("/", handler.CreateUser())
-	r.GET("/", handler.GetUser())
-	r.GET("/:id", handler.GetUserByID())
+type UserRouter struct {
+	handler *UserHandler
+}
+
+func NewUserRoutes(handler *UserHandler) *UserRouter {
+	return &UserRouter{handler: handler}
+}
+
+func (r *UserRouter) RegisterRoutes(engine *gin.Engine) {
+	group := engine.Group("/users")
+	group.POST("/", r.handler.CreateUser())
+	group.GET("/", r.handler.GetUser())
+	group.GET("/:id", r.handler.GetUserByID())
 }
