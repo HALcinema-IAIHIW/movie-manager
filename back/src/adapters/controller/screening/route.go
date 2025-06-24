@@ -2,13 +2,14 @@ package screening
 
 import (
 	"github.com/gin-gonic/gin"
+	"modules/src/module"
 )
 
 type ScreeningRouter struct {
 	handler *ScreeningHandler
 }
 
-func NewScreeningRoutes(handler *ScreeningHandler) *ScreeningRouter {
+func NewScreeningRoutes(handler *ScreeningHandler) module.Route {
 	return &ScreeningRouter{handler: handler}
 }
 

@@ -4,6 +4,7 @@ import (
 	"modules/src/adapters/presenter"
 	"modules/src/database/model"
 	"modules/src/datastructure/request"
+	"modules/src/module"
 	"modules/src/usecases"
 
 	"fmt"
@@ -19,6 +20,10 @@ type MovieHandler struct {
 
 func NewMovieHandler(uc *usecases.MovieUsecase) *MovieHandler {
 	return &MovieHandler{Usecase: uc}
+}
+
+func (h *MovieHandler) Routes() module.Route {
+	return NewMovieRoutes(h)
 }
 
 func (h *MovieHandler) CreateMovie() gin.HandlerFunc {

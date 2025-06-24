@@ -4,6 +4,7 @@ import (
 	"modules/src/adapters/presenter"
 	"modules/src/database/model"
 	"modules/src/datastructure/request"
+	"modules/src/module"
 	"modules/src/usecases"
 	"net/http"
 
@@ -16,6 +17,10 @@ type ScreenHandler struct {
 
 func NewScreenHandler(uc *usecases.ScreenUsecase) *ScreenHandler {
 	return &ScreenHandler{Usecase: uc}
+}
+
+func (h *ScreenHandler) Routes() module.Route {
+	return NewScreenRoutes(h)
 }
 
 func (h *ScreenHandler) CreateScreen() gin.HandlerFunc {
