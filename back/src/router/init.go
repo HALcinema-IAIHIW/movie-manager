@@ -1,4 +1,4 @@
-package controller
+package router
 
 import (
 	"modules/src/adapters/controller/movie"

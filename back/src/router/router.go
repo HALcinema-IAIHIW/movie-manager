@@ -1,7 +1,6 @@
 package router
 
 import (
-	"modules/src/adapters/controller"
 	"modules/src/di"
 	"net/http"
 
@@ -11,7 +10,7 @@ import (
 func SetupRouter(h *di.Handlers) *gin.Engine {
 	r := gin.Default()
 
-	routes := controller.InitRoutes(h)
+	routes := InitRoutes(h)
 	for _, route := range routes {
 		route.RegisterRoutes(r)
 	}
