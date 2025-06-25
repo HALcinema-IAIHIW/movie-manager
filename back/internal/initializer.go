@@ -1,0 +1,58 @@
+// internal/initializer.go
+package internal
+
+import (
+	"modules/config"
+	"modules/database/model"
+	"modules/frameworks/db"
+	"modules/internal/di"
+	"modules/router"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
+type Initializer struct {
+	DB       *gorm.DB
+	Handlers *di.Handlers
+	Engine   *gin.Engine
+}
+
+func NewInitializer() (*Initializer, error) {
+	// 環境変数等ロード
+	env := config.LoadEnv()
+
+	// DB接続
+	db, err := frameworks.NewDB(env)
+	if err != nil {
+		return nil, err
+	}
+
+	// マイグレーション
+	if err := db.AutoMigrate(
+		&model.User{},
+		&model.Movie{},
+		&model.SeatType{},
+		&model.Screening{},
+		&model.Screen{},
+		&model.Purchase{},
+	); err != nil {
+		return nil, err
+	}
+
+	// ハンドラ生成（DIコンテナ的にまとめてる想定）
+	handlers := di.NewHandlers(db)
+
+	// Gin Engine初期化
+	engine := gin.Default()
+
+	return &Initializer{
+		DB:       db,
+		Handlers: handlers,
+		Engine:   engine,
+	}, nil
+}
+
+func (i *Initializer) SetupRouter() *gin.Engine {
+	return router.SetupRouter(i.Handlers)
+}
