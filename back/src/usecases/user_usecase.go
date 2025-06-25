@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"modules/src/database/model"
-	"modules/src/usecases/repository"
+	"modules/src/repository"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

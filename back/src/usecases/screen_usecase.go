@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"modules/src/database/model"
-	"modules/src/usecases/repository"
+	"modules/src/repository"
 )
 
 type ScreenUsecase struct {
