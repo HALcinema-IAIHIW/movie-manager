@@ -7,9 +7,9 @@ import (
 
 func ToScreenResponse(screen model.Screen) response.ScreenResponse {
 	return response.ScreenResponse{
-		ID:        screen.ID,
-		MaxRow:    screen.MaxRow,
-		MaxColumn: screen.MaxColumn,
+		ID: screen.ID,
+		// MaxRow:    screen.MaxRow,
+		// MaxColumn: screen.MaxColumn,
 	}
 }
 
