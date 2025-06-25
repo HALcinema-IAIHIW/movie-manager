@@ -14,7 +14,7 @@ func NewRoleRoutes(handler *RoleHandler) module.Route {
 	return &RoleRouter{handler: handler}
 }
 func (r *RoleRouter) RegisterRoutes(engine *gin.Engine) {
-	group := engine.Group("/role")
+	group := engine.Group("/roles")
 	group.POST("/", r.handler.CreateRoles())
 	group.GET("/", r.handler.GetRoles())
 }
