@@ -47,11 +47,11 @@ func CreatePurchase(db *gorm.DB) gin.HandlerFunc {
 
 		// 新規スクリーン作成
 		purchase := model.Purchase{
-			UserID:        req.UserID,
-			ScreeningID:   req.ScreeningID,
-			TotalPrice:    req.TotalPrice,
-			PaymentStatus: model.PaymentStatus(req.PaymentStatus),
-			PurchaseTime:  parsedTime,
+			UserID:      req.UserID,
+			ScreeningID: req.ScreeningID,
+			TotalPrice:  req.TotalPrice,
+			// PaymentStatus: model.PaymentStatus(req.PaymentStatus),
+			PurchaseTime: parsedTime,
 		}
 
 		// データベースにスクリーン情報を保存

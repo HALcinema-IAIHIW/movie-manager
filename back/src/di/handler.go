@@ -2,6 +2,7 @@ package di
 
 import (
 	"modules/src/adapters/controller/movie"
+	"modules/src/adapters/controller/role"
 	"modules/src/adapters/controller/screen"
 	"modules/src/adapters/controller/screening"
 	"modules/src/adapters/controller/seatType"
@@ -20,6 +21,7 @@ type Handlers struct {
 	Screen    *screen.ScreenHandler
 	SeatType  *seatType.SeatTypeHandler
 	Screening *screening.ScreeningHandler
+	Role      *role.RoleHandler
 	// Purchase *purchase.PurchaseHandler
 }
 
@@ -28,6 +30,11 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	userRepo := gateway.NewGormUserRepository(db)
 	userUC := &usecases.UserUsecase{UserRepo: userRepo}
 	userHandler := user.NewUserHandler(userUC)
+
+	// Role
+	roleRepo := gateway.NewGormRoleRepository(db)
+	roleUC := &usecases.RoleUsecase{RoleRepo: roleRepo}
+	roleHandler := role.NewRoleHandler(roleUC)
 
 	// Movie
 	movieRepo := gateway.NewGormMovieRepository(db)
@@ -60,6 +67,6 @@ func NewHandlers(db *gorm.DB) *Handlers {
 		Screen:    screenHandler,
 		SeatType:  seatTypeHandler,
 		Screening: screeningHandler,
-		// Purchase: purchaseHandler,
+		Role:      roleHandler, // Purchase: purchaseHandler,
 	}
 }
