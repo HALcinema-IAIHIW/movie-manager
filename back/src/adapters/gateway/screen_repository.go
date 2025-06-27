@@ -23,3 +23,11 @@ func (r *gormScreenRepository) FindAll() ([]model.Screen, error) {
 	result := r.db.Find(&screens)
 	return screens, result.Error
 }
+
+func (r *gormScreenRepository) FindByID(id uint) (*model.Screen, error) {
+	var screen model.Screen
+	if err := r.db.First(&screen, id).Error; err != nil {
+		return nil, err
+	}
+	return &screen, nil
+}
