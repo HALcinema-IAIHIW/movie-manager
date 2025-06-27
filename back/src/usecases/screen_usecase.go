@@ -20,3 +20,7 @@ func (uc *ScreenUsecase) CreateScreen(screen *model.Screen) error {
 func (uc *ScreenUsecase) GetAllScreens() ([]model.Screen, error) {
 	return uc.ScreenRepo.FindAll()
 }
+
+func (uc *ScreenUsecase) GetScreenByID(id uint) (*model.Screen, error) {
+	return uc.ScreenRepo.FindByID(id)
+}
