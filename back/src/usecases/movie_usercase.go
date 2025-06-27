@@ -9,14 +9,19 @@ type MovieUsecase struct {
 }
 
 type MovieRepository interface {
-	Create(movie *model.Movie) error
-	FindAll() ([]model.Movie, error)
+	CreateMovie(movie *model.Movie) error
+	FindAllMovies() ([]model.Movie, error)
+	GetMovieByID(id uint) (*model.Movie, error)
 }
 
 func (u *MovieUsecase) CreateMovie(movie *model.Movie) error {
-	return u.MovieRepo.Create(movie)
+	return u.MovieRepo.CreateMovie(movie)
 }
 
 func (u *MovieUsecase) GetAllMovies() ([]model.Movie, error) {
-	return u.MovieRepo.FindAll()
+	return u.MovieRepo.FindAllMovies()
+}
+
+func (u *MovieUsecase) GetMovieById(id uint) (*model.Movie, error) {
+	return u.MovieRepo.GetMovieByID(id)
 }

@@ -26,7 +26,7 @@ func (h *RoleHandler) Routes() module.Route {
 func (h *RoleHandler) CreateRoles() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req request.CreateRoleRequest
-		if err := c.ShouldBind(&req); err != nil {
+		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
