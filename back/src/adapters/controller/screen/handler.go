@@ -32,8 +32,8 @@ func (h *ScreenHandler) CreateScreen() gin.HandlerFunc {
 			return
 		}
 		screen := &model.Screen{
-			MaxRow:    req.MaxRow,
-			MaxColumn: req.MaxColumn,
+			// MaxRow:    req.MaxRow,
+			// MaxColumn: req.MaxColumn,
 		}
 		if err := h.Usecase.CreateScreen(screen); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "スクリーンの登録に失敗しました"})

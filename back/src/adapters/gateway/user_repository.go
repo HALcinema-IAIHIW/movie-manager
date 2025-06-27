@@ -24,7 +24,7 @@ func (r *GormUserRepository) FindByEmail(email string) (*model.User, error) {
 
 func (r *GormUserRepository) FindAll() ([]model.User, error) {
 	var users []model.User
-	if err := r.DB.Find(&users).Error; err != nil {
+	if err := r.DB.Preload("Role").Find(&users).Error; err != nil {
 		return nil, err
 	}
 	return users, nil
