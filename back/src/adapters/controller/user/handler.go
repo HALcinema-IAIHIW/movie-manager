@@ -37,6 +37,7 @@ func (h *UserHandler) CreateUser() gin.HandlerFunc {
 			Name:     req.Name,
 			Email:    req.Email,
 			Password: req.Password,
+			RoleName: req.RoleName,
 		})
 		if err != nil {
 			if err == usecases.ErrEmailExists {
@@ -54,7 +55,7 @@ func (h *UserHandler) CreateUser() gin.HandlerFunc {
 	}
 }
 
-func (h *UserHandler) GetUser() gin.HandlerFunc {
+func (h *UserHandler) GetAllUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		users, err := h.UserUC.GetUser()
 		if err != nil {
@@ -87,9 +88,10 @@ func (h *UserHandler) GetUserByID() gin.HandlerFunc {
 		}
 
 		res := response.UserResponse{
-			ID:    user.ID,
-			Name:  user.Name,
-			Email: user.Email,
+			ID:       user.ID,
+			Name:     user.Name,
+			Email:    user.Email,
+			RoleName: user.Role.RoleName,
 		}
 
 		c.JSON(http.StatusOK, res)
