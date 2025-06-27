@@ -6,6 +6,7 @@ import (
 	"modules/src/datastructure/request"
 	"modules/src/module"
 	"modules/src/usecases"
+	"strconv"
 
 	"fmt"
 	"net/http"
@@ -68,6 +69,25 @@ func (h *MovieHandler) GetMovies() gin.HandlerFunc {
 			return
 		}
 		res := presenter.ToMovieResponseList(movies)
+		c.JSON(http.StatusOK, res)
+	}
+}
+
+func (h *MovieHandler) GetMovieById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idParam := c.Param("movie_id")
+		idUint64, err := strconv.ParseUint(idParam, 10, 32)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "IDが不正です"})
+			return
+		}
+		id := uint(idUint64)
+		movie, err := h.Usecase.GetMovieById(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "映画情報の取得に失敗しました"})
+			return
+		}
+		res := presenter.ToMovieResponse(*movie)
 		c.JSON(http.StatusOK, res)
 	}
 }
