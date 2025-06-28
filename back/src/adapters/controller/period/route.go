@@ -6,15 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Period struct {
-	handler *ScreenPeriodHandler
+type PeriodRouter struct {
+	handler *PeriodHandler
 }
 
-func NewScreenPeriodRoutes(handler *ScreenPeriodHandler) module.Route {
-	return &Period{handler: handler}
+func NewPeriodRoutes(handler *PeriodHandler) module.Route {
+	return &PeriodRouter{handler: handler}
 }
 
-func (r *Period) RegisterRoutes(engine *gin.Engine) {
+func (r *PeriodRouter) RegisterRoutes(engine *gin.Engine) {
 	group := engine.Group("period")
 	group.POST("/", r.handler.CreatePeriod())
 }
