@@ -57,6 +57,8 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	screeningUC := &usecases.ScreeningUsecase{ScreeningRepo: screeningRepo}
 	screeningHandler := screening.NewScreeningHandler(screeningUC)
 
+	// Period
+
 	// // Purchase
 	// purchaseRepo := gateway.NewGormPurchaseRepository(db)
 	// purchaseUC := &usecases.PurchaseUsecase{Repo: purchaseRepo}
