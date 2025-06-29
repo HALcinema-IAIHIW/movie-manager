@@ -5,6 +5,7 @@ import (
 	"modules/src/adapters/controller/role"
 	"modules/src/adapters/controller/screen"
 	"modules/src/adapters/controller/screening"
+	"modules/src/adapters/controller/seat"
 	"modules/src/adapters/controller/seatType"
 
 	// "modules/src/adapters/controller/purchase"
@@ -19,6 +20,7 @@ type Handlers struct {
 	User      *user.UserHandler
 	Movie     *movie.MovieHandler
 	Screen    *screen.ScreenHandler
+	Seat      *seat.SeatHandler
 	SeatType  *seatType.SeatTypeHandler
 	Screening *screening.ScreeningHandler
 	Role      *role.RoleHandler
@@ -47,6 +49,11 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	screenUC := &usecases.ScreenUsecase{ScreenRepo: screenRepo}
 	screenHandler := screen.NewScreenHandler(screenUC)
 
+	//Seat
+	seatRepo := gateway.NewGormSeatRepository(db)
+	seatUC := &usecases.SeatUsecase{SeatRepo: seatRepo}
+	seatHandler := seat.NewSeatHandler(seatUC)
+
 	// seatType
 	seatTypeRepo := gateway.NewGormSeatTypeRepository(db)
 	seatTypeUC := &usecases.SeatTypeUsecase{SeatRepo: seatTypeRepo}
@@ -66,6 +73,7 @@ func NewHandlers(db *gorm.DB) *Handlers {
 		User:      userHandler,
 		Movie:     movieHandler,
 		Screen:    screenHandler,
+		Seat:      seatHandler,
 		SeatType:  seatTypeHandler,
 		Screening: screeningHandler,
 		Role:      roleHandler, // Purchase: purchaseHandler,
