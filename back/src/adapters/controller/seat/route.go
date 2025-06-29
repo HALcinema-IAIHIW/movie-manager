@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SeatRoutes は座席に関するルートを定義します
 type SeatRoutes struct {
 	Handler *SeatHandler
 }
