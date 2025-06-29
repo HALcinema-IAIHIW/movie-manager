@@ -14,6 +14,5 @@ func (uc *SeatUsecase) CreateSeat(seat *model.Seat) error {
 }
 
 func (uc *SeatUsecase) GetAllSeats() ([]model.Seat, error) {
-	// ここを uc.SeatRepo.GetAll() に変更します
-	return uc.SeatRepo.GetAll() // <-- これで GormSeatRepository の GetAll() が呼ばれる
+	return uc.SeatRepo.GetAll()
 }
