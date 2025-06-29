@@ -11,12 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SeatHandler は座席関連のHTTPリクエストを処理します
 type SeatHandler struct {
 	Usecase *usecases.SeatUsecase
 }
 
-// NewSeatHandler は新しいSeatHandlerのインスタンスを作成します
 func NewSeatHandler(uc *usecases.SeatUsecase) *SeatHandler {
 	return &SeatHandler{Usecase: uc}
 }
@@ -49,7 +47,6 @@ func (h *SeatHandler) CreateSeat() gin.HandlerFunc {
 	}
 }
 
-// GetSeats はすべての座席を取得するためのハンドラです
 func (h *SeatHandler) GetSeats() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		seats, err := h.Usecase.GetAllSeats()
