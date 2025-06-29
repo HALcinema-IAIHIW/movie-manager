@@ -1,7 +1,7 @@
 package gateway
 
 import (
-	"modules/src/database/model" // model.Seat が定義されているパスに合わせてください
+	"modules/src/database/model"
 
 	"gorm.io/gorm"
 )
@@ -14,17 +14,17 @@ func NewGormSeatRepository(db *gorm.DB) *GormSeatRepository {
 	return &GormSeatRepository{db: db}
 }
 
-func (r *GormSeatRepository) Create(seat *model.Seat) error { // レシーバーの型を変更
+func (r *GormSeatRepository) Create(seat *model.Seat) error { 
 	return r.db.Create(seat).Error
 }
 
-func (r *GormSeatRepository) FindByScreenID(screenID uint) ([]model.Seat, error) { // レシーバーの型を変更
+func (r *GormSeatRepository) FindByScreenID(screenID uint) ([]model.Seat, error) { 
 	var seats []model.Seat
 	err := r.db.Where("screen_id = ?", screenID).Find(&seats).Error
 	return seats, err
 }
 
-func (r *GormSeatRepository) GetAll() ([]model.Seat, error) { // レシーバーの型を変更
+func (r *GormSeatRepository) GetAll() ([]model.Seat, error) { 
 	var seats []model.Seat
 	err := r.db.Find(&seats).Error
 	return seats, err
