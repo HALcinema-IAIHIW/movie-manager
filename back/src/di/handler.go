@@ -2,6 +2,7 @@ package di
 
 import (
 	"modules/src/adapters/controller/movie"
+	"modules/src/adapters/controller/period"
 	"modules/src/adapters/controller/role"
 	"modules/src/adapters/controller/screen"
 	"modules/src/adapters/controller/screening"
@@ -24,6 +25,7 @@ type Handlers struct {
 	SeatType  *seatType.SeatTypeHandler
 	Screening *screening.ScreeningHandler
 	Role      *role.RoleHandler
+	Period    *period.PeriodHandler
 	// Purchase *purchase.PurchaseHandler
 }
 
@@ -64,6 +66,11 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	screeningUC := &usecases.ScreeningUsecase{ScreeningRepo: screeningRepo}
 	screeningHandler := screening.NewScreeningHandler(screeningUC)
 
+	// Period
+	periodRepo := gateway.NewGormPeriodRepository(db)
+	periodUC := &usecases.PeriodUsecase{PeriodRepo: periodRepo}
+	periodHandler := period.NewPeriodHandler(periodUC)
+
 	// // Purchase
 	// purchaseRepo := gateway.NewGormPurchaseRepository(db)
 	// purchaseUC := &usecases.PurchaseUsecase{Repo: purchaseRepo}
@@ -77,5 +84,6 @@ func NewHandlers(db *gorm.DB) *Handlers {
 		SeatType:  seatTypeHandler,
 		Screening: screeningHandler,
 		Role:      roleHandler, // Purchase: purchaseHandler,
+		Period:    periodHandler,
 	}
 }

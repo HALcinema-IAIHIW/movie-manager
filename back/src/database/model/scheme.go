@@ -39,6 +39,21 @@ type Screen struct {
 	MaxColumn int
 }
 
+type SeatType struct {
+	gorm.Model
+	Name string `gorm:"not null"`
+}
+type Seat struct {
+	gorm.Model
+	ScreenID   uint   `gorm:"not null"`
+	SeatTypeID uint   `gorm:"not null"`
+	Row        string `gorm:"not null"`
+	Column     int    `gorm:"not null"`
+
+	Screen   Screen   `gorm:"foreignKey:ScreenID"`
+	SeatType SeatType `gorm:"foreignKey:SeatTypeID"`
+}
+
 // 上映期間
 type ScreeningPeriod struct {
 	gorm.Model
@@ -96,21 +111,6 @@ type PurchaseDetail struct {
 	PriceYen   int // Roleの単価をコピーして保存
 	Subtotal   int // Quantity * PriceYen
 
-	Role Role `gorm:"foreignKey:RoleID"`
-}
-
-type Seat struct {
-	gorm.Model
-	ScreenID   uint   `gorm:"not null"`
-	Row        string `gorm:"not null"`
-	Column     int    `gorm:"not null"`
-	SeatTypeID uint   `gorm:"not null"`
-
-	Screen   Screen   `gorm:"foreignKey:ScreenID"`
-	SeatType SeatType `gorm:"foreignKey:SeatTypeID"`
-}
-
-type SeatType struct {
-	gorm.Model
-	Name string `gorm:"not null"`
+	Purchase Purchase `gorm:"foreignKey:PurchaseID"`
+	Role     Role     `gorm:"foreignKey:RoleID"`
 }
