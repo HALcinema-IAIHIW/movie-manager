@@ -1,6 +1,6 @@
 package request
 
 type CreateScreenRequest struct {
-	MaxRow    int    `json:"max_row" binding:"required,gte=1"`
-	MaxColumn string `json:"max_column" binding:"required,max=10"`
+	MaxRow    string `json:"max_row" binding:"required,max=10"`
+	MaxColumn int    `json:"max_column" binding:"required,gte=1"`
 }

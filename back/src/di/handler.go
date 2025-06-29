@@ -26,16 +26,16 @@ type Handlers struct {
 }
 
 func NewHandlers(db *gorm.DB) *Handlers {
+
+	// role r
 	roleRepo := gateway.NewGormRoleRepository(db)
+	roleUC := &usecases.RoleUsecase{RoleRepo: roleRepo}
+	roleHandler := role.NewRoleHandler(roleUC)
+
 	// User
 	userRepo := gateway.NewGormUserRepository(db)
 	userUC := &usecases.UserUsecase{UserRepo: userRepo, RoleRepo: roleRepo}
 	userHandler := user.NewUserHandler(userUC)
-
-	// Role
-
-	roleUC := &usecases.RoleUsecase{RoleRepo: roleRepo}
-	roleHandler := role.NewRoleHandler(roleUC)
 
 	// Movie
 	movieRepo := gateway.NewGormMovieRepository(db)

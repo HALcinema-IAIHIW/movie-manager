@@ -1,8 +1,9 @@
 package movie
 
 import (
-	"github.com/gin-gonic/gin"
 	"modules/src/module"
+
+	"github.com/gin-gonic/gin"
 )
 
 type MovieRouter struct {
@@ -16,4 +17,5 @@ func (r *MovieRouter) RegisterRoutes(engine *gin.Engine) {
 	group := engine.Group("/movies")
 	group.POST("/", r.handler.CreateMovie())
 	group.GET("/", r.handler.GetMovies())
+	group.GET("/:movie_id", r.handler.GetMovieById())
 }
