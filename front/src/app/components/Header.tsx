@@ -228,7 +228,7 @@ export default function Header() {
                 >
                     <div className="p-8 pt-24">
                         {/* メニュータイトル */}
-                        <h2 className="text-2xl font-playfair text-gold mb-8 text-center">NAVIGATION</h2>
+                        <h2 className="text-2xl font-playfair text-gold mb-8 text-left">NAVIGATION</h2>
 
                         {/* メニューリスト */}
                         <ul className="space-y-6">

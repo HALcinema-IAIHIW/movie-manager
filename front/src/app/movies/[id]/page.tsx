@@ -86,7 +86,7 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link
-                      href={`/tickets/buy/${movie.id}`}
+                      href={`/tickets/schedule/${movie.id}`}
                       className="btn-luxury flex items-center justify-center gap-2 font-jp"
                   >
                     <Ticket size={20} />
@@ -176,7 +176,7 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
             <h2 className="text-3xl md:text-4xl font-bold text-gold mb-6 font-jp">この作品をご覧になりませんか？</h2>
             <p className="text-xl text-text-secondary mb-8 font-jp">最高の映画体験をHALCINEMAで。</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href={`/tickets/buy/${movie.id}`} className="btn-luxury font-jp">
+              <Link href={`/tickets/schedule/${movie.id}`} className="btn-luxury font-jp">
                 チケット購入
               </Link>
               <Link href="/movies" className="btn-outline-luxury font-jp">
