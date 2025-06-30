@@ -24,4 +24,5 @@ type MovieTLResponse struct {
 	// PosterURL string        `json:"poster_url"`
 	ScreenID uint          `json:"screen_id"`
 	Showings []ShowingInfo `json:"showings"`
+	Date     string        `json:"date"`
 }
