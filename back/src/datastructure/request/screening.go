@@ -3,8 +3,8 @@ package request
 import "time"
 
 type CreateScreeningRequest struct {
-	PlanId    uint      `json:"plan_id" binding:"required"`
-	ScreenId  uint      `json:"screen_id"`
-	StartTime time.Time `json:"start_time"`
-	Duration  int       `json:"duration"`
+	ScreeningPeriodID uint      `json:"screening_period_id" binding:"required"`
+	Date              time.Time `json:"date" binding:"required"`
+	StartTime         time.Time `json:"start_time" binding:"required"`
+	Duration          int       `json:"duration" binding:"required"`
 }
