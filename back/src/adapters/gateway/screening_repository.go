@@ -21,9 +21,16 @@ func (r *GormScreeningRepository) Create(screening *model.Screening) error {
 
 func (r *GormScreeningRepository) FindByDate(date time.Time) ([]model.Screening, error) {
 	var screenings []model.Screening
+
 	start := date.Truncate(24 * time.Hour)
 	end := start.Add(24 * time.Hour)
-	err := r.DB.Where("start_time >= ? AND start_time < ?", start, end).Find(&screenings).Error
+
+	err := r.DB.Preload("ScreeningPeriod").
+		Preload("ScreeningPeriod.Movie").
+		Preload("ScreeningPeriod.Screen").
+		Where("start_time >= ? AND start_time < ?", start, end).
+		// Where("date = ?", date).
+		Find(&screenings).Error
 	return screenings, err
 }
 
