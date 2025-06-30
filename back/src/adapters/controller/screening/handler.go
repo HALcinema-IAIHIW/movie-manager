@@ -1,6 +1,7 @@
 package screening
 
 import (
+	"fmt"
 	"modules/src/adapters/presenter"
 	"modules/src/database/model"
 	"modules/src/datastructure/request"
@@ -77,24 +78,41 @@ func (h *ScreeningHandler) GetScreeningsByDate() gin.HandlerFunc {
 		}
 
 		screenings, err := h.Usecase.GetScreeningsByDate(date)
+		fmt.Printf("取得件数: %d\n", len(screenings))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "上映情報の取得に失敗しました"})
 			return
 		}
 
-		var resList []response.ScreeningResponse
+		movieMap := make(map[uint]*response.MovieTLResponse)
+
 		for _, s := range screenings {
+			movie := s.ScreeningPeriod.Movie
+			fmt.Println(movie.Title)
+			screen := s.ScreeningPeriod.Screen
+
 			endTime := s.StartTime.Add(time.Duration(s.Duration) * time.Minute)
-			res := response.ScreeningResponse{
-				ID:                s.ID,
-				ScreeningPeriodID: s.ScreeningPeriodID,
-				MovieID:           s.ScreeningPeriod.MovieID,
-				ScreenID:          s.ScreeningPeriod.ScreenID,
-				Date:              s.Date,
-				StartTime:         s.StartTime,
-				EndTime:           endTime.Format("15:04"),
+
+			if _, exists := movieMap[movie.ID]; !exists {
+				movieMap[movie.ID] = &response.MovieTLResponse{
+					MovieId: movie.ID,
+					Title:   movie.Title,
+					// PosterURL: movie.PosterURL,
+					ScreenID: screen.ID,
+					Showings: []response.ShowingInfo{},
+				}
 			}
-			resList = append(resList, res)
+
+			movieMap[movie.ID].Showings = append(movieMap[movie.ID].Showings, response.ShowingInfo{
+				ScreeningID: s.ID,
+				StartTime:   s.StartTime.Format("15:04"),
+				EndTime:     endTime.Format("15:04"),
+			})
+		}
+
+		var resList []response.MovieTLResponse
+		for _, v := range movieMap {
+			resList = append(resList, *v)
 		}
 
 		c.JSON(http.StatusOK, resList)
