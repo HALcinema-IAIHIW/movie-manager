@@ -243,6 +243,11 @@ export default function Header() {
                                 </Link>
                             </li>
                             <li>
+                                <Link href="/tickets/schedule" className="nav-link block text-lg py-2 font-jp" onClick={toggleMenu}>
+                                    上映スケジュール
+                                </Link>
+                            </li>
+                            <li>
                                 <Link href="/news" className="nav-link block text-lg py-2 font-jp" onClick={toggleMenu}>
                                     ニュース
                                 </Link>
