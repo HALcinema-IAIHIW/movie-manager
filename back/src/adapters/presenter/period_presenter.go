@@ -7,6 +7,7 @@ import (
 
 func ToPeriodResponse(period model.ScreeningPeriod) response.PeriodResponse {
 	return response.PeriodResponse{
+		ID:        period.ID,
 		MovieID:   period.MovieID,
 		ScreenID:  period.ScreenID,
 		StartDate: period.StartDate,
@@ -21,4 +22,3 @@ func ToPeriodsResponses(periods []model.ScreeningPeriod) []response.PeriodRespon
 	}
 	return res
 }
-
