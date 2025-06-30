@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type PeriodResponce struct {
+type PeriodResponse struct {
 	MovieID   uint      `json:"movieID"`
 	ScreenID  uint      `json:"screenID"`
 	StartDate time.Time `json:"startDate" binding:"required" time_format:"2006-01-02"`

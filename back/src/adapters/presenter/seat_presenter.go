@@ -9,7 +9,6 @@ type SeatResponse struct {
 	ScreenID   uint   `json:"screen_id"`
 	Row        string `json:"row"`
 	Column     int    `json:"column"`
-	SeatTypeID uint   `json:"seat_type_id"`
 }
 
 func ToSeatResponse(seat model.Seat) SeatResponse {
@@ -18,7 +17,6 @@ func ToSeatResponse(seat model.Seat) SeatResponse {
 		ScreenID:   seat.ScreenID,
 		Row:        seat.Row,
 		Column:     seat.Column,
-		SeatTypeID: seat.SeatTypeID,
 	}
 }
 

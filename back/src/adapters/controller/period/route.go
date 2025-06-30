@@ -15,6 +15,7 @@ func NewPeriodRoutes(handler *PeriodHandler) module.Route {
 }
 
 func (r *PeriodRouter) RegisterRoutes(engine *gin.Engine) {
-	group := engine.Group("period")
+	group := engine.Group("/periods")
 	group.POST("/", r.handler.CreatePeriod())
-}
+	group.GET("/", r.handler.GetPeriod())
+	group.GET("/date", r.handler.GetPeriodsByDate())
