@@ -1,6 +1,6 @@
 'use client';
-import React from "react";
-import {useState} from "react";
+import React, { useEffect } from "react";
+import {useState, useMemo} from "react";
 // Swiper導入
 import {Swiper,SwiperSlide} from "swiper/react";
 import {Navigation} from "swiper/modules";
@@ -13,44 +13,14 @@ import "./schedule.css"
 // コンポーネント
 import MovieTL from "@/app/components/MovieTL/page";
 
+// fetch
+import { fetchScreeningsByDate } from "../libs/api/api";
 
-// 表示できる日付のリスト
-const ViewDate = [
-    {
-        id:1,
-        date:"0615"
-    },{
-        id:2,
-        date:"0616"
-    },{
-        id:3,
-        date:"0617"
-    },{
-        id:4,
-        date:"0618"
-    },{
-        id:5,
-        date:"0619"
-    },{
-        id:6,
-        date:"0620"
-    },{
-        id:7,
-        date:"0621"
-    },
-]
 
-//日付と映画の組み合わせリスト
-const DayMovieList = [
-    {id:1, date:"0615",movie:"Movie01"},
-    {id:2, date:"0615",movie:"Movie02"},
-    {id:3, date:"0615",movie:"Movie03"},
-    {id:4, date:"0616",movie:"Movie01"},
-    {id:5, date:"0616",movie:"Movie02"},
-    {id:6, date:"0616",movie:"Movie03"},
-    {id:7, date:"0617",movie:"Movie01"},
-    {id:8, date:"0618",movie:"Movie02"},
-]
+// TODO: 今日の日付から7日間の映画上映情報取得
+// TODO: その日付を使ってエンドポイントに投げる
+
+
 
 // 日付取得して初期値を設定
 const getNow = () =>{
@@ -61,20 +31,48 @@ const getNow = () =>{
     return month+day;
 }
 
+// 表示できる日付のリスト
+const getViewDates = () => {
+    const today = new Date();
+    const result = [];
+
+    for (let i = 0; i < 7; i++) {
+        const targetDate = new Date(today);
+        targetDate.setDate(today.getDate() + i);
+
+        const month = ('0' + (targetDate.getMonth() + 1)).slice(-2);
+        const day = ('0' + targetDate.getDate()).slice(-2);
+        const mmdd = month + day;
+
+        result.push({ id: i + 1, date: mmdd });
+    }
+
+    return result;
+}
 
 
 const Schedule = () =>{
+    const ViewDate = useMemo(() => getViewDates(), []);
     // 当日の日付
-    // const Today = getNow()
+    const Today = getNow()
     // 今表示している日付
-    // const [ShowDate, changeDate] = useState(Today());
-    // 仮日付
-    const TestToday = "0616"
-    // 仮日付を初期値にした表示している日付
-    const [ShowDate, changeDate] = useState(TestToday);
-    // 日付でmapする用の配列
-    const MoviePerDay = DayMovieList.filter(DayMovieList => DayMovieList.date === ShowDate);
+    const [ShowDate, changeDate] = useState(Today);
+    // 選択された日付に対応する映画ごとの上映スケジュール一覧を格納するステート
+    const [MovieListPerDay, setMovieListPerDay] = useState([]);
 
+
+useEffect(() => {
+    const fetchDate = async () => {
+        try{
+            const data = await fetchScreeningsByDate(ShowDate);
+            setMovieListPerDay(data);
+        } catch (err) {
+            console.log("取得エラー:", err);
+        }
+    };
+
+    fetchDate();
+}, [ShowDate])
 
     return(
         <div id={"scheduleBody"}>
@@ -104,7 +102,7 @@ const Schedule = () =>{
                     {ViewDate.map((day) => (
                         <SwiperSlide key={day.id}>
                             {
-                                Number(day.date)<Number(TestToday)?(
+                                Number(day.date)<Number(ShowDate)?(
                                     <button className={"scDate disableDate"}>
                                         {day.date}
                                     </button>
@@ -128,19 +126,12 @@ const Schedule = () =>{
             <hr/>
 
             <div id={"timeList"}>
-
-                {MoviePerDay.map((MPD) =>(
-                    <div key={MPD.id}>
-                    <MovieTL  Movie={MPD.movie} Day={ShowDate}/>
-                    <hr/>
+                {MovieListPerDay.map((m) =>(
+                    <div key={m.movie}>
+                        <MovieTL  Movie={m.movie} Day={ShowDate} Showings={m.showings}/>
+                        <hr/>
                     </div>
                 ))}
-                {/*<MovieTL Movie={"Movie01"} Day={ShowDate}/>*/}
-                {/*<hr/>*/}
-                {/*<MovieTL Movie={"Movie02"} Day={ShowDate}/>*/}
-                {/*<hr/>*/}
-                {/*<MovieTL Movie={"Movie03"} Day={ShowDate} />*/}
-
             </div>
 
 
