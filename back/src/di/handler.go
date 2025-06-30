@@ -2,9 +2,11 @@ package di
 
 import (
 	"modules/src/adapters/controller/movie"
+	"modules/src/adapters/controller/period"
 	"modules/src/adapters/controller/role"
 	"modules/src/adapters/controller/screen"
 	"modules/src/adapters/controller/screening"
+	"modules/src/adapters/controller/seat"
 	"modules/src/adapters/controller/seatType"
 
 	// "modules/src/adapters/controller/purchase"
@@ -19,9 +21,11 @@ type Handlers struct {
 	User      *user.UserHandler
 	Movie     *movie.MovieHandler
 	Screen    *screen.ScreenHandler
+	Seat      *seat.SeatHandler
 	SeatType  *seatType.SeatTypeHandler
 	Screening *screening.ScreeningHandler
 	Role      *role.RoleHandler
+	Period    *period.PeriodHandler
 	// Purchase *purchase.PurchaseHandler
 }
 
@@ -47,6 +51,11 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	screenUC := &usecases.ScreenUsecase{ScreenRepo: screenRepo}
 	screenHandler := screen.NewScreenHandler(screenUC)
 
+	//Seat
+	seatRepo := gateway.NewGormSeatRepository(db)
+	seatUC := &usecases.SeatUsecase{SeatRepo: seatRepo}
+	seatHandler := seat.NewSeatHandler(seatUC)
+
 	// seatType
 	seatTypeRepo := gateway.NewGormSeatTypeRepository(db)
 	seatTypeUC := &usecases.SeatTypeUsecase{SeatRepo: seatTypeRepo}
@@ -57,6 +66,11 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	screeningUC := &usecases.ScreeningUsecase{ScreeningRepo: screeningRepo}
 	screeningHandler := screening.NewScreeningHandler(screeningUC)
 
+	// Period
+	periodRepo := gateway.NewGormPeriodRepository(db)
+	periodUC := &usecases.PeriodUsecase{PeriodRepo: periodRepo}
+	periodHandler := period.NewPeriodHandler(periodUC)
+
 	// // Purchase
 	// purchaseRepo := gateway.NewGormPurchaseRepository(db)
 	// purchaseUC := &usecases.PurchaseUsecase{Repo: purchaseRepo}
@@ -66,8 +80,10 @@ func NewHandlers(db *gorm.DB) *Handlers {
 		User:      userHandler,
 		Movie:     movieHandler,
 		Screen:    screenHandler,
+		Seat:      seatHandler,
 		SeatType:  seatTypeHandler,
 		Screening: screeningHandler,
 		Role:      roleHandler, // Purchase: purchaseHandler,
+		Period:    periodHandler,
 	}
 }
