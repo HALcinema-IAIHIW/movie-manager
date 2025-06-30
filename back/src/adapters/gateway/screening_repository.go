@@ -26,3 +26,12 @@ func (r *GormScreeningRepository) FindByDate(date time.Time) ([]model.Screening,
 	err := r.DB.Where("start_time >= ? AND start_time < ?", start, end).Find(&screenings).Error
 	return screenings, err
 }
+
+func (r *GormScreeningRepository) FindByID(id uint) (*model.Screening, error) {
+	var screening model.Screening
+	err := r.DB.Preload("ScreeningPeriod").First(&screening, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &screening, nil
+}

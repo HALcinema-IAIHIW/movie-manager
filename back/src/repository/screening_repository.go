@@ -7,5 +7,6 @@ import (
 
 type ScreeningRepository interface {
 	Create(screening *model.Screening) error
-	GetByFilters(movieID uint, startTime *time.Time, status string, isActive *bool) ([]*model.Screening, error)
+	FindByDate(date time.Time) ([]model.Screening, error)
+	FindByID(id uint) (*model.Screening, error)
 }
