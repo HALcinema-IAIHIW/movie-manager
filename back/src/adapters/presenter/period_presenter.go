@@ -21,3 +21,4 @@ func ToPeriodsResponses(periods []model.ScreeningPeriod) []response.PeriodRespon
 	}
 	return res
 }
+

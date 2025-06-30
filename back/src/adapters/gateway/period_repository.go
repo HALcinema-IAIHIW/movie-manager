@@ -3,7 +3,6 @@ package gateway
 import (
 	"modules/src/database/model"
 	"time"
-
 	"gorm.io/gorm"
 )
 

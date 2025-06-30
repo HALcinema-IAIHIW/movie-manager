@@ -32,10 +32,10 @@ func NewInitializer() (*Initializer, error) {
 	if err := db.AutoMigrate(
 		&model.User{},
 		&model.Movie{},
+		&model.Seat{},
 		&model.SeatType{},
 		&model.Screening{},
 		&model.Screen{},
-		&model.Purchase{},
 	); err != nil {
 		return nil, err
 	}

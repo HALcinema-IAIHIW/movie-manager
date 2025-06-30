@@ -19,4 +19,3 @@ func (r *PeriodRouter) RegisterRoutes(engine *gin.Engine) {
 	group.POST("/", r.handler.CreatePeriod())
 	group.GET("/", r.handler.GetPeriod())
 	group.GET("/date", r.handler.GetPeriodsByDate())
-}

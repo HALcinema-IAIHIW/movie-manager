@@ -1,5 +1,6 @@
 package request
 
+
 type PeriodRequest struct {
 	MovieID   uint   `json:"movieID" binding:"required"`
 	ScreenID  uint   `json:"screenID" binding:"required"`
