@@ -34,8 +34,13 @@ div#dateSlider button{
     transition: 0.2s;
 
 }
+/* ホバーアニメーション */
 div#dateSlider button:hover{
     opacity: 0.8;
+}
+/*　disableButtonのみ除外　*/
+div#dateSlider button.disableDate:hover{
+    opacity: 1;
 }
 
 
@@ -68,11 +73,16 @@ div#dateList{
     height: 68px;
 }
 
+/*　日付ボタンの色　*/
 button.scDate{
     padding: 10px 25px;
     margin: 0 15px;
     background-color: #fff;
     color: #25283B;
+}
+button.disableDate{
+    background-color: #555;
+    color: #aaa;
 }
 
 

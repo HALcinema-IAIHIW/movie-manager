@@ -223,7 +223,11 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <Link href={"/schedule"} className={"bg-darker text-center"}>ここに上映スケジュール入れたいです</Link>
+        <Link href={"/schedule"} className={"flex justify-center"}>
+          <button className={` text-lg bg-accent/90 text-white px-5 py-2 mb-10 hover:bg-accent transition-colors`}>
+            上映スケジュール
+          </button>
+        </Link>
         {/* ニュースセクション */}
         <section className="py-16 bg-darker">
           <div className="container-custom">

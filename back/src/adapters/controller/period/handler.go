@@ -68,6 +68,7 @@ func (h *PeriodHandler) GetPeriod() gin.HandlerFunc {
 
 		res := presenter.ToPeriodsResponses(periods)
 		c.JSON(http.StatusOK, res)
+
 	}
 }
 

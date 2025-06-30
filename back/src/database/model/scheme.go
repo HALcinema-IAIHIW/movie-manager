@@ -46,12 +46,10 @@ type SeatType struct {
 type Seat struct {
 	gorm.Model
 	ScreenID   uint   `gorm:"not null"`
-	SeatTypeID uint   `gorm:"not null"`
 	Row        string `gorm:"not null"`
 	Column     int    `gorm:"not null"`
 
 	Screen   Screen   `gorm:"foreignKey:ScreenID"`
-	SeatType SeatType `gorm:"foreignKey:SeatTypeID"`
 }
 
 // 上映期間
