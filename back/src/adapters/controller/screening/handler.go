@@ -36,10 +36,16 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 			return
 		}
 
+		jst, err := time.LoadLocation("Asia/Tokyo")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "タイムゾーンの取得に失敗しました"})
+			return
+		}
+
 		screening := &model.Screening{
 			ScreeningPeriodID: req.ScreeningPeriodID,
-			Date:              req.Date,
-			StartTime:         req.StartTime,
+			Date:              req.Date.In(jst),
+			StartTime:         req.StartTime.In(jst),
 			Duration:          req.Duration,
 		}
 
