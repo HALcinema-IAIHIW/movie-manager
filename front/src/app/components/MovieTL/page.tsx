@@ -8,7 +8,7 @@ import { MovieTLProps } from "@/app/types/schedule";
 
 // TODO:もう１段階Component分けしたい
 
-export default function MovieTL({ title, screen_id, showings }: MovieTLProps) {
+export default function MovieTL({ title, screen_id, date,showings }: MovieTLProps) {
     // Day,Movieを元にリスト取得
     // 開始時間がTime型になっていないので導入時比較処理も修正する
     // 登録が必ず時系列順というわけでは無いなら並べ変え処理も入れた方が良いか？
@@ -31,6 +31,8 @@ export default function MovieTL({ title, screen_id, showings }: MovieTLProps) {
 
     const Now = getNowTime();
 
+    console.log(`showings[0].date(screeningsID)->${showings[0].screening_id}`)
+
     //日本時間じゃないので調整必要
     // オート更新も付ける
     // 仮時間
@@ -38,7 +40,8 @@ export default function MovieTL({ title, screen_id, showings }: MovieTLProps) {
     // const Now = NowTime()
     return (
     <div className="CinemaTL">
-      <h2>{title} <span className="text-gray-500">({showings[0].date})</span></h2>
+      <h2>{title}</h2>
+      
       <div className="Movie-TL">
         <div className="Poster bg-gray-500">poster</div>
         <div className="TlButtons">

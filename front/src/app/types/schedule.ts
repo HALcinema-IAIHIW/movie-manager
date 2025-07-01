@@ -9,6 +9,7 @@ export type MovieTLProps = {
   movie_id: number;
   title: string;
   screen_id: number;
+  date: string;
   showings: ShowingInfo[];
 };
 
