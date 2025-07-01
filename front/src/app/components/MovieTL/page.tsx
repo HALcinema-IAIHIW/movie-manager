@@ -41,7 +41,9 @@ export default function MovieTL({ title, screen_id, date,showings }: MovieTLProp
     return (
     <div className="CinemaTL">
       <h2>{title}</h2>
-      
+      {showings.map((s) => (
+        <p key={s.screening_id}>screenigID: {s.screening_id}</p>
+      ))}
       <div className="Movie-TL">
         <div className="Poster bg-gray-500">poster</div>
         <div className="TlButtons">
