@@ -36,10 +36,16 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 			return
 		}
 
+		jst, err := time.LoadLocation("Asia/Tokyo")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "タイムゾーンの取得に失敗しました"})
+			return
+		}
+
 		screening := &model.Screening{
 			ScreeningPeriodID: req.ScreeningPeriodID,
-			Date:              req.Date,
-			StartTime:         req.StartTime,
+			Date:              req.Date.In(jst),
+			StartTime:         req.StartTime.In(jst),
 			Duration:          req.Duration,
 		}
 
@@ -84,7 +90,7 @@ func (h *ScreeningHandler) GetScreeningsByDate() gin.HandlerFunc {
 			return
 		}
 
-		movieMap := make(map[uint]*response.MovieTLResponse)
+		movieMap := make(map[string]*response.MovieTLResponse)
 
 		for _, s := range screenings {
 			movie := s.ScreeningPeriod.Movie
@@ -93,17 +99,20 @@ func (h *ScreeningHandler) GetScreeningsByDate() gin.HandlerFunc {
 
 			endTime := s.StartTime.Add(time.Duration(s.Duration) * time.Minute)
 
-			if _, exists := movieMap[movie.ID]; !exists {
-				movieMap[movie.ID] = &response.MovieTLResponse{
+			key := fmt.Sprintf("%d-%d-%s", movie.ID, screen.ID, s.Date.Format("2006-01-02"))
+
+			if _, exists := movieMap[key]; !exists {
+				movieMap[key] = &response.MovieTLResponse{
 					MovieId: movie.ID,
 					Title:   movie.Title,
 					// PosterURL: movie.PosterURL,
 					ScreenID: screen.ID,
 					Showings: []response.ShowingInfo{},
+					Date:     s.Date.Format("2006-01-02"),
 				}
 			}
 
-			movieMap[movie.ID].Showings = append(movieMap[movie.ID].Showings, response.ShowingInfo{
+			movieMap[key].Showings = append(movieMap[key].Showings, response.ShowingInfo{
 				ScreeningID: s.ID,
 				StartTime:   s.StartTime.Format("15:04"),
 				EndTime:     endTime.Format("15:04"),
