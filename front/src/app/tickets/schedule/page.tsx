@@ -8,7 +8,7 @@ import "swiper/css"
 import "swiper/css/navigation"
 
 // types
-// import { MovieSchedule } from "../types/_schedule";
+// import { MovieSchedule } from "../types/schedule";
 
 // CSS
 import "./schedule.css"

@@ -240,7 +240,7 @@ export default function Home() {
                           <span className="font-jp">予告編を見る</span>
                         </Link>
                         <Link
-                            href={`/tickets/_schedule/${movie.id}`}
+                            href={`/tickets/schedule/${movie.id}`}
                             className="btn-outline-luxury flex items-center justify-center gap-2 font-shippori"
                         >
                           <Info size={20} />
@@ -374,7 +374,7 @@ export default function Home() {
                             <span className="font-shippori font-jp">{movie.duration}</span>
                           </div>
                           <Link
-                              href={`/tickets/_schedule/${movie.id}`}
+                              href={`/tickets/schedule/${movie.id}`}
                               className="block w-full text-center py-2 bg-gold/10 hover:bg-gold/20
                           text-gold text-sm font-medium transition-colors rounded font-shippori font-jp"
                           >
