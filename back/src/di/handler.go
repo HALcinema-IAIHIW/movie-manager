@@ -9,7 +9,7 @@ import (
 	"modules/src/adapters/controller/seat"
 	"modules/src/adapters/controller/seatType"
 
-	// "modules/src/adapters/controller/purchase"
+	"modules/src/adapters/controller/purchase"
 	"modules/src/adapters/controller/user"
 	"modules/src/adapters/gateway"
 	"modules/src/usecases"
@@ -71,10 +71,10 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	periodUC := &usecases.PeriodUsecase{PeriodRepo: periodRepo}
 	periodHandler := period.NewPeriodHandler(periodUC)
 
-	// // Purchase
-	// purchaseRepo := gateway.NewGormPurchaseRepository(db)
-	// purchaseUC := &usecases.PurchaseUsecase{Repo: purchaseRepo}
-	// purchaseHandler := purchase.NewPurchaseHandler(purchaseUC)
+	// Purchase
+	purchaseRepo := gateway.NewGormPurchaseRepository(db)
+	purchaseUC := &usecases.PurchaseUsecase{Repo: purchaseRepo}
+	purchaseHandler := purchase.NewPurchaseHandler(purchaseUC)
 
 	return &Handlers{
 		User:      userHandler,
@@ -83,7 +83,8 @@ func NewHandlers(db *gorm.DB) *Handlers {
 		Seat:      seatHandler,
 		SeatType:  seatTypeHandler,
 		Screening: screeningHandler,
-		Role:      roleHandler, // Purchase: purchaseHandler,
+		Role:      roleHandler,
+		Purchase: purchaseHandler,
 		Period:    periodHandler,
 	}
 }
