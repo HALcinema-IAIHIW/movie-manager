@@ -36,6 +36,8 @@ func NewInitializer() (*Initializer, error) {
 		&model.SeatType{},
 		&model.Screening{},
 		&model.Screen{},
+		&model.Purchase{},
+		&model.PurchaseDetail{},
 	); err != nil {
 		return nil, err
 	}
