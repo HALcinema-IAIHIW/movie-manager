@@ -72,9 +72,9 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	periodHandler := period.NewPeriodHandler(periodUC)
 
 	// Purchase
-	purchaseRepo := gateway.NewGormPurchaseRepository(db)
-	purchaseUC := &usecases.PurchaseUsecase{Repo: purchaseRepo}
-	purchaseHandler := purchase.NewPurchaseHandler(purchaseUC)
+	purchaseRepo := repository.NewPurchaseRepository(db)
+	purchaseUsecase := usecases.NewPurchaseUsecase(purchaseRepo)
+	purchaseHandler := purchase.NewPurchaseHandler(purchaseUsecase)
 
 	return &Handlers{
 		User:      userHandler,
