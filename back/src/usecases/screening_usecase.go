@@ -2,16 +2,12 @@ package usecases
 
 import (
 	"modules/src/database/model"
+	"modules/src/repository"
 	"time"
 )
 
-type ScreeningRepository interface {
-	Create(screening *model.Screening) error
-	FindByDate(date time.Time) ([]model.Screening, error)
-}
-
 type ScreeningUsecase struct {
-	ScreeningRepo ScreeningRepository
+	ScreeningRepo repository.ScreeningRepository
 }
 
 func (uc *ScreeningUsecase) CreateScreening(screening *model.Screening) (*model.Screening, error) {
@@ -23,4 +19,8 @@ func (uc *ScreeningUsecase) CreateScreening(screening *model.Screening) (*model.
 
 func (uc *ScreeningUsecase) GetScreeningsByDate(date time.Time) ([]model.Screening, error) {
 	return uc.ScreeningRepo.FindByDate(date)
+}
+
+func (uc *ScreeningUsecase) GetScreeningByID(id uint) (*model.Screening, error) {
+	return uc.ScreeningRepo.FindByID(id)
 }

@@ -5,5 +5,4 @@ type SeatResponse struct {
 	ScreenID   uint   `json:"screen_id"`
 	Row        string `json:"row"`
 	Column     int    `json:"column"`
-	SeatTypeID uint   `json:"seat_type_id"`
 }

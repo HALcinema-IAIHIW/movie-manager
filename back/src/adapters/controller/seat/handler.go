@@ -35,7 +35,6 @@ func (h *SeatHandler) CreateSeat() gin.HandlerFunc {
 			ScreenID:   req.ScreenID,
 			Row:        req.Row,
 			Column:     req.Column,
-			SeatTypeID: req.SeatTypeID,
 		}
 		err := h.Usecase.CreateSeat(seat)
 		if err != nil {
