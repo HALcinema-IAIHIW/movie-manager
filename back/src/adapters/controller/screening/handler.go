@@ -1,6 +1,7 @@
 package screening
 
 import (
+	"errors"
 	"fmt"
 	"modules/src/adapters/presenter"
 	"modules/src/database/model"
@@ -51,6 +52,10 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 
 		result, err := h.Usecase.CreateScreening(screening)
 		if err != nil {
+			if errors.Is(err, usecases.ErrDuplicateScreening) {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "同じ上映情報が既に存在します"})
+				return
+			}
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "上映作成に失敗しました"})
 			return
 		}
@@ -87,6 +92,10 @@ func (h *ScreeningHandler) GetScreeningsByDate() gin.HandlerFunc {
 		fmt.Printf("取得件数: %d\n", len(screenings))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "上映情報の取得に失敗しました"})
+			return
+		}
+		if len(screenings) == 0 {
+			c.JSON(http.StatusOK, []response.MovieTLResponse{})
 			return
 		}
 
