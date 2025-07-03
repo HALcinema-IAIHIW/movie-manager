@@ -7,7 +7,7 @@ import (
 	"modules/src/adapters/controller/screen"
 	"modules/src/adapters/controller/screening"
 	"modules/src/adapters/controller/seat"
-	"modules/src/adapters/controller/seatType"
+	"modules/src/repository"
 
 	"modules/src/adapters/controller/purchase"
 	"modules/src/adapters/controller/user"
@@ -22,11 +22,10 @@ type Handlers struct {
 	Movie     *movie.MovieHandler
 	Screen    *screen.ScreenHandler
 	Seat      *seat.SeatHandler
-	SeatType  *seatType.SeatTypeHandler
 	Screening *screening.ScreeningHandler
 	Role      *role.RoleHandler
 	Period    *period.PeriodHandler
-	// Purchase *purchase.PurchaseHandler
+	Purchase  *purchase.PurchaseHandler
 }
 
 func NewHandlers(db *gorm.DB) *Handlers {
@@ -56,11 +55,6 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	seatUC := &usecases.SeatUsecase{SeatRepo: seatRepo}
 	seatHandler := seat.NewSeatHandler(seatUC)
 
-	// seatType
-	seatTypeRepo := gateway.NewGormSeatTypeRepository(db)
-	seatTypeUC := &usecases.SeatTypeUsecase{SeatRepo: seatTypeRepo}
-	seatTypeHandler := seatType.NewSeatTypeHandler(seatTypeUC)
-
 	// screening
 	screeningRepo := gateway.NewGormScreeningRepository(db)
 	screeningUC := &usecases.ScreeningUsecase{ScreeningRepo: screeningRepo}
@@ -72,19 +66,18 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	periodHandler := period.NewPeriodHandler(periodUC)
 
 	// Purchase
-	purchaseRepo := gateway.NewGormPurchaseRepository(db)
-	purchaseUC := &usecases.PurchaseUsecase{Repo: purchaseRepo}
-	purchaseHandler := purchase.NewPurchaseHandler(purchaseUC)
+	purchaseRepo := repository.NewPurchaseRepository(db)
+	purchaseUsecase := usecases.NewPurchaseUsecase(purchaseRepo)
+	purchaseHandler := purchase.NewPurchaseHandler(purchaseUsecase)
 
 	return &Handlers{
 		User:      userHandler,
 		Movie:     movieHandler,
 		Screen:    screenHandler,
 		Seat:      seatHandler,
-		SeatType:  seatTypeHandler,
 		Screening: screeningHandler,
 		Role:      roleHandler,
-		Purchase: purchaseHandler,
+		Purchase:  purchaseHandler,
 		Period:    periodHandler,
 	}
 }

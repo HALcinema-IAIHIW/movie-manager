@@ -16,3 +16,7 @@ func (uc *SeatUsecase) CreateSeat(seat *model.Seat) error {
 func (uc *SeatUsecase) GetAllSeats() ([]model.Seat, error) {
 	return uc.SeatRepo.GetAll()
 }
+
+func (uc *SeatUsecase) GetSeatsByScreenID(id uint) ([]model.Seat, error) {
+	return uc.SeatRepo.FindByScreenID(id)
+}
