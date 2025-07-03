@@ -17,8 +17,8 @@ import "./schedule.css"
 import MovieTL from "@/app/components/MovieTL/page";
 
 // fetch
-import { fetchScreeningsByDate } from "../libs/api/api";
-import { MovieTLProps } from "../types/schedule";
+import { fetchScreeningsByDate } from "../../libs/api/api";
+import { MovieTLProps } from "../../types/schedule";
 
 
 

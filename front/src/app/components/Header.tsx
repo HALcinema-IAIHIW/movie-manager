@@ -1,433 +1,657 @@
 "use client"
 
-import {useState} from "react"
+import type React from "react"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { User, ChevronDown, AlertCircle, CheckCircle } from "lucide-react"
+
+// フォームバリデーションの型定義
+interface LoginForm {
+    email: string
+    password: string
+}
+
+interface SignUpForm {
+    name: string
+    email: string
+    password: string
+    confirmPassword: string
+    phone: string
+    role: string
+}
+
+interface FormErrors {
+    [key: string]: string
+}
 
 export default function Header() {
+    // メニューとメンバーパネルの状態管理
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isMemberPanelOpen, setIsMemberPanelOpen] = useState(false)
     const [activeTab, setActiveTab] = useState("login")
+    const [isScrolled, setIsScrolled] = useState(false)
 
+    // フォームの状態管理
+    const [loginForm, setLoginForm] = useState<LoginForm>({
+        email: "",
+        password: "",
+    })
+
+    const [signUpForm, setSignUpForm] = useState<SignUpForm>({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phone: "",
+        role: "",
+    })
+
+    const [loginErrors, setLoginErrors] = useState<FormErrors>({})
+    const [signUpErrors, setSignUpErrors] = useState<FormErrors>({})
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitSuccess, setSubmitSuccess] = useState(false)
+
+    // 新規登録用の区分オプション
+    const roleOptions = [
+        { value: "", label: "区分を選択してください" },
+        { value: "general", label: "一般" },
+        { value: "university", label: "大学生" },
+        { value: "highschool", label: "中学生・高校生" },
+        { value: "elementary", label: "小学生・幼児" },
+    ]
+
+    // スクロール時のヘッダー背景変更
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50)
+        }
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
+
+    // メニューの開閉
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen)
+        document.body.style.overflow = !isMenuOpen ? "hidden" : "auto"
     }
 
+    // メンバーパネルの開閉
     const toggleMemberPanel = () => {
         setIsMemberPanelOpen(!isMemberPanelOpen)
+        // パネルが閉じるときにフォームをリセット
+        if (isMemberPanelOpen) {
+            resetForms()
+        }
     }
 
-    const showTab = (tabName: string) => {
-        setActiveTab(tabName)
+    // フォームとエラーをリセット
+    const resetForms = () => {
+        setLoginForm({ email: "", password: "" })
+        setSignUpForm({ name: "", email: "", password: "", confirmPassword: "", phone: "", role: "" })
+        setLoginErrors({})
+        setSignUpErrors({})
+        setSubmitSuccess(false)
     }
+
+    // タブ切り替えハンドラ
+    const handleTabChange = (tab: string) => {
+        setActiveTab(tab)
+        resetForms()
+    }
+
+    // バリデーション関数
+    const validateEmail = (email: string): boolean => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email)
+    }
+
+    const validatePassword = (password: string): boolean => {
+        return password.length >= 8
+    }
+
+    const validatePhone = (phone: string): boolean => {
+        const phoneRegex = /^[\d\-$+\s]+$/
+        return phoneRegex.test(phone) && phone.replace(/\D/g, "").length >= 10
+    }
+
+    const validateName = (name: string): boolean => {
+        return name.trim().length >= 2
+    }
+
+    // ログインフォームのバリデーション
+    const validateLoginForm = (): boolean => {
+        const errors: FormErrors = {}
+
+        if (!loginForm.email.trim()) {
+            errors.email = "メールアドレスを入力してください"
+        } else if (!validateEmail(loginForm.email)) {
+            errors.email = "有効なメールアドレスを入力してください"
+        }
+
+        if (!loginForm.password.trim()) {
+            errors.password = "パスワードを入力してください"
+        }
+
+        setLoginErrors(errors)
+        return Object.keys(errors).length === 0
+    }
+
+    // 新規登録フォームのバリデーション
+    const validateSignUpForm = (): boolean => {
+        const errors: FormErrors = {}
+
+        if (!signUpForm.name.trim()) {
+            errors.name = "お名前を入力してください"
+        } else if (!validateName(signUpForm.name)) {
+            errors.name = "お名前は2文字以上で入力してください"
+        }
+
+        if (!signUpForm.email.trim()) {
+            errors.email = "メールアドレスを入力してください"
+        } else if (!validateEmail(signUpForm.email)) {
+            errors.email = "有効なメールアドレスを入力してください"
+        }
+
+        if (!signUpForm.password.trim()) {
+            errors.password = "パスワードを入力してください"
+        } else if (!validatePassword(signUpForm.password)) {
+            errors.password = "パスワードは8文字以上で入力してください"
+        }
+
+        if (!signUpForm.confirmPassword.trim()) {
+            errors.confirmPassword = "パスワード確認を入力してください"
+        } else if (signUpForm.password !== signUpForm.confirmPassword) {
+            errors.confirmPassword = "パスワードが一致しません"
+        }
+
+        if (!signUpForm.phone.trim()) {
+            errors.phone = "電話番号を入力してください"
+        } else if (!validatePhone(signUpForm.phone)) {
+            errors.phone = "有効な電話番号を入力してください"
+        }
+
+        if (!signUpForm.role) {
+            errors.role = "区分を選択してください"
+        }
+
+        setSignUpErrors(errors)
+        return Object.keys(errors).length === 0
+    }
+
+    // フォーム入力ハンドラ
+    const handleLoginChange = (field: keyof LoginForm, value: string) => {
+        setLoginForm((prev) => ({ ...prev, [field]: value }))
+        // ユーザーが入力を開始したらエラーをクリア
+        if (loginErrors[field]) {
+            setLoginErrors((prev) => ({ ...prev, [field]: "" }))
+        }
+    }
+
+    const handleSignUpChange = (field: keyof SignUpForm, value: string) => {
+        setSignUpForm((prev) => ({ ...prev, [field]: value }))
+        // ユーザーが入力を開始したらエラーをクリア
+        if (signUpErrors[field]) {
+            setSignUpErrors((prev) => ({ ...prev, [field]: "" }))
+        }
+    }
+
+    // フォーム送信ハンドラ
+    const handleLoginSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        if (!validateLoginForm()) return
+
+        setIsSubmitting(true)
+
+        try {
+            // API呼び出しをシミュレート
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+
+            // ここで認証のためのAPI呼び出しを行う
+            console.log("Login attempt:", loginForm)
+
+            setSubmitSuccess(true)
+            setTimeout(() => {
+                setSubmitSuccess(false)
+                toggleMemberPanel()
+            }, 2000)
+        } catch (error) {
+            console.error("Login error:", error)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const handleSignUpSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        if (!validateSignUpForm()) return
+
+        setIsSubmitting(true)
+
+        try {
+            // API呼び出しをシミュレート
+            await new Promise((resolve) => setTimeout(resolve, 1500))
+
+            // ここで登録のためのAPI呼び出しを行う
+            console.log("SignUp attempt:", signUpForm)
+
+            setSubmitSuccess(true)
+            setTimeout(() => {
+                setSubmitSuccess(false)
+                toggleMemberPanel()
+            }, 2000)
+        } catch (error) {
+            console.error("SignUp error:", error)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    // コンポーネントのアンマウント時にスクロールを有効化
+    useEffect(() => {
+        return () => {
+            document.body.style.overflow = "auto"
+        }
+    }, [])
 
     return (
         <>
-            <style jsx>{`
-              .header {
-                display: flex;
-                align-items: center;
-                background-color: black;
-                color: white;
-                height: 65px;
-                position: relative;
-              }
+            {/* ヘッダー本体 */}
+            <header
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+                    isScrolled ? "bg-darkest/95 backdrop-blur-md shadow-luxury" : "bg-transparent"
+                }`}
+            >
+                <div className="container-luxury">
+                    <div className="flex items-center justify-between h-20">
+                        {/* メニューボタン */}
+                        <div className="flex-1 flex items-center">
+                            <button
+                                onClick={toggleMenu}
+                                className="flex flex-col items-center justify-center w-16 h-16 hover:bg-accent/30 transition-all duration-300 group"
+                                aria-label="メニューを開く"
+                            >
+                                <div className="relative w-6 h-6">
+                  <span
+                      className={`absolute block w-6 h-0.5 bg-text-primary transition-all duration-300 
+                                        ${isMenuOpen ? "rotate-45 top-3" : "top-1"}`}
+                  />
+                                    <span
+                                        className={`absolute block w-6 h-0.5 bg-text-primary transition-all duration-300 
+                                        ${isMenuOpen ? "opacity-0" : "top-3"}`}
+                                    />
+                                    <span
+                                        className={`absolute block w-6 h-0.5 bg-text-primary transition-all duration-300 
+                                        ${isMenuOpen ? "-rotate-45 top-3" : "top-5"}`}
+                                    />
+                                </div>
+                                <span className="text-xs text-text-muted mt-1 font-en">MENU</span>
+                            </button>
+                        </div>
 
-              .menu-container {
-                height: 100%;
-                width: 65px;
-                background-color: grey;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-              }
+                        {/* ロゴ */}
+                        <div className="flex-1 flex justify-center">
+                            <Link
+                                href="/"
+                                className="text-4xl md:text-5xl text-gold hover:text-gold-light
+                                transition-colors duration-300 tracking-wider font-en"
+                            >
+                                HAL CINEMA
+                            </Link>
+                        </div>
 
-              .menu-toggle {
-                width: 30px;
-                height: 24px;
-                position: relative;
-                cursor: pointer;
-                transition: 0.3s ease;
-              }
+                        {/* メンバーボタン */}
+                        <div className="flex-1 flex justify-end">
+                            <div className="relative">
+                                <button
+                                    onClick={toggleMemberPanel}
+                                    className="flex items-center gap-2 px-4 py-2 text-text-secondary
+                                    hover:text-gold transition-colors duration-300 group"
+                                    aria-label="メンバーメニューを開く"
+                                >
+                                    <User size={20} />
+                                    <span className="text-lg hidden sm:block font-en">MEMBER</span>
+                                    <ChevronDown
+                                        size={16}
+                                        className={`transition-transform duration-300 ${isMemberPanelOpen ? "rotate-180" : ""}`}
+                                    />
+                                </button>
 
-              .menu-toggle .bar {
-                height: 3px;
-                width: 100%;
-                background-color: white;
-                position: absolute;
-                transition: 0.3s ease;
-                border-radius: 2px;
-              }
+                                {/* メンバーパネル */}
+                                {isMemberPanelOpen && (
+                                    <div
+                                        className="absolute top-full right-0 mt-2 w-80 sm:w-96 bg-dark-lighter
+                                        border border-accent/20 rounded-lg shadow-luxury-lg animate-scale-in max-h-[80vh] overflow-y-auto"
+                                    >
+                                        {/* 矢印 */}
+                                        <div
+                                            className="absolute -top-2 right-6 w-4 h-4 bg-dark-lighter
+                                            border-l border-t border-accent/20 rotate-45"
+                                        />
 
-              .bar.top {
-                top: 0;
-              }
+                                        <div className="p-6">
+                                            {/* 成功メッセージ */}
+                                            {submitSuccess && (
+                                                <div className="mb-4 p-3 bg-green-900/30 border border-green-700/50 rounded-lg flex items-center gap-2">
+                                                    <CheckCircle size={16} className="text-green-400" />
+                                                    <span className="text-green-300 text-sm font-jp">
+                            {activeTab === "login" ? "ログインしました" : "登録が完了しました"}
+                          </span>
+                                                </div>
+                                            )}
 
-              .bar.middle {
-                top: 7px;
-              }
+                                            {/* タブナビゲーション */}
+                                            <div className="flex border-b border-accent/20 mb-6">
+                                                <button
+                                                    className={`flex-1 py-3 text-center text-lg transition-colors font-en ${
+                                                        activeTab === "login"
+                                                            ? "text-gold border-b-2 border-gold"
+                                                            : "text-text-muted hover:text-text-secondary"
+                                                    }`}
+                                                    onClick={() => handleTabChange("login")}
+                                                >
+                                                    Login
+                                                </button>
+                                                <button
+                                                    className={`flex-1 py-3 text-center text-lg transition-colors font-en ${
+                                                        activeTab === "signup"
+                                                            ? "text-gold border-b-2 border-gold"
+                                                            : "text-text-muted hover:text-text-secondary"
+                                                    }`}
+                                                    onClick={() => handleTabChange("signup")}
+                                                >
+                                                    Sign Up
+                                                </button>
+                                            </div>
 
-              .bar.bottom {
-                top: 14px;
-              }
+                                            {/* ログインフォーム */}
+                                            {activeTab === "login" && (
+                                                <form onSubmit={handleLoginSubmit} className="space-y-4">
+                                                    <div>
+                                                        <input
+                                                            type="email"
+                                                            placeholder="メールアドレス"
+                                                            value={loginForm.email}
+                                                            onChange={(e) => handleLoginChange("email", e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-darker border rounded-lg text-text-primary placeholder-text-muted
+                                                            focus:outline-none transition-colors font-shippori font-jp ${
+                                                                loginErrors.email
+                                                                    ? "border-red-500 focus:border-red-400"
+                                                                    : "border-accent/30 focus:border-gold"
+                                                            }`}
+                                                            disabled={isSubmitting}
+                                                        />
+                                                        {loginErrors.email && (
+                                                            <div className="mt-1 flex items-center gap-1 text-red-400 text-xs">
+                                                                <AlertCircle size={12} />
+                                                                <span className="font-jp">{loginErrors.email}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-              .menu-toggle.open .bar.top {
-                transform: rotate(45deg);
-                top: 10px;
-              }
+                                                    <div>
+                                                        <input
+                                                            type="password"
+                                                            placeholder="パスワード"
+                                                            value={loginForm.password}
+                                                            onChange={(e) => handleLoginChange("password", e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-darker border rounded-lg text-text-primary placeholder-text-muted
+                                                            focus:outline-none transition-colors font-shippori font-jp ${
+                                                                loginErrors.password
+                                                                    ? "border-red-500 focus:border-red-400"
+                                                                    : "border-accent/30 focus:border-gold"
+                                                            }`}
+                                                            disabled={isSubmitting}
+                                                        />
+                                                        {loginErrors.password && (
+                                                            <div className="mt-1 flex items-center gap-1 text-red-400 text-xs">
+                                                                <AlertCircle size={12} />
+                                                                <span className="font-jp">{loginErrors.password}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-              .menu-toggle.open .bar.middle {
-                opacity: 0;
-              }
+                                                    <button
+                                                        type="submit"
+                                                        disabled={isSubmitting}
+                                                        className="w-full btn-luxury font-shippori font-jp disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    >
+                                                        {isSubmitting ? "ログイン中..." : "ログイン"}
+                                                    </button>
 
-              .menu-toggle.open .bar.bottom {
-                transform: rotate(-45deg);
-                top: 10px;
-              }
+                                                    <Link
+                                                        href="/forgot-password"
+                                                        className="block text-center text-sm text-text-muted hover:text-gold
+                                                        transition-colors font-shippori font-jp"
+                                                    >
+                                                        パスワードを忘れた方
+                                                    </Link>
+                                                </form>
+                                            )}
 
-              .menu-header {
-                font-size: 0.65rem;
-                margin-top: 5px;
-                text-align: center;
-              }
+                                            {/* サインアップフォーム */}
+                                            {activeTab === "signup" && (
+                                                <form onSubmit={handleSignUpSubmit} className="space-y-4">
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="お名前"
+                                                            value={signUpForm.name}
+                                                            onChange={(e) => handleSignUpChange("name", e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-darker border rounded-lg text-text-primary placeholder-text-muted
+                                                            focus:outline-none transition-colors font-shippori font-jp ${
+                                                                signUpErrors.name
+                                                                    ? "border-red-500 focus:border-red-400"
+                                                                    : "border-accent/30 focus:border-gold"
+                                                            }`}
+                                                            disabled={isSubmitting}
+                                                        />
+                                                        {signUpErrors.name && (
+                                                            <div className="mt-1 flex items-center gap-1 text-red-400 text-xs">
+                                                                <AlertCircle size={12} />
+                                                                <span className="font-jp">{signUpErrors.name}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-              .logo {
-                font-size: 40px;
-                margin-left: 30px;
-                font-family: "Italiana", sans-serif;
-                font-weight: 400;
-                font-style: normal;
-                text-decoration: none;
-                color: white;
-                //letter-spacing: 1px;
-              }
+                                                    <div>
+                                                        <input
+                                                            type="email"
+                                                            placeholder="メールアドレス"
+                                                            value={signUpForm.email}
+                                                            onChange={(e) => handleSignUpChange("email", e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-darker border rounded-lg text-text-primary placeholder-text-muted
+                                                            focus:outline-none transition-colors font-shippori font-jp ${
+                                                                signUpErrors.email
+                                                                    ? "border-red-500 focus:border-red-400"
+                                                                    : "border-accent/30 focus:border-gold"
+                                                            }`}
+                                                            disabled={isSubmitting}
+                                                        />
+                                                        {signUpErrors.email && (
+                                                            <div className="mt-1 flex items-center gap-1 text-red-400 text-xs">
+                                                                <AlertCircle size={12} />
+                                                                <span className="font-jp">{signUpErrors.email}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-              .right-section {
-                margin-left: auto;
-                display: flex;
-                align-items: center;
-                gap: 20px;
-                margin-right: 40px;
-              }
+                                                    <div>
+                                                        <input
+                                                            type="password"
+                                                            placeholder="パスワード"
+                                                            value={signUpForm.password}
+                                                            onChange={(e) => handleSignUpChange("password", e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-darker border rounded-lg text-text-primary placeholder-text-muted
+                                                            focus:outline-none transition-colors font-shippori font-jp ${
+                                                                signUpErrors.password
+                                                                    ? "border-red-500 focus:border-red-400"
+                                                                    : "border-accent/30 focus:border-gold"
+                                                            }`}
+                                                            disabled={isSubmitting}
+                                                        />
+                                                        {signUpErrors.password && (
+                                                            <div className="mt-1 flex items-center gap-1 text-red-400 text-xs">
+                                                                <AlertCircle size={12} />
+                                                                <span className="font-jp">{signUpErrors.password}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-              .search-bar {
-                width: 400px;
-                padding: 8px 13px; /* 高さを狭くしました */
-                border-radius: 50px; /* 角丸を最大にしました */
-                border: none;
-                color: black;
-                background-color: white;
-              }
+                                                    <div>
+                                                        <input
+                                                            type="password"
+                                                            placeholder="パスワード確認"
+                                                            value={signUpForm.confirmPassword}
+                                                            onChange={(e) => handleSignUpChange("confirmPassword", e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-darker border rounded-lg text-text-primary placeholder-text-muted
+                                                            focus:outline-none transition-colors font-shippori font-jp ${
+                                                                signUpErrors.confirmPassword
+                                                                    ? "border-red-500 focus:border-red-400"
+                                                                    : "border-accent/30 focus:border-gold"
+                                                            }`}
+                                                            disabled={isSubmitting}
+                                                        />
+                                                        {signUpErrors.confirmPassword && (
+                                                            <div className="mt-1 flex items-center gap-1 text-red-400 text-xs">
+                                                                <AlertCircle size={12} />
+                                                                <span className="font-jp">{signUpErrors.confirmPassword}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-              .search-bar::placeholder {
-                color: #999;
-              }
+                                                    <div>
+                                                        <input
+                                                            type="tel"
+                                                            placeholder="電話番号"
+                                                            value={signUpForm.phone}
+                                                            onChange={(e) => handleSignUpChange("phone", e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-darker border rounded-lg text-text-primary placeholder-text-muted
+                                                            focus:outline-none transition-colors font-shippori font-jp ${
+                                                                signUpErrors.phone
+                                                                    ? "border-red-500 focus:border-red-400"
+                                                                    : "border-accent/30 focus:border-gold"
+                                                            }`}
+                                                            disabled={isSubmitting}
+                                                        />
+                                                        {signUpErrors.phone && (
+                                                            <div className="mt-1 flex items-center gap-1 text-red-400 text-xs">
+                                                                <AlertCircle size={12} />
+                                                                <span className="font-jp">{signUpErrors.phone}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-              .side-menu {
-                position: fixed;
-                top: 65px;
-                left: -350px;
-                width: 250px;
-                height: 100%;
-                background-color: gray;
-                color: white;
-                padding: 20px;
-                transition: 0.3s;
-                z-index: 1000;
-              }
+                                                    <div>
+                                                        <select
+                                                            value={signUpForm.role}
+                                                            onChange={(e) => handleSignUpChange("role", e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-darker border rounded-lg text-text-primary
+                                                            focus:outline-none transition-colors font-shippori font-jp ${
+                                                                signUpErrors.role
+                                                                    ? "border-red-500 focus:border-red-400"
+                                                                    : "border-accent/30 focus:border-gold"
+                                                            }`}
+                                                            disabled={isSubmitting}
+                                                        >
+                                                            {roleOptions.map((option) => (
+                                                                <option key={option.value} value={option.value} className="bg-darker">
+                                                                    {option.label}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                        {signUpErrors.role && (
+                                                            <div className="mt-1 flex items-center gap-1 text-red-400 text-xs">
+                                                                <AlertCircle size={12} />
+                                                                <span className="font-jp">{signUpErrors.role}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-              .side-menu.open {
-                left: 0;
-              }
-
-              .side-menu ul {
-                list-style: none;
-                padding: 0;
-              }
-
-              .side-menu li {
-                margin: 15px 0 15px 10px;
-                cursor: pointer;
-                font-family: "Italiana", sans-serif;
-                font-size: 1.2rem;
-                transition: opacity 0.3s ease;
-              }
-
-              .side-menu li:hover {
-                opacity: 0.6;
-              }
-
-              .side-menu a {
-                color: white;
-                text-decoration: none;
-              }
-
-              .member-btn {
-                font-family: "Italiana", sans-serif;
-                font-weight: 400;
-                font-size: 40px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-              }
-
-              .member-panel {
-                position: absolute;
-                top: 65px;
-                right: 40px;
-                width: 300px;
-                background-color: white;
-                border-radius: 10px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-                padding: 20px;
-                display: ${isMemberPanelOpen ? "block" : "none"};
-                animation: slideDown 0.3s ease forwards;
-                z-index: 1000;
-              }
-
-              .arrow-up {
-                position: absolute;
-                top: -10px;
-                right: 20px;
-                width: 0;
-                height: 0;
-                border-left: 10px solid transparent;
-                border-right: 10px solid transparent;
-                border-bottom: 10px solid white;
-              }
-
-              .tabs {
-                display: flex;
-                justify-content: space-around;
-                font-size: 20px;
-                font-family: "Italiana", sans-serif;
-                margin-bottom: 10px;
-                position: relative;
-              }
-
-              .tab {
-                padding: 5px 10px;
-                cursor: pointer;
-                border-bottom: 2px solid transparent;
-                transition: all 0.3s;
-                color: black;
-              }
-
-              .tab.active {
-                border-bottom: 2px solid orange;
-              }
-
-              .form-section {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-              }
-
-              .hidden {
-                display: none;
-              }
-
-              #loginTab {
-                margin-left: 10px;
-              }
-
-              #signupTab {
-                margin-left: 60px;
-              }
-
-              .form-group {
-                margin: 10px 0;
-              }
-
-              .form-group input {
-                width: 90%;
-                padding: 8px 15px;
-                border: 1px solid black;
-                border-radius: 20px;
-                font-family: "Italiana", sans-serif;
-                font-size: 14px;
-                outline: none;
-                color: black;
-              }
-
-              .signup-btn {
-                background-color: #ffd966;
-                font-family: "Italiana", sans-serif;
-                border: 1px solid black;
-                border-radius: 20px;
-                width: 100%;
-                padding: 10px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                color: black;
-              }
-
-              .forgot {
-                font-family: "Italiana", sans-serif;
-              }
-
-              .forgot a {
-                text-decoration: none;
-                color: black;
-              }
-
-              .arrow-icon {
-                width: 0;
-                height: 0;
-                border-left: 8px solid transparent;
-                border-right: 8px solid transparent;
-                border-top: 8px solid white;
-                transition: transform 0.3s ease;
-                transform: ${isMemberPanelOpen ? "rotate(180deg)" : "rotate(0deg)"};
-              }
-
-              .member-text {
-                position: relative;
-              }
-
-              @keyframes slideDown {
-                0% {
-                  opacity: 0;
-                  transform: translateY(-20px);
-                }
-                100% {
-                  opacity: 1;
-                  transform: translateY(0);
-                }
-              }
-
-              @media (max-width: 768px) {
-                .search-bar {
-                  width: 200px;
-                }
-
-                .logo {
-                  font-size: 36px;
-                  margin-left: 15px;
-                }
-
-                .member-btn {
-                  font-size: 28px;
-                }
-
-                .right-section {
-                  margin-right: 20px;
-                }
-
-                .member-panel {
-                  right: 20px;
-                  width: 280px;
-                }
-              }
-            `}</style>
-
-            <header className="header">
-                <div className="menu-container">
-                    <div className={`menu-toggle ${isMenuOpen ? "open" : ""}`} onClick={toggleMenu}>
-                        <span className="bar top"></span>
-                        <span className="bar middle"></span>
-                        <span className="bar bottom"></span>
-                    </div>
-                    <p className="menu-header">MENU</p>
-                </div>
-
-                <div className={"logo "}>
-                    <Link href="/">
-                        HALCINEMA
-                    </Link>
-                </div>
-
-
-                <div className="right-section">
-                    <input type="text" className="search-bar" placeholder=""/>
-                    <div className="member-btn" onClick={toggleMemberPanel}>
-                        <span className="member-text">MEMBER</span>
-                        <div className="arrow-icon"></div>
+                                                    <button
+                                                        type="submit"
+                                                        disabled={isSubmitting}
+                                                        className="w-full btn-luxury font-shippori font-jp disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    >
+                                                        {isSubmitting ? "登録中..." : "新規登録"}
+                                                    </button>
+                                                </form>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
 
-            <nav className={`side-menu ${isMenuOpen ? "open" : ""}`}>
-                <ul>
-                    <li>
-                        <Link href="/">Top Page</Link>
-                    </li>
-                    <li>
-                        <Link href="/schedule">Schedule</Link>
-                    </li>
-                    <li>
-                        <Link href="/news">Information</Link>
-                    </li>
-                    <li>
-                        <Link href="/movies">Movies</Link>
-                    </li>
-                    <li>
-                        <Link href="/access">Access</Link>
-                    </li>
-                    <li>
-                        <Link href="/mypage">My Page</Link>
-                    </li>
-                    <li>
-                        <Link href="/faq">Q & A</Link>
-                    </li>
-                </ul>
-            </nav>
+            {/* サイドメニュー */}
+            <div
+                className={`fixed inset-0 z-40 transition-opacity duration-300 ${
+                    isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+            >
+                {/* オーバーレイ */}
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={toggleMenu} />
 
-            <div className="member-panel">
-                <div className="arrow-up"></div>
-                <div className="tabs">
-          <span
-              id="loginTab"
-              className={`tab ${activeTab === "login" ? "active" : ""}`}
-              onClick={() => showTab("login")}
-          >
-            Login
-          </span>
-                    <span
-                        id="signupTab"
-                        className={`tab ${activeTab === "signup" ? "active" : ""}`}
-                        onClick={() => showTab("signup")}
-                    >
-            Sign-Up
-          </span>
-                </div>
-                <div className={`form-section ${activeTab === "login" ? "" : "hidden"}`}>
-                    <div className="form-group">
-                        <input type="email" placeholder="Email"/>
+                {/* メニューパネル */}
+                <nav
+                    className={`absolute left-0 top-0 h-full w-80 bg-darker border-r border-accent/20 
+                    shadow-luxury-lg transform transition-transform duration-300 ${
+                        isMenuOpen ? "translate-x-0" : "-translate-x-full"
+                    }`}
+                >
+                    <div className="p-8 pt-24">
+                        {/* メニュータイトル */}
+                        <h2 className="text-2xl font-playfair text-gold mb-8 text-left">NAVIGATION</h2>
+
+                        {/* メニューリスト */}
+                        <ul className="space-y-6">
+                            <li>
+                                <Link href="/" className="nav-link block text-lg py-2 font-jp" onClick={toggleMenu}>
+                                    トップページ
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/movies" className="nav-link block text-lg py-2 font-jp" onClick={toggleMenu}>
+                                    作品案内
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tickets/schedule" className="nav-link block text-lg py-2 font-jp" onClick={toggleMenu}>
+                                    上映スケジュール
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/news" className="nav-link block text-lg py-2 font-jp" onClick={toggleMenu}>
+                                    ニュース
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/access" className="nav-link block text-lg font-shippori py-2" onClick={toggleMenu}>
+                                    アクセス
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/mypage" className="nav-link block text-lg font-shippori py-2" onClick={toggleMenu}>
+                                    マイページ
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/faq" className="nav-link block text-lg font-shippori py-2" onClick={toggleMenu}>
+                                    よくある質問
+                                </Link>
+                            </li>
+                        </ul>
                     </div>
-                    <div className="form-group">
-                        <input type="password" placeholder="Password"/>
-                    </div>
-                    <div className="form-group">
-                        <button className="signup-btn">Login</button>
-                    </div>
-                    <div className="forgot">
-                        <a href="#">Email/Passwordを忘れた方</a>
-                    </div>
-                </div>
-                <div className={`form-section ${activeTab === "signup" ? "" : "hidden"}`}>
-                    <div className="form-group">
-                        <input type="text" placeholder="Full Name"/>
-                    </div>
-                    <div className="form-group">
-                        <input type="text" placeholder="Gender"/>
-                    </div>
-                    <div className="form-group">
-                        <input type="email" placeholder="Email"/>
-                    </div>
-                    <div className="form-group">
-                        <input type="password" placeholder="Password"/>
-                    </div>
-                    <div className="form-group">
-                        <input type="tel" placeholder="Phone"/>
-                    </div>
-                    <div className="form-group">
-                        <button className="signup-btn">Sign Up</button>
-                    </div>
-                </div>
+                </nav>
             </div>
+
+            {/* メンバーパネル外クリック時の閉じる処理 */}
+            {isMemberPanelOpen && <div className="fixed inset-0 z-30" onClick={() => setIsMemberPanelOpen(false)} />}
         </>
     )
 }
