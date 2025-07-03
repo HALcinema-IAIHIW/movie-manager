@@ -39,17 +39,13 @@ type Screen struct {
 	MaxColumn int
 }
 
-type SeatType struct {
-	gorm.Model
-	Name string `gorm:"not null"`
-}
 type Seat struct {
 	gorm.Model
-	ScreenID   uint   `gorm:"not null"`
-	Row        string `gorm:"not null"`
-	Column     int    `gorm:"not null"`
+	ScreenID uint   `gorm:"not null"`
+	Row      string `gorm:"not null"`
+	Column   int    `gorm:"not null"`
 
-	Screen   Screen   `gorm:"foreignKey:ScreenID"`
+	Screen Screen `gorm:"foreignKey:ScreenID"`
 }
 
 // 上映期間
