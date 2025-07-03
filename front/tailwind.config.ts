@@ -1,16 +1,46 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
+        // より深みのある暗いトーンのカラーパレット
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+
+        // 高級映画館らしい深い色調
+        darkest: "#0a0d14", // 最も深い背景色
+        darker: "#0f131e", // 深い背景色
+        dark: "#161b2c", // 基本背景色
+        "dark-lighter": "#1e2538", // 少し明るい背景色
+
+        // 高級感を演出するゴールド系
+        gold: {
+          DEFAULT: "#d4af37",
+          light: "#e5c76b",
+          dark: "#b8941f",
+        },
+
+        // アクセントカラー（既存を深く調整）
+        accent: {
+          DEFAULT: "#6b6b7d",
+          light: "#8a8a9d",
+          dark: "#4a4a5a",
+        },
+
+        // テキスト用の白系統
+        "text-primary": "#ffffff",
+        "text-secondary": "#e2e8f0",
+        "text-muted": "#94a3b8",
+        "text-subtle": "#64748b",
+
+        // その他のshadcn/ui互換色
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -31,8 +61,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        accent: "#78788c",
-        "accent-light": "#9999ad",
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -40,63 +68,49 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
-        },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
-        dark: "#161b2c",
-        darker: "#0f131e",
-        gold: "#d4af37",
-        "gold-light": "#e5c76b",
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+
+      // フォントファミリーの設定
+      fontFamily: {
+        // 英語テキスト用のフォント
+        playfair: ["var(--font-playfair)", "serif"],
+        // 日本語テキスト用のフォント
+        shippori: ["var(--font-shippori)", "serif"],
+        // デフォルトフォント設定
+        sans: ["var(--font-shippori)", "serif"],
+        serif: ["var(--font-shippori)", "serif"],
       },
+
+      // カスタムアニメーション
       keyframes: {
-        "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+        "slide-in-left": {
+          "0%": { opacity: "0", transform: "translateX(-30px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.6s ease-out",
+        "slide-in-left": "slide-in-left 0.5s ease-out",
+        "scale-in": "scale-in 0.4s ease-out",
       },
-      fontFamily: {
-        sans: ["var(--font-inter)"],
-        playfair: ["var(--font-playfair)"],
-        italiana: ["var(--font-italiana)"],
-        noto: ["var(--font-noto-serif-jp)"],
+
+      // カスタムボックスシャドウ（高級感演出）
+      boxShadow: {
+        luxury: "0 8px 32px rgba(0, 0, 0, 0.4)",
+        "luxury-lg": "0 16px 64px rgba(0, 0, 0, 0.5)",
+        "gold-glow": "0 0 20px rgba(212, 175, 55, 0.3)",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-};
-export default config;
+}
+
+export default config
