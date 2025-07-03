@@ -33,7 +33,6 @@ func NewInitializer() (*Initializer, error) {
 		&model.User{},
 		&model.Movie{},
 		&model.Seat{},
-		&model.SeatType{},
 		&model.Screening{},
 		&model.Screen{},
 		&model.Purchase{},
