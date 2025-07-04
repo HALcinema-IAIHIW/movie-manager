@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Users, MapPin, Calendar, Clock } from "lucide-react"
-
 // 座席の状態を定義
 type SeatStatus = "available" | "reserved" | "selected"
 
@@ -87,6 +86,9 @@ const screenConfigs: { [key: string]: ScreenConfig } = {
     },
 }
 
+// この辺に持ってきた値
+
+
 export default function SeatSelection() {
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -103,6 +105,7 @@ export default function SeatSelection() {
     const [currentConfig, setCurrentConfig] = useState<ScreenConfig>(screenConfigs["スクリーン1"])
 
     // URLパラメータから情報を取得
+    const scId = searchParams.get("scId")
     useEffect(() => {
         const screen = searchParams.get("screen") || "スクリーン1"
         const movieId = searchParams.get("movieId") || "1"
@@ -191,6 +194,7 @@ export default function SeatSelection() {
             return currentConfig.rows.map((row, rowIndex) => {
                 const seatsInRow = currentConfig.seatsPerRow[rowIndex]
                 return (
+
                     <div key={row} className="flex items-center justify-center gap-1">
                         {/* 行ラベル（左） */}
                         <div className="w-8 text-center text-gold font-medium font-en">{row}</div>
@@ -402,6 +406,7 @@ export default function SeatSelection() {
 
     return (
         <div className="min-h-screen pt-24">
+            <p>確認用:{scId}</p>
             {/* ヒーローセクション */}
             <section className="relative h-[20vh] md:h-[30vh] overflow-hidden">
                 <div className="absolute inset-0">
