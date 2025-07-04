@@ -38,7 +38,11 @@ func (r *GormScreeningRepository) FindByDate(date time.Time) ([]model.Screening,
 
 func (r *GormScreeningRepository) FindByID(id uint) (*model.Screening, error) {
 	var screening model.Screening
-	err := r.DB.Preload("ScreeningPeriod").First(&screening, id).Error
+	err := r.DB.
+		Preload("ScreeningPeriod").
+		Preload("ScreeningPeriod.Movie").
+		Preload("ScreeningPeriod.Screen").
+		First(&screening, id).Error
 	if err != nil {
 		return nil, err
 	}

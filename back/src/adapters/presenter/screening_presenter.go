@@ -11,11 +11,17 @@ func ToScreeningResponse(screening model.Screening) response.ScreeningResponse {
 	return response.ScreeningResponse{
 		ID:                screening.ID,
 		ScreeningPeriodID: screening.ScreeningPeriodID,
-		MovieID:           screening.ScreeningPeriod.MovieID,
-		ScreenID:          screening.ScreeningPeriod.ScreenID,
-		Date:              screening.Date,
-		StartTime:         screening.StartTime,
-		EndTime:           endTime.Format("15:04"),
+		Movie: response.MovieInfo{
+			ID:        screening.ScreeningPeriod.Movie.ID,
+			Title:     screening.ScreeningPeriod.Movie.Title,
+			PosterUrl: screening.ScreeningPeriod.Movie.PosterPath,
+		},
+		Screen: response.ScreenInfo{
+			ID: screening.ScreeningPeriod.Screen.ID,
+		},
+		Date:      screening.Date,
+		StartTime: screening.StartTime,
+		EndTime:   endTime.Format("15:04"),
 	}
 }
 
