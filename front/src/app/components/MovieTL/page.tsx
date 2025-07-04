@@ -2,6 +2,7 @@
 import React from "react";
 import "./MovieTL.css";
 import { MovieTLProps } from "@/app/types/schedule";
+import Link from "next/link";
 
 
 
@@ -33,6 +34,7 @@ export default function MovieTL({ title, screen_id, date,showings }: MovieTLProp
 
     console.log(`showings[0].date(screeningsID)->${showings[0].screening_id}`)
 
+
     //日本時間じゃないので調整必要
     // オート更新も付ける
     // 仮時間
@@ -49,21 +51,26 @@ export default function MovieTL({ title, screen_id, date,showings }: MovieTLProp
         <div className="TlButtons">
           {showings?.map((s) => (
             <div className="inline" key={s.screening_id}>
-              <button className="Time">
-                スクリーン{screen_id}
-                <br />
-                <span>{s.start_time}</span>
-                <br />
-                {Number(s.start_time.replace(":", "")) <= Number(Now) ? (
-                  <p>販売時間外</p>
-                ) : (
-                  <p>販売中</p>
-                )}
-              </button>
+              {/* seatsに情報持って遷移 */}
+                <Link href={{pathname:"/tickets/seats",query:{scId:s.screening_id}} }>
+              {/*  <Link href={`/tickets/seats/}`}>*/}
+                    <button className="Time">
+                        スクリーン{screen_id}
+                        <br/>
+                        <span>{s.start_time}</span>
+                        <br/>
+                        {Number(s.start_time.replace(":", "")) <= Number(Now) ? (
+                            <p>販売時間外</p>
+                        ) : (
+                            <p>販売中</p>
+                        )}
+                    </button>
+                </Link>
+
             </div>
           ))}
         </div>
       </div>
     </div>
-  );
+    );
 }
