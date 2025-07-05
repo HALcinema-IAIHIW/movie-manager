@@ -38,56 +38,38 @@ type MovieInfo = {
 
 export default function TicketTypeSelection() {
     const router = useRouter()
-    const searchParams = useSearchParams()
     const [selectedSeats, setSelectedSeats] = useState<string[]>([])
     const [seatTickets, setSeatTickets] = useState<SeatTicket[]>([])
     const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null)
     const [totalPrice, setTotalPrice] = useState(0)
 
-    // URLパラメータから情報を取得
     useEffect(() => {
-        const movieId = searchParams.get("movieId")
-        const seats = searchParams.get("seats")
-        const date = searchParams.get("date")
-        const time = searchParams.get("time")
-        const screen = searchParams.get("screen")
+      if (typeof window === "undefined") return
 
-        if (!movieId || !seats || !date || !time || !screen) {
-            // 必要なパラメータがない場合のみリダイレクト
-            if (typeof window !== "undefined") {
-                router.push("/tickets/seats")
-            }
-            return
-        }
+      const stored = sessionStorage.getItem("seatSelection")
+      if (!stored) {
+        router.push("/tickets/seats")
+        return
+      }
 
-        const seatList = seats.split(",")
-
-        // 既に設定済みの場合は再設定しない
-        if (selectedSeats.length === 0) {
-            setSelectedSeats(seatList)
-        }
-
-        // 映画情報を設定（実際のアプリではAPIから取得）
-        if (!movieInfo) {
-            setMovieInfo({
-                id: movieId,
-                title: "インターステラー",
-                date: date,
-                time: time,
-                screen: screen,
-                poster: "/images/movie-poster-1.jpg",
-            })
-        }
-
-        // 初期券種を一般に設定（まだ設定されていない場合のみ）
-        if (seatTickets.length === 0) {
-            const initialSeatTickets = seatList.map((seatId) => ({
-                seatId,
-                ticketType: ticketTypes[0], // 一般
-            }))
-            setSeatTickets(initialSeatTickets)
-        }
-    }, [searchParams]) // 依存配列をsearchParamsのみに限定
+      const parsed = JSON.parse(stored)
+      setSelectedSeats(parsed.selectedSeats)
+      setMovieInfo({
+        id: parsed.movieId,
+        title: "インターステラー", // 本来はAPIなどから取得
+        date: parsed.date,
+        time: parsed.time,
+        screen: parsed.screen,
+        poster: "/images/movie-poster-1.jpg",
+      })
+      if (seatTickets.length === 0) {
+        const initialSeatTickets = parsed.selectedSeats.map((seatId) => ({
+          seatId,
+          ticketType: ticketTypes[0],
+        }))
+        setSeatTickets(initialSeatTickets)
+      }
+    }, [])
 
     // 合計金額を計算
     useEffect(() => {

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Users, MapPin, Calendar, Clock } from "lucide-react"
+import { createSeat } from "../../libs/api/seat"
 
 // 座席の状態を定義
 type SeatStatus = "available" | "reserved" | "selected"
@@ -87,39 +88,63 @@ const screenConfigs: { [key: string]: ScreenConfig } = {
     },
 }
 
+// この辺に持ってきた値
+
+
 export default function SeatSelection() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [selectedSeats, setSelectedSeats] = useState<string[]>([])
     const [seats, setSeats] = useState<Seat[]>([])
     const [movieInfo, setMovieInfo] = useState<MovieInfo>({
-        id: "1",
-        title: "インターステラー",
-        date: "2024年5月5日",
-        time: "19:30",
-        screen: "スクリーン1",
-        poster: "/images/movie-poster-1.jpg",
+        id: "",
+        title: "",
+        date: "",
+        time: "",
+        screen: "",
+        poster: "",
     })
     const [currentConfig, setCurrentConfig] = useState<ScreenConfig>(screenConfigs["スクリーン1"])
 
     // URLパラメータから情報を取得
+    const scId = searchParams.get("scId")
+    const [screenId, setScreenId] = useState<number | null>(null);
+
     useEffect(() => {
-        const screen = searchParams.get("screen") || "スクリーン1"
-        const movieId = searchParams.get("movieId") || "1"
-        const date = searchParams.get("date") || "2024年5月5日"
-        const time = searchParams.get("time") || "19:30"
+      if (!scId) return;
 
-        setMovieInfo({
-            id: movieId,
-            title: "インターステラー",
-            date: date,
-            time: time,
-            screen: screen,
-            poster: "/images/movie-poster-1.jpg",
+      fetch(`http://localhost:8080/screenings/${scId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to fetch screening data");
+          return res.json();
         })
+        .then(data => {
+          setScreenId(data.screen.id);
+          console.log("API response:", data);
+          if (!data || !data.movie || !data.screen) {
+            console.error("APIレスポンスの形式が期待と違います");
+            return;
+          }
+          const screenId = data.screen.id;
+          const screenName = `スクリーン${screenId}`;
 
-        setCurrentConfig(screenConfigs[screen] || screenConfigs["スクリーン1"])
-    }, [searchParams])
+          setMovieInfo({
+            id: data.movie.id.toString(),
+            title: data.movie.title,
+            date: new Date(data.date).toLocaleDateString(),
+            time: new Date(data.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            screen: screenName,
+            poster: data.movie.posterUrl || "/images/movie-poster-1.jpg",
+          })
+          setCurrentConfig(screenConfigs[screenName] || screenConfigs["スクリーン1"])
+        })
+        .catch(err => {
+          console.error(err)
+      // 必要ならエラーメッセージ表示や fallback 処理を書く
+        })
+    }, [scId])
+
+
 
     // 座席データの初期化
     useEffect(() => {
@@ -191,6 +216,7 @@ export default function SeatSelection() {
             return currentConfig.rows.map((row, rowIndex) => {
                 const seatsInRow = currentConfig.seatsPerRow[rowIndex]
                 return (
+
                     <div key={row} className="flex items-center justify-center gap-1">
                         {/* 行ラベル（左） */}
                         <div className="w-8 text-center text-gold font-medium font-en">{row}</div>
@@ -384,24 +410,50 @@ export default function SeatSelection() {
     }
 
     // 次のページへ進む
-    const handleNext = () => {
-        if (selectedSeats.length === 0) {
-            alert("座席を選択してください")
-            return
+    const handleNext = async () => {
+      if (!screenId) {
+        alert("スクリーンIDが取得できていません");
+        return;
+      }
+  
+      if (selectedSeats.length === 0) {
+        alert("座席を選択してください")
+        return
+      }
+
+      try {
+        for (const seatId of selectedSeats) {
+        const row = seatId.slice(0, 1) // A〜J
+        const column = parseInt(seatId.slice(1)) // 数字部分
+        await createSeat({
+            screen_id: screenId,
+            row,
+            column,
+          })
+        }
+        alert("座席の予約に成功しました。");
+
+        const seatSelectionData = {
+          screen_id: screenId,
+          selectedSeats,
+          movieId: movieInfo.id,
+          date: movieInfo.date,
+          time: movieInfo.time,
+          screen: movieInfo.screen,
         }
 
-        const params = new URLSearchParams()
-        params.set("movieId", movieInfo.id)
-        params.set("seats", selectedSeats.join(","))
-        params.set("date", movieInfo.date)
-        params.set("time", movieInfo.time)
-        params.set("screen", movieInfo.screen)
-
-        router.push(`/tickets/types?${params.toString()}`)
+        sessionStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
+        router.push(`/tickets/types?`)
+      } catch (error) {
+        alert("座席の予約に失敗しました。")
+        console.error(error)
+      }
     }
+
 
     return (
         <div className="min-h-screen pt-24">
+            <p>確認用:{scId}</p>
             {/* ヒーローセクション */}
             <section className="relative h-[20vh] md:h-[30vh] overflow-hidden">
                 <div className="absolute inset-0">
@@ -540,7 +592,7 @@ export default function SeatSelection() {
                                     </button>
 
                                     <Link
-                                        href="/tickets/date-selection"
+                                        href="/tickets/schedule"
                                         className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-accent/30
                       text-text-secondary hover:text-text-primary hover:border-accent/50 rounded-lg transition-all duration-300 font-jp"
                                     >
