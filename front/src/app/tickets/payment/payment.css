@@ -2,6 +2,12 @@
 div#payment{
     margin: 80px auto 0 auto;
 }
+div#payment h1{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+
+}
 div#payment h2{
 
     font-size: 24px;
@@ -20,7 +26,7 @@ div#inputPurchaser, div#inputCredit{
 }
 
 /*入力フォームデザイン　共通*/
-div#payment label{
+div#payment label.payLabel{
     display: inline-block;
     background-color: #fff;
     /*margin-bottom: 50px;*/
@@ -30,7 +36,7 @@ div#payment label{
     border: none;
     border-radius: 10px 0 0 10px;
 }
-div#payment input[type="text"],input[type="email"],input[type="password"]{
+div#payment input.payInput{
     padding: 10px 25px;
     margin-bottom: 50px;
     width: 50%;
@@ -47,4 +53,27 @@ div#inputPurchaser{
     align-items: center;
     margin: 0 auto 100px auto;
     width: 90%;
+}
+
+/* 表示 */
+div#viewCredit{
+    margin: 0 auto 0 auto;
+    /*background-color: #888a;*/
+    width: 50%;
+}
+
+/*金額表示・購入ボタン*/
+div#decision{
+    display: flex;
+    justify-content: space-evenly;
+    width: 60%;
+    margin: 0 auto 50px auto;
+}
+h3#price{
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    text-decoration: underline;
+}
+div#decision button{
+    margin: 1.5rem 0 0 0;
 }
