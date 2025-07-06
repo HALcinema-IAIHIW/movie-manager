@@ -12,13 +12,13 @@ type User struct {
 	Email    string `gorm:"unique"`
 	Password string
 	RoleID   uint
-	Role     Role `gorm:"foreignKey:RoleID"`
+	Role     Role `gorm:"foreignKey:RoleID" json:"role"`
 }
 
 type Role struct {
 	ID       uint   `gorm:"primaryKey"`
-	RoleName string `gorm:"unique;not null"` // "一般", "大学生", "中学生～高校生", "小学生、幼児"
-	PriceYen int    `gorm:"not null"`        // チケット価格
+	RoleName string `gorm:"unique;not null" json:"role"` // "一般", "大学生", "中学生～高校生", "小学生、幼児"
+	PriceYen int    `gorm:"not null"`                    // チケット価格
 }
 
 type Movie struct {
@@ -79,9 +79,10 @@ type Purchase struct {
 	PurchaseTime time.Time
 	TotalPrice   int
 
-	User            User             `gorm:"foreignKey:UserID" json:"user,omitempty"`
-	Screening       Screening        `gorm:"foreignKey:ScreeningID"`
-	PurchaseDetails []PurchaseDetail `gorm:"foreignKey:PurchaseID"`
+	User             User              `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	Screening        Screening         `gorm:"foreignKey:ScreeningID"`
+	PurchaseDetails  []PurchaseDetail  `gorm:"foreignKey:PurchaseID"`
+	ReservationSeats []ReservationSeat `gorm:"foreignKey:PurchaseID"`
 }
 
 // どの座席を押さえたか

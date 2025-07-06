@@ -1,75 +1,34 @@
-"use client"
+"use client" // Next.js App Routerのクライアントコンポーネント指定
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Mail, Phone, CreditCard, Calendar, MapPin, Clock, QrCode, Info, Edit3, Save, Film } from "lucide-react"
 
-// 予約データの型定義
+
+// ★Reservation 型の定義をバックエンドのUserReservationResponseに厳密に合わせるよ★
+// GoのJSONタグ名と完全に一致させるのがポイントだよ。
 type Reservation = {
-    id: number
-    movieTitle: string
-    date: string
-    time: string
-    endTime: string
-    screen: string
-    seat: string
-    poster: string
-    timeUntil: string
+    purchase_id: number;
+    reservation_seat_id: number;
+    movieTitle: string;
+    date: string;       // "YYYY年MM月DD日" 形式
+    time: string;       // "HH:MM" 形式
+    endTime: string;    // "HH:MM" 形式
+    screen: string;     // スクリーンID (stringに変換されている) 例: "1"
+    seat: string;       // 座席番号 例: "A1"
+    poster: string;     // Movie.PosterPath からくるURL
+    timeUntil: string;  // "残り X時間 Y分 Z秒" または "上映済み"
 }
 
-// コレクションデータの型定義
+// CollectionItem 型（変更なし）
 type CollectionItem = {
-    id: number
-    movieTitle: string
-    watchedDate: string
-    screen: string
-    poster: string
+    id: number;
+    movieTitle: string;
+    watchedDate: string;
+    screen: string;
+    poster: string;
 }
-
-// サンプルデータ
-const reservationData: Reservation = {
-    id: 1,
-    movieTitle: "名探偵コナン",
-    date: "2024年5月5日",
-    time: "23:45",
-    endTime: "25:15",
-    screen: "スクリーン1",
-    seat: "G-15",
-    poster: "/images/movie-poster-1.jpg",
-    timeUntil: "0時間後",
-}
-
-const collectionData: CollectionItem[] = [
-    {
-        id: 1,
-        movieTitle: "インターステラー",
-        watchedDate: "2024年4月20日",
-        screen: "スクリーン1",
-        poster: "/images/movie-poster-1.jpg",
-    },
-    {
-        id: 2,
-        movieTitle: "ブレードランナー 2049",
-        watchedDate: "2024年4月15日",
-        screen: "スクリーン2",
-        poster: "/images/movie-poster-2.jpg",
-    },
-    {
-        id: 3,
-        movieTitle: "ラ・ラ・ランド",
-        watchedDate: "2024年4月10日",
-        screen: "スクリーン3",
-        poster: "/images/movie-poster-3.jpg",
-    },
-    {
-        id: 4,
-        movieTitle: "ダンケルク",
-        watchedDate: "2024年4月5日",
-        screen: "スクリーン1",
-        poster: "/images/movie-poster-4.jpg",
-    },
-]
 
 export default function MyPage() {
     const [isEditing, setIsEditing] = useState(false)
@@ -80,9 +39,74 @@ export default function MyPage() {
         cardExpiry: "12/26",
     })
 
+    // 予約情報と鑑賞履歴のステート
+    const [reservations, setReservations] = useState<Reservation[]>([]);
+    // 鑑賞履歴はまだフェッチしないので、ここではダミーデータを設定しない
+    const [collectionItems] = useState<CollectionItem[]>([]);
+    const [loadingReservations, setLoadingReservations] = useState(true);
+    const [loadingCollection, setLoadingCollection] = useState(false); // 鑑賞履歴はフェッチしないので、ロード済みと設定
+    const [errorReservations, setErrorReservations] = useState<string | null>(null);
+    const [errorCollection, setErrorCollection] = useState<string | null>(null); // 鑑賞履歴はフェッチしないので、エラーなしと設定
+
+
+    // --- データフェッチング ---
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const loggedInUserId = localStorage.getItem('userId'); // localStorageからuserIdを取得
+
+        // トークンまたはUserIDがない場合は、ログインしていないと判断し、フェッチをスキップ
+        if (!token || !loggedInUserId) {
+            setErrorReservations("ログインしていません。");
+            setErrorCollection("ログインしていません。（鑑賞履歴はログイン後に表示されます）");
+            setLoadingReservations(false);
+            setLoadingCollection(false);
+            return;
+        }
+
+        const fetchOptions: RequestInit = {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`, // JWTトークンをAuthorizationヘッダーに設定
+                "Content-Type": "application/json",
+            },
+            mode: "cors", // CORSを有効にする
+        };
+
+        // 予約情報のフェッチ
+        const fetchReservations = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/purchases/reservations/${loggedInUserId}`, fetchOptions);
+
+                if (!response.ok) {
+                    const errorData = await response.json(); // エラーレスポンスをパース
+                    throw new Error(errorData.error || `予約情報の取得に失敗しました: ${response.status}`);
+                }
+                const data: Reservation[] = await response.json();
+                setReservations(data);
+            } catch (err: unknown) { 
+                console.error("予約情報の取得エラー:", err);
+                if (err instanceof Error) {
+                    setErrorReservations(`予約情報の取得中にエラーが発生しました: ${err.message}`);
+                } else {
+                    setErrorReservations("予約情報の取得中に不明なエラーが発生しました。");
+                }
+            } finally {
+                setLoadingReservations(false); // ローディング状態を解除
+            }
+        };
+
+        fetchReservations(); // 関数を呼び出して予約情報を取得
+
+        // 鑑賞履歴は現在のところAPIが実装されていないので、ロード済みとして設定
+        setLoadingCollection(false);
+        setErrorCollection(null); // エラーがない場合
+    }, []); // コンポーネントがマウントされたときに一度だけ実行
+
     const handleSave = () => {
         setIsEditing(false)
-        // ここで実際の保存処理を行う
+        // ここでプロフィールの実際の保存処理をAPI経由で行う
+        console.log("プロフィールデータを保存:", profileData);
+        // 例: fetch('/api/users/me/profile', { method: 'PUT', headers: { ... }, body: JSON.stringify(profileData) });
     }
 
     return (
@@ -120,64 +144,75 @@ export default function MyPage() {
                         {/* 予約セクション */}
                         <div>
                             <h2 className="text-3xl font-bold text-text-primary mb-8 font-jp">現在の予約</h2>
-                            <div className="card-luxury p-8">
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-                                    {/* 映画ポスター */}
-                                    <div className="lg:col-span-1">
-                                        <div className="relative aspect-[2/3] max-w-48 mx-auto">
-                                            <Image
-                                                src={reservationData.poster || "/placeholder.svg"}
-                                                alt={reservationData.movieTitle}
-                                                fill
-                                                className="object-cover rounded-lg shadow-luxury"
-                                            />
-                                        </div>
-                                    </div>
+                            {loadingReservations ? (
+                                <p>予約情報を読み込み中...</p>
+                            ) : errorReservations ? (
+                                <p className="text-red-500">{errorReservations}</p>
+                            ) : reservations.length === 0 ? (
+                                <p className="text-text-secondary">現在の予約はありません。</p>
+                            ) : (
+                                // 複数の予約がある可能性があるので、mapでレンダリング
+                                reservations.map((reservationData) => (
+                                    <div key={reservationData.purchase_id} className="card-luxury p-8 mb-6 last:mb-0">
+                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                                            {/* 映画ポスター */}
+                                            <div className="lg:col-span-1">
+                                                <div className="relative aspect-[2/3] max-w-48 mx-auto">
+                                                    <Image
+                                                        src={reservationData.poster || "/images/movie-poster-1.jpg"}
+                                                        alt={reservationData.movieTitle ? `${reservationData.movieTitle}のポスター` : "映画ポスター"}
+                                                        fill
+                                                        className="object-cover rounded-lg shadow-luxury"
+                                                    />
+                                                </div>
+                                            </div>
 
-                                    {/* 予約詳細 */}
-                                    <div className="lg:col-span-2 space-y-6">
-                                        <div>
-                                            <h3 className="text-2xl font-bold text-gold mb-4 font-jp border-b border-gold/30 pb-2 inline-block">
-                                                {reservationData.movieTitle}
-                                            </h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-text-secondary">
-                                                <div className="flex items-center gap-3">
-                                                    <Calendar size={20} className="text-gold flex-shrink-0" />
-                                                    <div>
-                                                        <p className="font-medium font-jp">{reservationData.date}</p>
-                                                        <p className="text-sm text-text-muted font-jp">
-                                                            {reservationData.time} 〜 {reservationData.endTime}
-                                                        </p>
+                                            {/* 予約詳細 */}
+                                            <div className="lg:col-span-2 space-y-6">
+                                                <div>
+                                                    <h3 className="text-2xl font-bold text-gold mb-4 font-jp border-b border-gold/30 pb-2 inline-block">
+                                                        {reservationData.movieTitle}
+                                                    </h3>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-text-secondary">
+                                                        <div className="flex items-center gap-3">
+                                                            <Calendar size={20} className="text-gold flex-shrink-0" />
+                                                            <div>
+                                                                <p className="font-medium font-jp">{reservationData.date}</p>
+                                                                <p className="text-sm text-text-muted font-jp">
+                                                                    {reservationData.time} 〜 {reservationData.endTime}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <MapPin size={20} className="text-gold flex-shrink-0" />
+                                                            <div>
+                                                                <p className="font-medium font-jp">{reservationData.screen}</p>
+                                                                <p className="text-sm text-text-muted font-jp">座席: {reservationData.seat}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <Clock size={20} className="text-gold flex-shrink-0" />
+                                                            <p className="font-medium text-gold font-jp">{reservationData.timeUntil}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-3">
-                                                    <MapPin size={20} className="text-gold flex-shrink-0" />
-                                                    <div>
-                                                        <p className="font-medium font-jp">{reservationData.screen}</p>
-                                                        <p className="text-sm text-text-muted font-jp">座席: {reservationData.seat}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    <Clock size={20} className="text-gold flex-shrink-0" />
-                                                    <p className="font-medium text-gold font-jp">{reservationData.timeUntil}</p>
+
+                                                {/* アクションボタン */}
+                                                <div className="flex flex-col sm:flex-row gap-4">
+                                                    <button className="btn-luxury flex items-center justify-center gap-2 font-jp">
+                                                        <Info size={18} />
+                                                        映画詳細
+                                                    </button>
+                                                    <button className="btn-outline-luxury flex items-center justify-center gap-2 font-jp">
+                                                        <QrCode size={18} />
+                                                        QRコード
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {/* アクションボタン */}
-                                        <div className="flex flex-col sm:flex-row gap-4">
-                                            <button className="btn-luxury flex items-center justify-center gap-2 font-jp">
-                                                <Info size={18} />
-                                                映画詳細
-                                            </button>
-                                            <button className="btn-outline-luxury flex items-center justify-center gap-2 font-jp">
-                                                <QrCode size={18} />
-                                                QRコード
-                                            </button>
-                                        </div>
                                     </div>
-                                </div>
-                            </div>
+                                ))
+                            )}
                         </div>
 
                         {/* プロフィールセクション */}
@@ -284,50 +319,58 @@ export default function MyPage() {
                         {/* コレクションセクション */}
                         <div>
                             <h2 className="text-3xl font-bold text-text-primary mb-8 font-jp">鑑賞履歴</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {collectionData.map((item) => (
-                                    <div key={item.id} className="card-luxury p-0 overflow-hidden hover-lift group">
-                                        {/* 映画ポスター */}
-                                        <div className="relative aspect-[2/3] overflow-hidden">
-                                            <Image
-                                                src={item.poster || "/placeholder.svg"}
-                                                alt={item.movieTitle}
-                                                fill
-                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
-                                            />
+                            {loadingCollection ? (
+                                <p>鑑賞履歴を読み込み中...</p>
+                            ) : errorCollection ? (
+                                <p className="text-red-500">{errorCollection}</p>
+                            ) : collectionItems.length === 0 ? (
+                                <p className="text-text-secondary">鑑賞履歴はありません。</p>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    {collectionItems.map((item) => (
+                                        <div key={item.id} className="card-luxury p-0 overflow-hidden hover-lift group">
+                                            {/* 映画ポスター */}
+                                            <div className="relative aspect-[2/3] overflow-hidden">
+                                                <Image
+                                                    src={item.poster || "/placeholder.svg"}
+                                                    alt={item.movieTitle ? `${item.movieTitle}のポスター` : "映画ポスター"}
+                                                    fill
+                                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                                />
 
-                                            {/* ホバー時のオーバーレイ */}
-                                            <div
-                                                className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100
+                                                {/* ホバー時のオーバーレイ */}
+                                                <div
+                                                    className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100
                         transition-all duration-300 flex items-center justify-center"
-                                            >
-                                                <Link
-                                                    href={`/movies/${item.id}`}
-                                                    className="w-12 h-12 bg-gold/20 hover:bg-gold/30 text-gold
-                            rounded-full flex items-center justify-center transition-colors"
                                                 >
-                                                    <Film size={20} />
-                                                </Link>
+                                                    <Link
+                                                        href={`/movies/${item.id}`}
+                                                        className="w-12 h-12 bg-gold/20 hover:bg-gold/30 text-gold
+                            rounded-full flex items-center justify-center transition-colors"
+                                                    >
+                                                        <Film size={20} />
+                                                    </Link>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        {/* 映画情報 */}
-                                        <div className="p-4">
-                                            <h3 className="font-medium text-text-primary mb-2 line-clamp-2 font-jp">{item.movieTitle}</h3>
-                                            <div className="space-y-1 text-sm text-text-muted">
-                                                <div className="flex items-center gap-2">
-                                                    <Calendar size={12} />
-                                                    <span className="font-jp">{item.watchedDate}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <MapPin size={12} />
-                                                    <span className="font-jp">{item.screen}</span>
+                                            {/* 映画情報 */}
+                                            <div className="p-4">
+                                                <h3 className="font-medium text-text-primary mb-2 line-clamp-2 font-jp">{item.movieTitle}</h3>
+                                                <div className="space-y-1 text-sm text-text-muted">
+                                                    <div className="flex items-center gap-2">
+                                                        <Calendar size={12} />
+                                                        <span className="font-jp">{item.watchedDate}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <MapPin size={12} />
+                                                        <span className="font-jp">{item.screen}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
