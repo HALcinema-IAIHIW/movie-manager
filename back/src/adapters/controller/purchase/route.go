@@ -12,7 +12,6 @@ func NewPurchaseRouter(handler *PurchaseHandler) *PurchaseRouter {
 	return &PurchaseRouter{handler: handler}
 }
 
-// RegisterRoutes は Gin エンジンに購入関連のルートを登録するよ。
 func (r *PurchaseRouter) RegisterRoutes(engine *gin.Engine) {
 	purchaseGroup := engine.Group("/purchases")
 	{

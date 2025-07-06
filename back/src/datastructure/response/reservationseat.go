@@ -12,7 +12,6 @@ type ReservationSeatResponse struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
-// UserReservationResponse はユーザーの予約詳細情報を表すレスポンスモデルです。
 type UserReservationResponse struct {
 	PurchaseID        uint   `json:"purchase_id"`
 	ReservationSeatID uint   `json:"reservation_seat_id"`

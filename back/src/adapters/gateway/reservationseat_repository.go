@@ -1,16 +1,18 @@
 package gateway
 
 import (
-	"modules/src/database/model" // modelパッケージのパスを確認
+	"errors"
+	"modules/src/database/model"
 
 	"gorm.io/gorm"
 )
 
-// ReservationSeatRepository は ReservationSeat モデルのデータ操作を定義するインターフェースです。
 type ReservationSeatRepository interface {
 	CreateReservationSeat(reservationSeat *model.ReservationSeat) error
 	FindAllReservationSeats() ([]model.ReservationSeat, error)
 	GetReservationSeatByID(id uint) (*model.ReservationSeat, error)
+	GetReservationSeatsByScreenID(screenID uint) ([]model.ReservationSeat, error)
+	GetReservationSeatsByScreeningID(screeningID uint) ([]model.ReservationSeat, error)
 }
 
 type GormReservationSeatRepository struct {
@@ -38,4 +40,38 @@ func (r *GormReservationSeatRepository) GetReservationSeatByID(id uint) (*model.
 		return nil, err
 	}
 	return &reservationSeat, nil
+}
+
+func (r *GormReservationSeatRepository) GetReservationSeatsByScreenID(screenID uint) ([]model.ReservationSeat, error) {
+	var reservationSeats []model.ReservationSeat
+	err := r.DB.
+		Joins("JOIN seats ON seats.id = reservation_seats.seat_id").
+		Where("seats.screen_id = ?", screenID).
+		Preload("Seat").
+		Find(&reservationSeats).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []model.ReservationSeat{}, nil
+		}
+		return nil, err
+	}
+	return reservationSeats, nil
+}
+
+func (r *GormReservationSeatRepository) GetReservationSeatsByScreeningID(screeningID uint) ([]model.ReservationSeat, error) {
+	var reservationSeats []model.ReservationSeat
+	err := r.DB.
+		Joins("JOIN purchases ON purchases.id = reservation_seats.purchase_id").
+		Where("purchases.screening_id = ?", screeningID).
+		Preload("Seat"). // Seat情報もプリロード
+		Find(&reservationSeats).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []model.ReservationSeat{}, nil
+		}
+		return nil, err
+	}
+	return reservationSeats, nil
 }

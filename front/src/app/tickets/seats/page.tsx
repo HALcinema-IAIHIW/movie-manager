@@ -1,11 +1,15 @@
-"use client"
+// src/app/tickets/seats/page.tsx
+
+"use client" // Next.js App Routerのクライアントコンポーネント指定
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Users, MapPin, Calendar, Clock } from "lucide-react"
-import { createSeat } from "../../libs/api/seat"
+// createSeat はもう直接は使わないのでコメントアウトか削除
+// import { createSeat } from "../../libs/api/seat"
+
 
 // 座席の状態を定義
 type SeatStatus = "available" | "reserved" | "selected"
@@ -15,20 +19,21 @@ type Seat = {
     row: string
     number: number
     status: SeatStatus
-    id: string
+    id: string // 例: "A1"
 }
 
-// 映画情報の型定義
+// MovieInfo 型に poster を戻す
 type MovieInfo = {
     id: string
     title: string
     date: string
     time: string
+    endTime: string
     screen: string
-    poster: string
+    poster: string; // ★poster をここに戻すよ★
 }
 
-// スクリーン設定の型定義
+// スクリーン設定の型定義 (既存のまま)
 type ScreenConfig = {
     rows: string[]
     seatsPerRow: number[]
@@ -36,51 +41,51 @@ type ScreenConfig = {
     layout: "large" | "medium" | "small"
 }
 
-// スクリーン設定
+// スクリーン設定 (既存のまま)
 const screenConfigs: { [key: string]: ScreenConfig } = {
-    スクリーン1: {
+    "スクリーン1": {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
         seatsPerRow: [20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
         totalSeats: 200,
         layout: "large",
     },
-    スクリーン2: {
+    "スクリーン2": {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
         seatsPerRow: [20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
         totalSeats: 200,
         layout: "large",
     },
-    スクリーン3: {
+    "スクリーン3": {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
         seatsPerRow: [20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
         totalSeats: 200,
         layout: "large",
     },
-    スクリーン4: {
+    "スクリーン4": {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
         seatsPerRow: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
         totalSeats: 120,
         layout: "medium",
     },
-    スクリーン5: {
+    "スクリーン5": {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
         seatsPerRow: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
         totalSeats: 120,
         layout: "medium",
     },
-    スクリーン6: {
+    "スクリーン6": {
         rows: ["A", "B", "C", "D", "E", "F", "G"],
         seatsPerRow: [10, 10, 10, 10, 10, 10, 10],
         totalSeats: 70,
         layout: "small",
     },
-    スクリーン7: {
+    "スクリーン7": {
         rows: ["A", "B", "C", "D", "E", "F", "G"],
         seatsPerRow: [10, 10, 10, 10, 10, 10, 10],
         totalSeats: 70,
         layout: "small",
     },
-    スクリーン8: {
+    "スクリーン8": {
         rows: ["A", "B", "C", "D", "E", "F", "G"],
         seatsPerRow: [10, 10, 10, 10, 10, 10, 10],
         totalSeats: 70,
@@ -88,7 +93,28 @@ const screenConfigs: { [key: string]: ScreenConfig } = {
     },
 }
 
-// この辺に持ってきた値
+// バックエンドからの予約済み座席レスポンスの型
+type ReservedSeatResponse = {
+    reservation_seat_id: number;
+    purchase_id: number;
+    seat_id: number;
+    is_cancelled: boolean;
+    seat_number: string; // "A1" のような形式
+}
+
+// バックエンドの CreatePurchaseRequest に合わせる新しい型定義
+type CreatePurchaseDetail = {
+    role_id: number; // チケットの種類（例: 大人、学生）
+    quantity: number; // 数量
+}
+
+type CreatePurchaseData = {
+    user_id: number;
+    screening_id: number;
+    purchase_time: string; // ISO 8601形式の購入日時 (例: "2025-07-07T15:30:00+09:00")
+    purchase_details: CreatePurchaseDetail[];
+    selected_seat_ids: string[]; // 選択された座席のIDリスト (例: ["A1", "B2"])
+}
 
 
 export default function SeatSelection() {
@@ -101,80 +127,150 @@ export default function SeatSelection() {
         title: "",
         date: "",
         time: "",
+        endTime:"",
         screen: "",
-        poster: "",
+        poster: "", // 初期値に追加
     })
     const [currentConfig, setCurrentConfig] = useState<ScreenConfig>(screenConfigs["スクリーン1"])
 
     // URLパラメータから情報を取得
-    const scId = searchParams.get("scId")
-    const [screenId, setScreenId] = useState<number | null>(null);
+    const scId = searchParams.get("scId") // ScreeningID (string)
+    const [screeningId, setScreeningId] = useState<string | null>(null); // StateをscIdのstring型に合わせる
 
+    // URLパラメータからScreeningIDを取得し、映画情報をフェッチ
     useEffect(() => {
-      if (!scId) return;
-
-      fetch(`http://localhost:8080/screenings/${scId}`)
-        .then(res => {
-          if (!res.ok) throw new Error("Failed to fetch screening data");
-          return res.json();
-        })
-        .then(data => {
-          setScreenId(data.screen.id);
-          console.log("API response:", data);
-          if (!data || !data.movie || !data.screen) {
-            console.error("APIレスポンスの形式が期待と違います");
+        if (!scId) {
+            console.warn("URLパラメータにscIdがありません。");
             return;
-          }
-          const screenId = data.screen.id;
-          const screenName = `スクリーン${screenId}`;
+        }
+        setScreeningId(scId); // scIdをscreeningIdステートにセット
 
-          setMovieInfo({
-            id: data.movie.id.toString(),
-            title: data.movie.title,
-            date: new Date(data.date).toLocaleDateString(),
-            time: new Date(data.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            screen: screenName,
-            poster: data.movie.posterUrl || "/images/movie-poster-1.jpg",
-          })
-          setCurrentConfig(screenConfigs[screenName] || screenConfigs["スクリーン1"])
-        })
-        .catch(err => {
-          console.error(err)
-      // 必要ならエラーメッセージ表示や fallback 処理を書く
-        })
-    }, [scId])
+        const fetchMovieAndScreeningInfo = async () => {
+            try {
+                // Screeningの詳細情報を取得するAPIを呼び出す
+                const response = await fetch(`http://localhost:8080/screenings/${scId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch screening data");
+                }
+                const data = await response.json(); // APIレスポンスの型は後で厳密に定義すると良い
+                console.log("Screening API response:", data);
 
-
-
-    // 座席データの初期化
-    useEffect(() => {
-        const seatData: Seat[] = []
-
-        currentConfig.rows.forEach((row, rowIndex) => {
-            const seatsInRow = currentConfig.seatsPerRow[rowIndex] || 0
-            for (let i = 1; i <= seatsInRow; i++) {
-                const seatId = `${row}${i}`
-                let status: SeatStatus = "available"
-
-                // ランダムに一部の座席を予約済みに設定（デモ用）
-                if (Math.random() < 0.15) {
-                    status = "reserved"
+                // APIレスポンスの形式チェックを強化
+                if (!data || !data.screening_period || !data.screening_period.movie ||
+                    !data.screening_period.screen || !data.start_time || !data.duration) {
+                    console.error("APIレスポンスの形式が期待と違います。必要なデータが不足しています。");
+                    // 必要ならエラーメッセージ表示やfallback処理
+                    return;
                 }
 
-                seatData.push({
-                    row,
-                    number: i,
-                    status,
-                    id: seatId,
-                })
+                // 日付と時刻のフォーマット
+                const movieDate = new Date(data.date).toLocaleDateString("ja-JP", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                }); // "2024年5月5日"
+                const startTime = new Date(data.start_time).toLocaleTimeString("ja-JP", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false, // 24時間表示
+                }); // "14:00"
+
+                // 上映終了時刻の計算 (startTime + duration)
+                const startDateTime = new Date(data.start_time);
+                const endTime = new Date(startDateTime.getTime() + data.duration * 60 * 1000).toLocaleTimeString("ja-JP", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                });
+
+                // スクリーン名（IDを文字列にしたキー）
+                const screenNameKey = `スクリーン${data.screening_period.screen.id}`;
+
+
+                setMovieInfo({
+                    id: data.screening_period.movie.id.toString(),
+                    title: data.screening_period.movie.title,
+                    date: movieDate,
+                    time: startTime,
+                    endTime: endTime, // 計算したendTimeを設定
+                    screen: screenNameKey, // Screen IDを文字列にしたキー
+                    poster: data.screening_period.movie.posterPath || "/images/movie-poster-1.jpg", // PosterPathを使用
+                });
+
+                setCurrentConfig(screenConfigs[screenNameKey] || screenConfigs["スクリーン1"]);
+
+            } catch (err) {
+                console.error("映画情報取得エラー:", err);
+                // 必要ならエラーメッセージ表示や fallback 処理を書く
             }
-        })
+        };
 
-        setSeats(seatData)
-        setSelectedSeats([]) // スクリーン変更時に選択をリセット
-    }, [currentConfig])
+        fetchMovieAndScreeningInfo();
 
-    // 座席選択の処理
+    }, [scId]); // scId が変更されたときに実行
+
+
+    // 座席データの初期化と予約済み座席のフェッチ
+    useEffect(() => {
+        // screeningId と currentConfig が揃ってから実行
+        // currentConfig.rows.length はスクリーン設定がロードされたことを確認するため
+        // movieInfo.screen はこのuseEffectの予約済み座席フェッチには直接関係ないので依存から外す
+        if (!screeningId || !currentConfig.rows.length) return;
+
+        const initializeSeats = async () => {
+            const initialSeatData: Seat[] = [];
+
+            // 全座席の初期状態を"available"として生成
+            currentConfig.rows.forEach((row, rowIndex) => {
+                const seatsInRow = currentConfig.seatsPerRow[rowIndex] || 0;
+                for (let i = 1; i <= seatsInRow; i++) {
+                    const seatId = `${row}${i}`;
+                    initialSeatData.push({
+                        row,
+                        number: i,
+                        status: "available" as SeatStatus, // 明示的にSeatStatusにキャスト
+                        id: seatId,
+                    });
+                }
+            });
+
+            // ★予約済み座席のフェッチ★ (screeningIDベース)
+            try {
+                // APIエンドポイントを /reservation-seats/screening/:screeningID に変更
+                // movieInfo.screen から actualScreenId を抽出するロジックは、
+                // このAPI呼び出しでは不要。screeningId を直接使う。
+                const response = await fetch(`http://localhost:8080/reservationseats/screening/${screeningId}`);
+                if (!response.ok) {
+                    // エラーレスポンスのボディを読んで、より詳細なエラーメッセージを出す
+                    const errorData = await response.json();
+                    throw new Error(`予約済み座席の取得に失敗しました: ${response.statusText} - ${errorData.error || '不明なエラー'}`);
+                }
+                const reservedSeatsData: ReservedSeatResponse[] = await response.json();
+                console.log("Reserved Seats API response:", reservedSeatsData);
+
+                // 予約済み座席のステータスを更新
+                const updatedSeats = initialSeatData.map(seat => {
+                    const isReserved = reservedSeatsData.some(reservedSeat => reservedSeat.seat_number === seat.id);
+                    if (isReserved) {
+                        return { ...seat, status: "reserved" as SeatStatus };
+                    }
+                    return seat;
+                });
+                setSeats(updatedSeats);
+            } catch (err) {
+                console.error("予約済み座席情報取得エラー:", err);
+                setSeats(initialSeatData); // エラー時は初期生成した座席データ（すべてavailable）を使用
+            } finally {
+                setSelectedSeats([]); // スクリーン変更時に選択をリセット
+            }
+        };
+
+        initializeSeats();
+
+    }, [screeningId, currentConfig]); // movieInfo.screen を依存配列から削除
+
+
+    // 座席選択の処理 (既存のまま)
     const handleSeatClick = (seatId: string) => {
         const seat = seats.find((s) => s.id === seatId)
         if (!seat || seat.status === "reserved") return
@@ -182,7 +278,7 @@ export default function SeatSelection() {
         if (selectedSeats.includes(seatId)) {
             // 選択解除
             setSelectedSeats(selectedSeats.filter((id) => id !== seatId))
-            setSeats(seats.map((s) => (s.id === seatId ? { ...s, status: "available" } : s)))
+            setSeats(seats.map((s) => (s.id === seatId ? { ...s, status: "available" as SeatStatus } : s)))
         } else {
             // 最大4席まで選択可能
             if (selectedSeats.length >= 4) {
@@ -191,11 +287,11 @@ export default function SeatSelection() {
             }
             // 選択
             setSelectedSeats([...selectedSeats, seatId])
-            setSeats(seats.map((s) => (s.id === seatId ? { ...s, status: "selected" } : s)))
+            setSeats(seats.map((s) => (s.id === seatId ? { ...s, status: "selected" as SeatStatus } : s)))
         }
     }
 
-    // 座席のスタイルを取得
+    // 座席のスタイルを取得 (既存のまま)
     const getSeatStyle = (status: SeatStatus) => {
         switch (status) {
             case "available":
@@ -209,7 +305,7 @@ export default function SeatSelection() {
         }
     }
 
-    // 座席レイアウトのレンダリング
+    // 座席レイアウトのレンダリング (既存のまま)
     const renderSeatLayout = () => {
         if (currentConfig.layout === "large") {
             // 大スクリーン（200席）: 4-12-4 配置
@@ -225,7 +321,6 @@ export default function SeatSelection() {
                         <div className="flex gap-1">
                             {/* 1-4席 */}
                             {Array.from({ length: 4 }, (_, i) => i + 1).map((num) => {
-                                if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
                                 return (
@@ -233,7 +328,7 @@ export default function SeatSelection() {
                                         key={seatId}
                                         onClick={() => handleSeatClick(seatId)}
                                         className={`w-8 h-8 text-xs font-medium rounded border transition-all duration-200 ${getSeatStyle(
-                                            seat?.status || "available",
+                                            seat?.status || "available" as SeatStatus,
                                         )}`}
                                         disabled={seat?.status === "reserved"}
                                     >
@@ -247,7 +342,6 @@ export default function SeatSelection() {
 
                             {/* 5-16席 */}
                             {Array.from({ length: 12 }, (_, i) => i + 5).map((num) => {
-                                if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
                                 return (
@@ -255,7 +349,7 @@ export default function SeatSelection() {
                                         key={seatId}
                                         onClick={() => handleSeatClick(seatId)}
                                         className={`w-8 h-8 text-xs font-medium rounded border transition-all duration-200 ${getSeatStyle(
-                                            seat?.status || "available",
+                                            seat?.status || "available" as SeatStatus,
                                         )}`}
                                         disabled={seat?.status === "reserved"}
                                     >
@@ -277,7 +371,7 @@ export default function SeatSelection() {
                                         key={seatId}
                                         onClick={() => handleSeatClick(seatId)}
                                         className={`w-8 h-8 text-xs font-medium rounded border transition-all duration-200 ${getSeatStyle(
-                                            seat?.status || "available",
+                                            seat?.status || "available" as SeatStatus,
                                         )}`}
                                         disabled={seat?.status === "reserved"}
                                     >
@@ -305,7 +399,6 @@ export default function SeatSelection() {
                         <div className="flex gap-1">
                             {/* 1-2席 */}
                             {Array.from({ length: 2 }, (_, i) => i + 1).map((num) => {
-                                if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
                                 return (
@@ -313,7 +406,7 @@ export default function SeatSelection() {
                                         key={seatId}
                                         onClick={() => handleSeatClick(seatId)}
                                         className={`w-8 h-8 text-xs font-medium rounded border transition-all duration-200 ${getSeatStyle(
-                                            seat?.status || "available",
+                                            seat?.status || "available" as SeatStatus,
                                         )}`}
                                         disabled={seat?.status === "reserved"}
                                     >
@@ -327,7 +420,6 @@ export default function SeatSelection() {
 
                             {/* 3-10席 */}
                             {Array.from({ length: 8 }, (_, i) => i + 3).map((num) => {
-                                if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
                                 return (
@@ -335,7 +427,7 @@ export default function SeatSelection() {
                                         key={seatId}
                                         onClick={() => handleSeatClick(seatId)}
                                         className={`w-8 h-8 text-xs font-medium rounded border transition-all duration-200 ${getSeatStyle(
-                                            seat?.status || "available",
+                                            seat?.status || "available" as SeatStatus,
                                         )}`}
                                         disabled={seat?.status === "reserved"}
                                     >
@@ -357,7 +449,7 @@ export default function SeatSelection() {
                                         key={seatId}
                                         onClick={() => handleSeatClick(seatId)}
                                         className={`w-8 h-8 text-xs font-medium rounded border transition-all duration-200 ${getSeatStyle(
-                                            seat?.status || "available",
+                                            seat?.status || "available" as SeatStatus,
                                         )}`}
                                         disabled={seat?.status === "reserved"}
                                     >
@@ -391,7 +483,7 @@ export default function SeatSelection() {
                                         key={seatId}
                                         onClick={() => handleSeatClick(seatId)}
                                         className={`w-8 h-8 text-xs font-medium rounded border transition-all duration-200 ${getSeatStyle(
-                                            seat?.status || "available",
+                                            seat?.status || "available" as SeatStatus,
                                         )}`}
                                         disabled={seat?.status === "reserved"}
                                     >
@@ -411,43 +503,90 @@ export default function SeatSelection() {
 
     // 次のページへ進む
     const handleNext = async () => {
-      if (!screenId) {
-        alert("スクリーンIDが取得できていません");
-        return;
-      }
-  
-      if (selectedSeats.length === 0) {
-        alert("座席を選択してください")
-        return
-      }
-
-      try {
-        for (const seatId of selectedSeats) {
-        const row = seatId.slice(0, 1) // A〜J
-        const column = parseInt(seatId.slice(1)) // 数字部分
-        await createSeat({
-            screen_id: screenId,
-            row,
-            column,
-          })
-        }
-        alert("座席の予約に成功しました。");
-
-        const seatSelectionData = {
-          screen_id: screenId,
-          selectedSeats,
-          movieId: movieInfo.id,
-          date: movieInfo.date,
-          time: movieInfo.time,
-          screen: movieInfo.screen,
+        if (!screeningId) {
+            alert("上映IDが取得できていません"); // screeningId に変更
+            return;
         }
 
-        sessionStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
-        router.push(`/tickets/types?`)
-      } catch (error) {
-        alert("座席の予約に失敗しました。")
-        console.error(error)
-      }
+        if (selectedSeats.length === 0) {
+            alert("座席を選択してください")
+            return
+        }
+
+        // ログインしているユーザーのIDが必要
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            alert("ユーザーがログインしていません。ログインしてください。");
+            router.push('/login'); // ログインページへリダイレクト
+            return;
+        }
+
+        try {
+            // スクリーンIDを数値として取得
+            const numericScreeningId = parseInt(screeningId);
+            if (isNaN(numericScreeningId)) {
+                alert("無効な上映IDが検出されました。");
+                console.error("Invalid screeningId for purchase:", screeningId);
+                return;
+            }
+
+            const purchaseTime = new Date().toISOString();
+
+            const purchaseDetails: CreatePurchaseDetail[] = [
+                {
+                    role_id: 1, // 仮のRoleID (例: 一般)
+                    quantity: selectedSeats.length,
+                }
+            ];
+
+            const seatIdsToReserve: string[] = selectedSeats;
+
+            const purchaseData: CreatePurchaseData = {
+                user_id: parseInt(userId),
+                screening_id: numericScreeningId,
+                purchase_time: purchaseTime,
+                purchase_details: purchaseDetails,
+                selected_seat_ids: seatIdsToReserve, // 文字列IDのリスト
+            };
+
+            // Purchase作成API呼び出し
+            const purchaseResponse = await fetch('http://localhost:8080/purchases/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // 認証トークンが必要な場合
+                },
+                body: JSON.stringify(purchaseData),
+            });
+
+            if (!purchaseResponse.ok) {
+                const errorData = await purchaseResponse.json();
+                throw new Error(`購入の作成に失敗しました: ${purchaseResponse.statusText} - ${errorData.error || '不明なエラー'}`);
+            }
+
+            const purchaseResult = await purchaseResponse.json();
+            console.log("購入成功レスポンス:", purchaseResult);
+            alert("座席の予約と購入情報が登録されました！");
+
+            // ★Step 2: PurchaseIDを基にReservationSeatを作る（バックエンドで自動的に行われる）★
+            // Purchase作成APIが成功すれば、バックエンドがPurchaseDetailsとReservationSeatsを自動的に作成する前提
+
+            const seatSelectionData = {
+                purchaseId: purchaseResult.PurchaseID, // 新しく取得したPurchaseIDをsessionStorageに保存
+                selectedSeats: seatIdsToReserve, // これも文字列のまま
+                movieId: movieInfo.id,
+                date: movieInfo.date,
+                time: movieInfo.time,
+                screen: movieInfo.screen,
+            };
+
+            sessionStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
+            router.push(`/tickets/types?`); // 次のページへ
+
+        } catch (error) {
+            alert("座席の予約と購入に失敗しました。")
+            console.error(error)
+        }
     }
 
 
@@ -457,7 +596,7 @@ export default function SeatSelection() {
             {/* ヒーローセクション */}
             <section className="relative h-[20vh] md:h-[30vh] overflow-hidden">
                 <div className="absolute inset-0">
-                    <Image src="/images/theater-interior.jpg" alt="劇場内観" fill className="object-cover" priority />
+                    <Image src="/images/theater-interior-1.jpg" alt="劇場内観" fill className="object-cover" priority />
                     <div className="absolute inset-0 bg-gradient-to-r from-darkest/90 via-darkest/60 to-transparent" />
                     <div className="absolute inset-0 bg-gradient-to-t from-darkest/80 via-transparent to-darkest/40" />
                 </div>

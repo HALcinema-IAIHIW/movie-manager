@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"modules/src/adapters/presenter"
 	"net/http"
+	"strconv"
 
 	"modules/src/database/model"        // modelパッケージのパスを確認
 	"modules/src/datastructure/request" // requestパッケージをインポート
@@ -68,5 +69,55 @@ func (h *ReservationSeatHandler) GetAllReservationSeats() gin.HandlerFunc {
 		res := presenter.ToReservationSeatResponseList(reservationSeats)
 
 		c.JSON(http.StatusOK, res)
+	}
+}
+
+func (h *ReservationSeatHandler) GetReservedSeatsByScreenID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		screenIDParam := c.Param("screenID") // ルーターで ":screenID" と定義したパスパラメータ名
+		screenIDUint64, err := strconv.ParseUint(screenIDParam, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効なスクリーンIDが指定されました", "details": err.Error()})
+			return
+		}
+		screenID := uint(screenIDUint64)
+
+		reservedSeats, err := h.Usecase.GetReservedSeatsByScreenID(screenID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "予約座席の取得に失敗しました", "details": err.Error()})
+			return
+		}
+
+		if len(reservedSeats) == 0 {
+			c.JSON(http.StatusOK, []interface{}{})
+			return
+		}
+
+		c.JSON(http.StatusOK, reservedSeats)
+	}
+}
+
+func (h *ReservationSeatHandler) GetReservedSeatsByScreeningID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		screeningIDParam := c.Param("screeningID")
+		screeningIDUint64, err := strconv.ParseUint(screeningIDParam, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効な上映IDが指定されました", "details": err.Error()})
+			return
+		}
+		screeningID := uint(screeningIDUint64)
+
+		reservedSeats, err := h.Usecase.GetReservedSeatsByScreeningID(screeningID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "予約座席の取得に失敗しました", "details": err.Error()})
+			return
+		}
+
+		if len(reservedSeats) == 0 {
+			c.JSON(http.StatusOK, []interface{}{}) // 予約がない場合は空の配列を返す
+			return
+		}
+
+		c.JSON(http.StatusOK, reservedSeats)
 	}
 }
