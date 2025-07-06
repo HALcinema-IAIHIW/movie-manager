@@ -45,9 +45,9 @@ export default function MovieTL({ title, screen_id, date, showings }: MovieTLPro
                 </div>
             </div>
 
-            {showings.map((s) => (
-                <p key={s.screening_id} className="text-text-muted text-sm font-jp">screenigID: {s.screening_id}</p>
-            ))}
+            {/*{showings.map((s) => (*/}
+            {/*    <p key={s.screening_id} className="text-text-muted text-sm font-jp">screenigID: {s.screening_id}</p>*/}
+            {/*))}*/}
 
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* ポスター */}
