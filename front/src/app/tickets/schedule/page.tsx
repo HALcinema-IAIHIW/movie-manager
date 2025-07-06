@@ -164,6 +164,7 @@ useEffect(() => {
       <div id="timeList">
         {MovieListPerDay?.map((props) => (
           <div key={`${props.title}-${props.showings}`}>
+
             <MovieTL {...props} />
             <hr />
           </div>

@@ -2,14 +2,24 @@ package response
 
 import "time"
 
+type MovieInfo struct {
+	ID        uint   `json:"id"`
+	Title     string `json:"title"`
+	PosterUrl string `json:"posterUrl"`
+}
+
+type ScreenInfo struct {
+	ID uint `json:"id"`
+}
+
 type ScreeningResponse struct {
-	ID                uint      `json:"id"`
-	ScreeningPeriodID uint      `json:"screening_period_id"`
-	MovieID           uint      `json:"movie_id"`
-	ScreenID          uint      `json:"screen_id"`
-	Date              time.Time `json:"date" binding:"required"`
-	StartTime         time.Time `json:"start_time" binding:"required"`
-	EndTime           string    `json:"end_time"`
+	ID                uint       `json:"id"`
+	ScreeningPeriodID uint       `json:"screening_period_id"`
+	Movie             MovieInfo  `json:"movie"`
+	Screen            ScreenInfo `json:"screen"`
+	Date              time.Time  `json:"date"`
+	StartTime         time.Time  `json:"start_time"`
+	EndTime           string     `json:"end_time"`
 }
 
 type ShowingInfo struct {

@@ -33,3 +33,40 @@ export async function fetchScreeningsByDate(input: string): Promise<MovieTLProps
     console.log("取得データ", data);
     return data
 }
+
+
+
+export async function fetchScreeningById(screeningId: string): Promise<Screening> {
+  if (!screeningId) throw new Error("screeningIdが指定されていません");
+
+  const res = await fetch(`http://localhost:8080/screenings/${screeningId}`, {
+    method: "GET",
+  });
+
+  if (!res.ok) throw new Error(`上映情報の取得に失敗しました: ${res.status}`);
+
+  const data = await res.json();
+
+  return {
+    id: data.id,
+    screeningPeriodId: data.screeningPeriodId,
+    date: data.date,
+    startTime: data.startTime,
+    duration: data.duration,
+    movie: {
+      id: data.movie.id.toString(),
+      title: data.movie.title,
+      description: data.movie.description,
+      releaseDate: data.movie.releaseDate,
+      genre: data.movie.genre,
+      director: data.movie.director,
+      posterPath: data.movie.posterPath,
+      duration: data.movie.duration,
+    },
+    screen: {
+      id: data.screen.id.toString(),
+      maxRow: data.screen.maxRow,
+      maxColumn: data.screen.maxColumn,
+    },
+  };
+}
