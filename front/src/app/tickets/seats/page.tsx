@@ -568,8 +568,6 @@ export default function SeatSelection() {
             console.log("購入成功レスポンス:", purchaseResult);
             alert("座席の予約と購入情報が登録されました！");
 
-            // ★Step 2: PurchaseIDを基にReservationSeatを作る（バックエンドで自動的に行われる）★
-            // Purchase作成APIが成功すれば、バックエンドがPurchaseDetailsとReservationSeatsを自動的に作成する前提
 
             const seatSelectionData = {
                 purchaseId: purchaseResult.PurchaseID, // 新しく取得したPurchaseIDをsessionStorageに保存
