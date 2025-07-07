@@ -2,15 +2,13 @@ package purchase
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
-	"time"
-
-	"modules/src/adapters/presenter"
 	"modules/src/database/model"
 	"modules/src/datastructure/request"
 	"modules/src/module"
 	"modules/src/usecases"
+	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,10 +21,12 @@ func NewPurchaseHandler(uc *usecases.PurchaseUsecase) *PurchaseHandler {
 	return &PurchaseHandler{Usecase: uc}
 }
 
+// Routes はこのハンドラーのルートを定義するルーターを返すよ。
 func (h *PurchaseHandler) Routes() module.Route {
-	return NewPurchaseRoutes(h)
+	return NewPurchaseRouter(h) // router/purchase_router.go で定義される
 }
 
+// CreatePurchase は新しい購入情報を作成するハンドラーだよ。（既存のまま）
 func (h *PurchaseHandler) CreatePurchase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req request.CreatePurchaseRequest
@@ -37,7 +37,7 @@ func (h *PurchaseHandler) CreatePurchase() gin.HandlerFunc {
 
 		parsedTime, err := time.Parse("2006-01-02T15:04:05Z07:00", req.PurchaseTime)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "購入日時の形式が正しくありません (ISO 8601形式: YYYY-MM-DDTHH:MM:SSZ±HH:MM)", "details": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "購入日時の形式が正しくありません (ISO 8601形式:YYYY-MM-DDTHH:MM:SSZ±HH:MM)", "details": err.Error()})
 			return
 		}
 
@@ -62,7 +62,7 @@ func (h *PurchaseHandler) CreatePurchase() gin.HandlerFunc {
 	}
 }
 
-func (h *PurchaseHandler) GetPurchases() gin.HandlerFunc {
+func (h *PurchaseHandler) GetAllPurchases() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		purchases, err := h.Usecase.GetAllPurchases()
 		if err != nil {
@@ -70,15 +70,13 @@ func (h *PurchaseHandler) GetPurchases() gin.HandlerFunc {
 			return
 		}
 
-		res := presenter.ToPurchaseResponseList(purchases)
-
-		c.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, purchases)
 	}
 }
 
-func (h *PurchaseHandler) GetPurchaseById() gin.HandlerFunc {
+func (h *PurchaseHandler) GetPurchaseByID() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		idParam := c.Param("purchase_id")
+		idParam := c.Param("id")
 		idUint64, err := strconv.ParseUint(idParam, 10, 32)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "IDが不正です", "details": err.Error()})
@@ -96,8 +94,32 @@ func (h *PurchaseHandler) GetPurchaseById() gin.HandlerFunc {
 			return
 		}
 
-		res := presenter.ToPurchaseResponse(*purchase)
-		
-		c.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, purchase)
+	}
+}
+
+func (h *PurchaseHandler) GetUserReservations() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		targetUserIDParam := c.Param("userID")
+		targetUserIDUint64, err := strconv.ParseUint(targetUserIDParam, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効なユーザーIDが指定されました", "details": err.Error()})
+			return
+		}
+		targetUserID := uint(targetUserIDUint64)
+
+		// ユースケースに取得したいユーザーIDを渡します。
+		reservations, err := h.Usecase.GetUserReservations(targetUserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "予約情報の取得に失敗しました", "details": err.Error()})
+			return
+		}
+
+		if len(reservations) == 0 {
+			c.JSON(http.StatusOK, []interface{}{}) // 予約がない場合は空の配列を返す
+			return
+		}
+
+		c.JSON(http.StatusOK, reservations)
 	}
 }

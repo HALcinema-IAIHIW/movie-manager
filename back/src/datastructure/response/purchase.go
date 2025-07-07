@@ -14,6 +14,3 @@ type Purchase struct {
 	PurchaseTime time.Time `json:"purchase_time"` // JSONタグを追加
 	TotalPrice   int       `json:"total_price"`   // JSONタグを追加
 }
-
-// PurchaseDetail はこのレスポンス構造体では含めない、という意図ですね。
-// もし含める場合はここに定義を追加する必要があります。

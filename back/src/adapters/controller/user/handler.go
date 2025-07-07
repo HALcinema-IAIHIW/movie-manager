@@ -1,6 +1,7 @@
 package user
 
 import (
+	"log"
 	"modules/src/adapters/presenter"
 	"modules/src/datastructure/request"
 	"modules/src/datastructure/response"
@@ -14,7 +15,8 @@ import (
 )
 
 type UserHandler struct {
-	UserUC *usecases.UserUsecase
+	UserUC          *usecases.UserUsecase
+	PurchaseUsecase *usecases.PurchaseUsecase
 }
 
 func NewUserHandler(uc *usecases.UserUsecase) *UserHandler {
@@ -95,5 +97,61 @@ func (h *UserHandler) GetUserByID() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, res)
+	}
+}
+
+func (h *UserHandler) Login() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req request.LoginRequest
+		// JSONリクエストボディを構造体にバインドし、バリデーションを実行
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "入力形式が間違っています", "details": err.Error()})
+			return
+		}
+
+		// ユースケースでユーザー認証を実行
+		token, user, err := h.UserUC.LoginUser(req.Email, req.Password)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+
+		log.Printf("DEBUG: userID=%d, roleID=%d, roleName=%s", user.ID, user.RoleID, user.Role.RoleName)
+
+		// ログイン成功レスポンス
+		c.JSON(http.StatusOK, response.LoginResponse{
+			Message: "ログイン成功",
+			Token:   token,
+			User: response.UserResponse{
+				ID:       user.ID,
+				Name:     user.Name,
+				Email:    user.Email,
+				RoleName: user.Role.RoleName,
+			},
+		})
+	}
+}
+
+func (h *UserHandler) GetLoggedInUserReservations() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, exists := c.Get("userID")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
+			return
+		}
+		loggedInUserID := userID.(uint)
+
+		reservations, err := h.PurchaseUsecase.GetUserReservations(loggedInUserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "予約情報の取得に失敗しました", "details": err.Error()})
+			return
+		}
+
+		if len(reservations) == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"message": "予約情報が見つかりませんでした"})
+			return
+		}
+
+		c.JSON(http.StatusOK, reservations)
 	}
 }

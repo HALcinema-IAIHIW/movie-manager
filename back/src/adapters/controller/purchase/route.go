@@ -1,24 +1,24 @@
 package purchase
 
 import (
-	"modules/src/module"
-
 	"github.com/gin-gonic/gin"
 )
 
-type purchaseRoutes struct {
+type PurchaseRouter struct {
 	handler *PurchaseHandler
 }
 
-func NewPurchaseRoutes(handler *PurchaseHandler) module.Route {
-	return &purchaseRoutes{handler: handler}
+func NewPurchaseRouter(handler *PurchaseHandler) *PurchaseRouter {
+	return &PurchaseRouter{handler: handler}
 }
 
-func (r *purchaseRoutes) RegisterRoutes(engine *gin.Engine) {
-	purchaseRoutes := engine.Group("/purchases")
+func (r *PurchaseRouter) RegisterRoutes(engine *gin.Engine) {
+	purchaseGroup := engine.Group("/purchases")
 	{
-		purchaseRoutes.POST("/", r.handler.CreatePurchase())
-		purchaseRoutes.GET("/", r.handler.GetPurchases())
-		purchaseRoutes.GET("/:purchase_id", r.handler.GetPurchaseById())
+		purchaseGroup.GET("reservations/:userID", r.handler.GetUserReservations())
+
+		purchaseGroup.GET("/:id", r.handler.GetPurchaseByID())
+		purchaseGroup.POST("/", r.handler.CreatePurchase())
+		purchaseGroup.GET("/", r.handler.GetAllPurchases())
 	}
 }

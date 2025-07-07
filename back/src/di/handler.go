@@ -3,29 +3,30 @@ package di
 import (
 	"modules/src/adapters/controller/movie"
 	"modules/src/adapters/controller/period"
+	"modules/src/adapters/controller/purchase"
+	"modules/src/adapters/controller/reservationseat"
 	"modules/src/adapters/controller/role"
 	"modules/src/adapters/controller/screen"
 	"modules/src/adapters/controller/screening"
 	"modules/src/adapters/controller/seat"
-	"modules/src/repository"
-
-	"modules/src/adapters/controller/purchase"
 	"modules/src/adapters/controller/user"
 	"modules/src/adapters/gateway"
+	"modules/src/repository"
 	"modules/src/usecases"
 
 	"gorm.io/gorm"
 )
 
 type Handlers struct {
-	User      *user.UserHandler
-	Movie     *movie.MovieHandler
-	Screen    *screen.ScreenHandler
-	Seat      *seat.SeatHandler
-	Screening *screening.ScreeningHandler
-	Role      *role.RoleHandler
-	Period    *period.PeriodHandler
-	Purchase  *purchase.PurchaseHandler
+	User            *user.UserHandler
+	Movie           *movie.MovieHandler
+	Screen          *screen.ScreenHandler
+	Seat            *seat.SeatHandler
+	Screening       *screening.ScreeningHandler
+	Role            *role.RoleHandler
+	Period          *period.PeriodHandler
+	Purchase        *purchase.PurchaseHandler
+	ReservationSeat *reservationseat.ReservationSeatHandler
 }
 
 func NewHandlers(db *gorm.DB) *Handlers {
@@ -66,18 +67,24 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	periodHandler := period.NewPeriodHandler(periodUC)
 
 	// Purchase
-	purchaseRepo := repository.NewPurchaseRepository(db)
-	purchaseUsecase := usecases.NewPurchaseUsecase(purchaseRepo)
+	purchaseRepo := repository.NewGormPurchaseRepository(db)
+	purchaseUsecase := usecases.NewPurchaseUsecase(purchaseRepo, screeningRepo, seatRepo, roleRepo)
 	purchaseHandler := purchase.NewPurchaseHandler(purchaseUsecase)
 
+	// ReservationSeat
+	reservationseatRepo := repository.NewGormReservationSeatRepository(db)
+	reservationseatUsecase := usecases.NewReservationSeatUsecase(reservationseatRepo)
+	reservationseatHandler := reservationseat.NewReservationSeatHandler(reservationseatUsecase)
+
 	return &Handlers{
-		User:      userHandler,
-		Movie:     movieHandler,
-		Screen:    screenHandler,
-		Seat:      seatHandler,
-		Screening: screeningHandler,
-		Role:      roleHandler,
-		Purchase:  purchaseHandler,
-		Period:    periodHandler,
+		User:            userHandler,
+		Movie:           movieHandler,
+		Screen:          screenHandler,
+		Seat:            seatHandler,
+		Screening:       screeningHandler,
+		Role:            roleHandler,
+		Purchase:        purchaseHandler,
+		Period:          periodHandler,
+		ReservationSeat: reservationseatHandler,
 	}
 }
