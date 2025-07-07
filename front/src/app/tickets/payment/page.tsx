@@ -26,7 +26,7 @@ export default function payment() {
     }
 
     // ラジオボタン処理
-    const [selCard,setCard] = useState("registed")
+    const [selCard,setCard] = useState("new")
     // ユーザーが無い時は初期値をnewの方にしてほしいです
     const HandleRadio = (data:any) =>{
         setCard(data.target.id);
