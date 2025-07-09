@@ -11,12 +11,15 @@ export default function payment() {
     const searchParams = useSearchParams();
 
 
-    const movieId = searchParams.get("movieId")
+    const movieId=searchParams.get("movieId")
     const date = searchParams.get("date")
     const time = searchParams.get("time")
-    const screen = searchParams.get("screen")
-    const seatTickets = searchParams.get("seatTickets")
-    const totalPrice = searchParams.get("totalPrice")
+    const screen=searchParams.get("screen")
+    const seatTime=searchParams.get("seatTime")
+    const totalPrice=searchParams.get("totalPrice")
+
+    
+
 
     const TestUser = {
         name: "none",
@@ -33,17 +36,25 @@ export default function payment() {
         console.log("Changed"+data.target.value)
     }
 
+    // 次ページに送る
+    const HandleComplete = () => {
+        const params = new URLSearchParams()
+        params.set("movieId","movieId")
+
+        router.push(`/tickets/payment?${params.toString()}`)
+
+    }
 
     return(
         <div id={"payment"}>
             <h1 className={"text-3xl "}>お支払方法選択</h1><br/>
             {TestUser.name}
             {movieId}
-            {date}
             {time}
-            {screen}
-            {seatTickets}
+            {date}
+            {seatTime}
             {totalPrice}
+            {screen}
             {!TestUser.name && (
                 <div id={"inputPurchaser"}>
                     {/*  ログインしていない場合  */}

@@ -1,0 +1,16 @@
+/*テーブル部分の定義*/
+table#payList{
+    border-collapse:collapse;
+}
+table#payList tr{
+    margin: 0 0 10px 0;
+}
+table#payList th{
+    width: 7rem;
+    padding: 5px 10px;
+    background-color: #555;
+}
+table#payList td{
+    padding: 5px 10px;
+    color: #25283B;
+}
