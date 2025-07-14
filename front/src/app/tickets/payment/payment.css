@@ -32,14 +32,14 @@ div#payment label.payLabel{
     /*margin-bottom: 50px;*/
     color: #25283B;
     padding: 10px 25px;
-    width: 250px;
+    width: 13rem;
     border: none;
     border-radius: 10px 0 0 10px;
 }
 div#payment input.payInput{
     padding: 10px 25px;
     margin-bottom: 50px;
-    width: 50%;
+    width: 260px;
     border: none;
     border-radius: 0 10px 10px 0;
 }

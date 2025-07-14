@@ -11,12 +11,15 @@ export default function payment() {
     const searchParams = useSearchParams();
 
 
-    const movieId = searchParams.get("movieId")
+    const movieId=searchParams.get("movieId")
     const date = searchParams.get("date")
     const time = searchParams.get("time")
-    const screen = searchParams.get("screen")
-    const seatTickets = searchParams.get("seatTickets")
-    const totalPrice = searchParams.get("totalPrice")
+    const screen=searchParams.get("screen")
+    const seatTickets=searchParams.get("seatTickets")
+    const totalPrice=searchParams.get("totalPrice")
+
+    
+
 
     const TestUser = {
         name: "none",
@@ -26,24 +29,38 @@ export default function payment() {
     }
 
     // ラジオボタン処理
-    const [selCard,setCard] = useState("registed")
+    const [selCard,setCard] = useState("new")
     // ユーザーが無い時は初期値をnewの方にしてほしいです
     const HandleRadio = (data:any) =>{
         setCard(data.target.id);
         console.log("Changed"+data.target.value)
     }
 
+    // 次ページに送る
+    const HandleComplete = () => {
+        const params = new URLSearchParams()
+        params.set("movieId",movieId|| "")
+        params.set("totalPrice",totalPrice || "")
+        params.set("time",time || "")
+        params.set("date",date || "")
+        params.set("screen",screen || "")
+        params.set("seatTickets",seatTickets || "")
+
+
+        router.push(`/tickets/completed?${params.toString()}`)
+
+    }
 
     return(
         <div id={"payment"}>
             <h1 className={"text-3xl "}>お支払方法選択</h1><br/>
             {TestUser.name}
             {movieId}
-            {date}
             {time}
-            {screen}
+            {date}
             {seatTickets}
             {totalPrice}
+            {screen}
             {!TestUser.name && (
                 <div id={"inputPurchaser"}>
                     {/*  ログインしていない場合  */}
@@ -113,7 +130,7 @@ export default function payment() {
             }
             <div id={"decision"}>
                 <h3 id={"price"}>決済金額:<span>{totalPrice}</span></h3>
-                <button className={"w-100 flex items-center justify-center gap-2 py-3 px-4\n" +
+                <button onClick={HandleComplete} className={"w-100 flex items-center justify-center gap-2 py-3 px-4\n" +
                     "                      bg-gradient-to-r from-gold to-gold-light text-darkest hover:shadow-gold-glow\n" +
                     "                      rounded-lg font-medium transition-all duration-300 font-jp"}>
                     決済
