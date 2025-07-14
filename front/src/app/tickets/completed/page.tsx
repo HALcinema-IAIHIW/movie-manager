@@ -3,6 +3,7 @@ import {useState} from "react";
 import {useRouter,useSearchParams} from "next/navigation";
 import Link from "next/link";
 import "./payCompleted.css"
+import {QrCode} from "lucide-react";
 
 export default function completed() {
     const searchParams = useSearchParams();
@@ -23,15 +24,18 @@ export default function completed() {
             <h2 className={"text-2xl mb-16"}>ご購入ありがとうございました</h2>
 
             <div id={"toEnter"} className={"bg-dark-lighter w-3/4 p-5 mb-8"}>
-                <h2 className={"text-2xl mb-2 text-gold font-semibold tracking-wide"}>入場方法</h2>
-                <div id={"admission-number"} className={"mb-5 flex justify-evenly"}>
+                <h2 className={"text-2xl mb-5 text-gold font-semibold tracking-wide"}>入場方法</h2>
+                <div id={"admission-number"} className={"mb-5 w-3/4 flex justify-between mx-auto"}>
                     <h2 className={"text-xl mb-2"}>チケットを発券して入場</h2>
-                    <p className={" block bg-gray-700 w-20 px-3 pt-0.5 tracking-widest text-lg  text-center"}>12345</p>
+                    <p className={" block bg-gray-700 px-6 py-3 tracking-widest text-lg  text-center text-gold"}>12345</p>
                 </div>
 
-                <div id={"admission-qr"} className={"mb-3 flex justify-evenly"}>
+                <div id={"admission-qr"} className={"mb-3 w-3/4 flex justify-between mx-auto"}>
                     <h2 className={"text-xl mb-2"}>QRコードで入場</h2>
-                    <button className={" block bg-gray-300 text-black tracking-widest text-lg text-center"}>QRコードを表示</button>
+                    <button className="btn-outline-luxury flex items-center justify-center gap-2 font-jp">
+                        <QrCode size={18}/>
+                        QRコード
+                    </button>
                 </div>
             </div>
 
