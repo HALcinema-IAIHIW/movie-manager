@@ -23,5 +23,6 @@ func (r *UserRouter) RegisterRoutes(engine *gin.Engine) {
 	// ユーザー単体の取得
 	group.GET("/:id", r.handler.GetUserByID())
 	group.POST("/login", r.handler.Login())
+	group.POST("/logout", r.handler.Logout())
 	group.GET("/me/reservations", r.handler.GetLoggedInUserReservations())
 }

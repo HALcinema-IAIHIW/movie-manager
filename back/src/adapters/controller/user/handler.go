@@ -132,6 +132,17 @@ func (h *UserHandler) Login() gin.HandlerFunc {
 	}
 }
 
+func (h *UserHandler) Logout() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// フロントエンド側で localStorage/sessionStorage から token を削除
+		c.JSON(http.StatusOK, gin.H{
+			"message": "ログアウトしました",
+			"token":   "",
+			"user":    nil,
+		})
+	}
+}
+
 func (h *UserHandler) GetLoggedInUserReservations() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID, exists := c.Get("userID")
