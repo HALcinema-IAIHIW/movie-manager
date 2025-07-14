@@ -1,11 +1,17 @@
 "use client"
-import { useState} from "react";
+import {useState} from "react";
 import {useRouter,useSearchParams} from "next/navigation";
 import Link from "next/link";
 import "./payCompleted.css"
 
 export default function completed() {
-    const getParam = new URLSearchParams
+    const searchParams = new URLSearchParams
+    const date = searchParams.get("date")
+    const time = searchParams.get("time")
+    const totalPrice = searchParams.get("totalPrice")
+    const screen = searchParams.get("screen")
+    const seatTickets = searchParams.get("seatTickets")
+
     return(
         <div id={"completedMain"} className={"flex flex-col mt-32 items-center justify-center"}>
 
@@ -30,7 +36,7 @@ export default function completed() {
                         </tr>
                         <tr>
                             <th scope="row">
-
+                                作品名
                             </th>
                             <td>
                                 作品
@@ -41,7 +47,8 @@ export default function completed() {
                                 日時
                             </th>
                             <td>
-                                00:00~
+                                {date}<br/>
+                                {time}
                             </td>
                         </tr>
                         <tr>
@@ -49,12 +56,12 @@ export default function completed() {
                                 座席
                             </th>
                             <td>
-                                E5,E6
+                                {seatTickets}
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <p className={"text-right text-lg"}>合計金額:3600円</p>
+                <p className={"text-right text-lg"}>合計金額:{totalPrice}</p>
             </div>
             <p className={"mb-5"}>マイページでもご確認いただけます</p>
             <Link className={"bg-gold py-3 px-4 rounded-lg text-darkest hover:scale-90 transition-all "} href={"../mypage"}>マイページ</Link>

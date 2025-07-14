@@ -15,7 +15,7 @@ export default function payment() {
     const date = searchParams.get("date")
     const time = searchParams.get("time")
     const screen=searchParams.get("screen")
-    const seatTime=searchParams.get("seatTime")
+    const seatTickets=searchParams.get("seatTickets")
     const totalPrice=searchParams.get("totalPrice")
 
     
@@ -40,6 +40,12 @@ export default function payment() {
     const HandleComplete = () => {
         const params = new URLSearchParams()
         params.set("movieId","movieId")
+        params.set("totalPrice",totalPrice || "")
+        params.set("time",time || "")
+        params.set("date",date || "")
+        params.set("screen",screen || "")
+        params.set("seatTickets",seatTickets || "")
+
 
         router.push(`/tickets/payment?${params.toString()}`)
 
@@ -52,7 +58,7 @@ export default function payment() {
             {movieId}
             {time}
             {date}
-            {seatTime}
+            {seatTickets}
             {totalPrice}
             {screen}
             {!TestUser.name && (
