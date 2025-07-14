@@ -6,6 +6,7 @@ import (
 	"modules/src/datastructure/response" // ★ここを確認してね！この行が必要だよ★
 	"modules/src/repository"
 	"strconv"
+	"time"
 )
 
 type ReservationSeatUsecase struct {
@@ -77,4 +78,21 @@ func (uc *ReservationSeatUsecase) GetReservedSeatsByScreenID(screenID uint) ([]r
 		})
 	}
 	return reservedSeatsResponse, nil
+}
+
+func (u *ReservationSeatUsecase) CancelReservationSeat(id uint) error {
+	seat, err := u.ReservationSeatRepo.FindReservationSeatByID(id)
+	if err != nil {
+		return err
+	}
+
+	if seat.IsCancelled {
+		return fmt.Errorf("すでにキャンセル済みです")
+	}
+
+	now := time.Now()
+	seat.IsCancelled = true
+	seat.CancelledAt = &now
+
+	return u.ReservationSeatRepo.UpdateReservationSeat(seat)
 }
