@@ -1,4 +1,3 @@
-// internal/initializer.go
 package internal
 
 import (
@@ -37,6 +36,7 @@ func NewInitializer() (*Initializer, error) {
 		&model.Screen{},
 		&model.Purchase{},
 		&model.PurchaseDetail{},
+		&model.ReservationSeat{},
 	); err != nil {
 		return nil, err
 	}

@@ -15,7 +15,7 @@ func SetupRouter(h *di.Handlers) *gin.Engine {
 	// 公式CORSミドルウェア(go get github.com/gin-contrib/cors)があるとのこと
 	r.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "Get, Post, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 

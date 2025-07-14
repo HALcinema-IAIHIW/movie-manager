@@ -2,62 +2,66 @@ package repository
 
 import (
 	"errors"
-	"modules/src/database/model"
-
 	"gorm.io/gorm"
+	"modules/src/database/model" // ★repository パッケージをインポート！★
 )
 
+// PurchaseRepository は modules/src/database/repository/purchase_repository.go と同じ宣言にする
+// このインターフェース定義は、adapters/gateway/purchase_repository.go にも配置する
 type PurchaseRepository interface {
 	CreatePurchase(purchase *model.Purchase) error
 	GetAllPurchases() ([]model.Purchase, error)
 	GetPurchaseByID(id uint) (*model.Purchase, error)
-	GetRoleByID(roleID uint) (*model.Role, error)
+	GetPurchasesByUserID(userID uint) ([]model.Purchase, error)
 }
 
-type purchaseRepository struct {
+// GormPurchaseRepository は GORM を使用した PurchaseRepository の実装です。
+type GormPurchaseRepository struct {
 	db *gorm.DB
 }
 
-func NewPurchaseRepository(db *gorm.DB) PurchaseRepository {
-	return &purchaseRepository{db: db}
+func NewGormPurchaseRepository(db *gorm.DB) *GormPurchaseRepository {
+	return &GormPurchaseRepository{db: db}
 }
 
-func (r *purchaseRepository) CreatePurchase(purchase *model.Purchase) error {
-	// GORMのCreateは関連するPurchaseDetailsも自動的に挿入します
+// CreatePurchase の実装
+func (r *GormPurchaseRepository) CreatePurchase(purchase *model.Purchase) error {
 	return r.db.Create(purchase).Error
 }
 
-func (r *purchaseRepository) GetAllPurchases() ([]model.Purchase, error) {
+// GetAllPurchases の実装
+func (r *GormPurchaseRepository) GetAllPurchases() ([]model.Purchase, error) {
 	var purchases []model.Purchase
-	// PurchaseDetails もプリロードする
-	if err := r.db.Preload("PurchaseDetails").Find(&purchases).Error; err != nil {
+	// Preload はユースケースで指定されることが多いが、リポジトリで固定しても良い
+	if err := r.db.Preload("PurchaseDetails.Role").Find(&purchases).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []model.Purchase{}, nil // レコードが見つからない場合は空のスライスを返す
+			return []model.Purchase{}, nil
 		}
 		return nil, err
 	}
 	return purchases, nil
 }
 
-func (r *purchaseRepository) GetPurchaseByID(id uint) (*model.Purchase, error) {
+// GetPurchaseByID の実装
+func (r *GormPurchaseRepository) GetPurchaseByID(id uint) (*model.Purchase, error) {
 	var purchase model.Purchase
-	// PurchaseDetails もプリロードする
-	if err := r.db.Preload("PurchaseDetails").First(&purchase, id).Error; err != nil {
+	if err := r.db.Preload("PurchaseDetails.Role").First(&purchase, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil // レコードが見つからない場合はnilを返す
+			return nil, nil
 		}
 		return nil, err
 	}
 	return &purchase, nil
 }
 
-func (r *purchaseRepository) GetRoleByID(roleID uint) (*model.Role, error) {
-	var role model.Role
-	if err := r.db.First(&role, roleID).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &role, nil
+// GetPurchasesByUserID の実装
+func (r *GormPurchaseRepository) GetPurchasesByUserID(userID uint) ([]model.Purchase, error) {
+	var purchases []model.Purchase
+	err := r.db.Where("user_id = ?", userID).
+		Preload("Screening.ScreeningPeriod.Movie").
+		Preload("Screening.ScreeningPeriod.Screen").
+		Preload("ReservationSeats.Seat").
+		Preload("PurchaseDetails.Role").
+		Find(&purchases).Error
+	return purchases, err
 }
