@@ -31,6 +31,8 @@ export default function Header() {
     const [isMemberPanelOpen, setIsMemberPanelOpen] = useState(false)
     const [activeTab, setActiveTab] = useState("login")
     const [isScrolled, setIsScrolled] = useState(false)
+    // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+
 
     // フォームの状態管理
     const [loginForm, setLoginForm] = useState<LoginForm>({
@@ -52,6 +54,7 @@ export default function Header() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitSuccess, setSubmitSuccess] = useState(false)
 
+
     // 新規登録用の区分オプション
     const roleOptions = [
         { value: "", label: "区分を選択してください" },
@@ -60,6 +63,13 @@ export default function Header() {
         { value: "highschool", label: "中学生・高校生" },
         { value: "elementary", label: "小学生・幼児" },
     ]
+
+    const roleMapping: { [key: string]: string } = {
+        "general": "一般",
+        "university": "大学生",
+        "highschool": "中学生・高校生",
+        "elementary": "小学生・幼児",
+    }
 
     // スクロール時のヘッダー背景変更
     useEffect(() => {
@@ -197,64 +207,138 @@ export default function Header() {
     }
 
     // フォーム送信ハンドラ
-    const handleLoginSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-        if (!validateLoginForm()) return
-
-        setIsSubmitting(true)
+        if (!validateLoginForm()) return;
 
         try {
-            // API呼び出しをシミュレート
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            const response = await fetch('http://localhost:8080/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(loginForm), // stateから直接送信
+            });
 
-            // ここで認証のためのAPI呼び出しを行う
-            console.log("Login attempt:", loginForm)
+            if (response.ok) {
+                const data = await response.json();
+                console.log("ログイン成功レスポンス:", data);
 
-            setSubmitSuccess(true)
-            setTimeout(() => {
-                setSubmitSuccess(false)
-                toggleMemberPanel()
-            }, 2000)
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+
+                    if (data.user && data.user.id !== undefined && data.user.id !== null) {
+                        localStorage.setItem('userId', data.user.id.toString()); 
+                        console.log("UserIDを保存しました:", data.user.id);
+                    } else {
+                        console.warn("ログイン成功レスポンスにユーザー情報またはIDが含まれていません:", data);
+                        alert('ログインは成功しましたが、ユーザー情報が取得できませんでした。');
+                    }
+
+                    alert('ログインに成功しました！');
+                } else {
+                    alert('ログインは成功しましたが、認証トークンがありませんでした。');
+                    console.error("ログイン成功時だがトークンなし:", data);
+                }
+            }
         } catch (error) {
-            console.error("Login error:", error)
-        } finally {
-            setIsSubmitting(false)
+            console.error("ログインリクエスト中にエラー:", error);
+            alert('ネットワークエラーが発生しました。');
         }
-    }
+    };
 
     const handleSignUpSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        if (!validateSignUpForm()) return
+        if (!validateSignUpForm()) return;
 
-        setIsSubmitting(true)
+        setIsSubmitting(true);
 
-        try {
-            // API呼び出しをシミュレート
-            await new Promise((resolve) => setTimeout(resolve, 1500))
+        // 外側の try ブロックを削除し、直接 API 呼び出しの try-catch を開始
+        try { // <-- ここからが実際の API 呼び出しの try ブロックです
+            const roleNameForBackend = roleMapping[signUpForm.role] || signUpForm.role;
 
-            // ここで登録のためのAPI呼び出しを行う
-            console.log("SignUp attempt:", signUpForm)
+            const userSignUpData = {
+                name: signUpForm.name,
+                email: signUpForm.email,
+                password: signUpForm.password,
+                // confirmPassword はバックエンドに送信不要
+                phone: signUpForm.phone, // 電話番号もバックエンドに送信する場合
+                role_name: roleNameForBackend,
+            };
 
-            setSubmitSuccess(true)
+            console.log("Sending SignUp data:", userSignUpData);
+
+            const response = await fetch('http://localhost:8080/users/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userSignUpData),
+            });
+
+            const responseData = await response.json(); // ここで一度だけ読み込む
+
+            console.log('API Response Status:', response.status);
+            console.log('API Response Data:', responseData); // 生のJSONデータを確認
+
+            if (!response.ok) {
+                // responseDataを直接利用
+                throw new Error(responseData.error || 'ユーザー登録に失敗しました');
+            }
+
+            // 成功時のレスポンスデータは既に responseData に入っている
+            console.log("SignUp successful:", responseData);
+
+            setSubmitSuccess(true);
             setTimeout(() => {
-                setSubmitSuccess(false)
-                toggleMemberPanel()
-            }, 2000)
+                setSubmitSuccess(false);
+                toggleMemberPanel();
+            }, 2000);
         } catch (error) {
             console.error("SignUp error:", error)
         } finally {
             setIsSubmitting(false)
         }
-    }
+    };
 
-    // コンポーネントのアンマウント時にスクロールを有効化
+    // ログアウト処理
+    const handleLogout = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/users/logout", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
+            });
+        
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("ログアウト成功:", data);
+                alert(data.message);
+            } else {
+                console.warn("ログアウト失敗:", data);
+                alert("ログアウトに失敗しました");
+            }
+        } catch (error) {
+            console.error("ログアウト中のエラー:", error);
+            alert("ログアウト中にエラーが発生しました");
+        } finally {
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            // setIsLoggedIn(false);
+            toggleMemberPanel();
+        }
+    };
+
+
+// コンポーネントのアンマウント時にスクロールを有効化
     useEffect(() => {
         return () => {
-            document.body.style.overflow = "auto"
-        }
-    }, [])
+            document.body.style.overflow = "auto";
+        };
+    }, []);
 
     return (
         <>
@@ -337,7 +421,7 @@ export default function Header() {
                                                 <div className="mb-4 p-3 bg-green-900/30 border border-green-700/50 rounded-lg flex items-center gap-2">
                                                     <CheckCircle size={16} className="text-green-400" />
                                                     <span className="text-green-300 text-sm font-jp">
-                            {activeTab === "login" ? "ログインしました" : "登録が完了しました"}
+                            {activeTab === "signup" ? "登録が完了しました" : "ログインしました"}
                           </span>
                                                 </div>
                                             )}
@@ -579,6 +663,19 @@ export default function Header() {
                                                     </button>
                                                 </form>
                                             )}
+
+                                            {/* ログイン済みユーザー向けログアウトボタン */}
+                                            {localStorage.getItem("token") && (
+                                                <div className="mt-6 border-t border-accent/20 pt-4">
+                                                    <button
+                                                        onClick={handleLogout}
+                                                        className="w-full text-center py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-colors font-jp"
+                                                    >
+                                                        ログアウト
+                                                    </button>
+                                                </div>
+                                            )}
+
                                         </div>
                                     </div>
                                 )}

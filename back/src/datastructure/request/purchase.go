@@ -1,13 +1,13 @@
 package request
 
 type CreatePurchaseRequest struct {
-	UserID          uint                          `json:"user_id" binding:"required"`
-	ScreeningID     uint                          `json:"screening_id" binding:"required"`
-	PurchaseTime    string                        `json:"purchase_time" binding:"required,datetime=2006-01-02T15:04:05Z07:00"`
-	PurchaseDetails []CreatePurchaseDetailRequest `json:"purchase_details" binding:"required,min=1,dive"`
+	UserID          uint                   `json:"user_id" binding:"required"`
+	ScreeningID     uint                   `json:"screening_id" binding:"required"`
+	PurchaseTime    string                 `json:"purchase_time" binding:"required"` // ISO 8601形式の文字列
+	PurchaseDetails []CreatePurchaseDetail `json:"purchase_details" binding:"required"`
 }
 
-type CreatePurchaseDetailRequest struct {
+type CreatePurchaseDetail struct {
+	Quantity int  `json:"quantity" binding:"required,min=1"`
 	RoleID   uint `json:"role_id" binding:"required"`
-	Quantity int  `json:"quantity" binding:"required,gte=1"`
 }
