@@ -31,6 +31,8 @@ export default function Header() {
     const [isMemberPanelOpen, setIsMemberPanelOpen] = useState(false)
     const [activeTab, setActiveTab] = useState("login")
     const [isScrolled, setIsScrolled] = useState(false)
+    // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+
 
     // フォームの状態管理
     const [loginForm, setLoginForm] = useState<LoginForm>({
@@ -298,6 +300,38 @@ export default function Header() {
             setIsSubmitting(false)
         }
     };
+
+    // ログアウト処理
+    const handleLogout = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/users/logout", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
+            });
+        
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("ログアウト成功:", data);
+                alert(data.message);
+            } else {
+                console.warn("ログアウト失敗:", data);
+                alert("ログアウトに失敗しました");
+            }
+        } catch (error) {
+            console.error("ログアウト中のエラー:", error);
+            alert("ログアウト中にエラーが発生しました");
+        } finally {
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            // setIsLoggedIn(false);
+            toggleMemberPanel();
+        }
+    };
+
 
 // コンポーネントのアンマウント時にスクロールを有効化
     useEffect(() => {
@@ -629,6 +663,19 @@ export default function Header() {
                                                     </button>
                                                 </form>
                                             )}
+
+                                            {/* ログイン済みユーザー向けログアウトボタン */}
+                                            {localStorage.getItem("token") && (
+                                                <div className="mt-6 border-t border-accent/20 pt-4">
+                                                    <button
+                                                        onClick={handleLogout}
+                                                        className="w-full text-center py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-colors font-jp"
+                                                    >
+                                                        ログアウト
+                                                    </button>
+                                                </div>
+                                            )}
+
                                         </div>
                                     </div>
                                 )}
