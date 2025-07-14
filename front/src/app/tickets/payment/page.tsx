@@ -39,7 +39,7 @@ export default function payment() {
     // 次ページに送る
     const HandleComplete = () => {
         const params = new URLSearchParams()
-        params.set("movieId","movieId")
+        params.set("movieId",movieId|| "")
         params.set("totalPrice",totalPrice || "")
         params.set("time",time || "")
         params.set("date",date || "")
@@ -47,7 +47,7 @@ export default function payment() {
         params.set("seatTickets",seatTickets || "")
 
 
-        router.push(`/tickets/payment?${params.toString()}`)
+        router.push(`/tickets/completed?${params.toString()}`)
 
     }
 
@@ -130,7 +130,7 @@ export default function payment() {
             }
             <div id={"decision"}>
                 <h3 id={"price"}>決済金額:<span>{totalPrice}</span></h3>
-                <button className={"w-100 flex items-center justify-center gap-2 py-3 px-4\n" +
+                <button onClick={HandleComplete} className={"w-100 flex items-center justify-center gap-2 py-3 px-4\n" +
                     "                      bg-gradient-to-r from-gold to-gold-light text-darkest hover:shadow-gold-glow\n" +
                     "                      rounded-lg font-medium transition-all duration-300 font-jp"}>
                     決済

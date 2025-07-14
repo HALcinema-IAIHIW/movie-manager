@@ -5,12 +5,16 @@ import Link from "next/link";
 import "./payCompleted.css"
 
 export default function completed() {
-    const searchParams = new URLSearchParams
+    const searchParams = useSearchParams();
     const date = searchParams.get("date")
     const time = searchParams.get("time")
     const totalPrice = searchParams.get("totalPrice")
     const screen = searchParams.get("screen")
-    const seatTickets = searchParams.get("seatTickets")
+    const seatTickets = (searchParams.get("seatTickets"))
+
+    var ticketDec =JSON.parse(seatTickets);
+    console.log(ticketDec)
+
 
     return(
         <div id={"completedMain"} className={"flex flex-col mt-32 items-center justify-center"}>
@@ -56,15 +60,31 @@ export default function completed() {
                                 座席
                             </th>
                             <td>
-                                {seatTickets}
+                                {ticketDec.map(ticket => (
+                                    <div key={ticket.seatId} className={"flex flex-row flex-nowrap"}>
+                                        <p className={"w-12"}>{ticket.seatId}</p>
+                                        <p className={"w-28"}>{ticket.ticketType.name}</p>
+                                        <p>{ticket.ticketType.price} 円</p>
+
+
+                                    </div>
+                                ))}
+                                <div className={"flex flex-row flex-nowrap"}>
+                                    <p className={"w-12"}>H2</p>
+                                    <p className={"w-28"}>小学生、幼児</p>
+                                    <p>1000 円</p>
+
+
+                                </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <p className={"text-right text-lg"}>合計金額:{totalPrice}</p>
+                <p className={"text-right text-lg"}>合計金額:{totalPrice} 円</p>
             </div>
             <p className={"mb-5"}>マイページでもご確認いただけます</p>
-            <Link className={"bg-gold py-3 px-4 rounded-lg text-darkest hover:scale-90 transition-all "} href={"../mypage"}>マイページ</Link>
+            <Link className={"bg-gold py-3 px-4 rounded-lg text-darkest hover:scale-90 transition-all "}
+                  href={"../mypage"}>マイページ</Link>
 
         </div>
     )
