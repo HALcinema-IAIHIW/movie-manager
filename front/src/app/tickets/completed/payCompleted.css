@@ -1,17 +1,22 @@
 /*テーブル部分の定義*/
 table#payList{
     border-collapse:collapse;
+    width: 500px;
 }
 table#payList tr{
-    margin: 0 0 10px 0;
-    border: #fff solid  2px;
+    /*border-bottom: #e5e7eb55 solid 1px;*/
+
+    /*border: #fff solid  2px;*/
 }
 table#payList th{
     width: 8rem;
+    text-align: left;
+
     padding: 10px 20px;
-    background-color: #555;
+    /*background-color: #555;*/
 }
 table#payList td{
-    padding: 10px 20px 10px 10px;
-    color: #25283B;
+    text-align: right;
+    padding: 10px 30px 10px 10px;
+    /*color: #25283B;*/
 }

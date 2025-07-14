@@ -19,18 +19,27 @@ export default function completed() {
     return(
         <div id={"completedMain"} className={"flex flex-col mt-32 items-center justify-center"}>
 
-            <h1 className={"text-4xl mb-5"}>購入完了</h1>
-            <h2 className={"text-2xl mb-10"}>ご購入ありがとうございました</h2>
+            <h1 className={"text-4xl mb-6 font-semibold tracking-wide"}>購入手続きが完了しました</h1>
+            <h2 className={"text-2xl mb-16"}>ご購入ありがとうございました</h2>
 
-            <div id={"showDetail"} className={"bg-gray-500 w-3/4 p-5 mb-5"}>
-                <div id={"admission"} className={"mb-3"}>
-                    <h2 className={"text-2xl mb-2"}>チケットを発券して入場</h2>
-                    <p className={" block bg-gray-700 w-20 tracking-widest text-lg text-center"}>12345</p>
+            <div id={"toEnter"} className={"bg-dark-lighter w-3/4 p-5 mb-8"}>
+                <h2 className={"text-2xl mb-2 text-gold font-semibold tracking-wide"}>入場方法</h2>
+                <div id={"admission-number"} className={"mb-5 flex justify-evenly"}>
+                    <h2 className={"text-xl mb-2"}>チケットを発券して入場</h2>
+                    <p className={" block bg-gray-700 w-20 px-3 pt-0.5 tracking-widest text-lg  text-center"}>12345</p>
                 </div>
-                <h3 className={"text-xl mb-5"}>購入情報</h3>
-                <table id={"payList"} className={"bg-gray-300 mx-auto mb-5"}>
+
+                <div id={"admission-qr"} className={"mb-3 flex justify-evenly"}>
+                    <h2 className={"text-xl mb-2"}>QRコードで入場</h2>
+                    <button className={" block bg-gray-300 text-black tracking-widest text-lg text-center"}>QRコードを表示</button>
+                </div>
+            </div>
+
+            <div id={"showDetail"} className={"bg-dark-lighter w-3/4 p-5 mb-5"}>
+                <h3 className={"text-2xl mb-5 text-gold font-semibold tracking-wide"}>購入情報</h3>
+                <table id={"payList"} className={" mx-auto mb-10"}>
                     <tbody>
-                        <tr>
+                    <tr className={"border-accent/30 border-b"}>
                             <th scope="row">
                                 スクリーン
                             </th>
@@ -38,7 +47,7 @@ export default function completed() {
                                 {screen}
                             </td>
                         </tr>
-                        <tr>
+                        <tr className={"border-accent/30 border-b"}>
                             <th scope="row">
                                 作品名
                             </th>
@@ -46,41 +55,39 @@ export default function completed() {
                                 作品
                             </td>
                         </tr>
-                        <tr>
+                        <tr className={"border-accent/30 border-b"}>
                             <th scope="row">
                                 日時
                             </th>
                             <td>
                                 {date}<br/>
-                                {time}
+                                {time}~
                             </td>
                         </tr>
-                        <tr>
+                        <tr className={"border-accent/30 border-b"}>
                             <th scope="row">
                                 座席
                             </th>
                             <td>
                                 {ticketDec.map(ticket => (
-                                    <div key={ticket.seatId} className={"flex flex-row flex-nowrap"}>
-                                        <p className={"w-12"}>{ticket.seatId}</p>
-                                        <p className={"w-28"}>{ticket.ticketType.name}</p>
-                                        <p>{ticket.ticketType.price} 円</p>
+                                    <div key={ticket.seatId} className={"flex flex-row flex-nowrap justify-end"}>
+                                        <p className={"w-12　"}>{ticket.seatId}</p>
+                                        <p className={"w-28 "}>{ticket.ticketType.name}</p>
+                                        <p >{ticket.ticketType.price} 円</p>
 
 
                                     </div>
                                 ))}
-                                <div className={"flex flex-row flex-nowrap"}>
-                                    <p className={"w-12"}>H2</p>
-                                    <p className={"w-28"}>小学生、幼児</p>
-                                    <p>1000 円</p>
-
-
-                                </div>
+                                {/*<div className={"flex flex-row flex-nowrap"}> 文字数確認用*/}
+                                {/*    <p className={"w-12"}>H2</p>*/}
+                                {/*    <p className={"w-28"}>小学生、幼児</p>*/}
+                                {/*    <p>1000 円</p>*/}
+                                {/*</div>*/}
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <p className={"text-right text-lg"}>合計金額:{totalPrice} 円</p>
+                <p className={"text-base text-center mb-10"}>合計金額 :<span className={"text-xl mx-2.5"}>{totalPrice}</span> 円</p>
             </div>
             <p className={"mb-5"}>マイページでもご確認いただけます</p>
             <Link className={"bg-gold py-3 px-4 rounded-lg text-darkest hover:scale-90 transition-all "}
