@@ -12,6 +12,8 @@ type ReservationSeatRepository interface {
 	FindAllReservationSeats() ([]model.ReservationSeat, error)
 	GetReservationSeatsByScreenID(screenID uint) ([]model.ReservationSeat, error)
 	GetReservationSeatsByScreeningID(screeningID uint) ([]model.ReservationSeat, error)
+	FindReservationSeatByID(id uint) (*model.ReservationSeat, error)
+	UpdateReservationSeat(seat *model.ReservationSeat) error
 }
 
 type GormReservationSeatRepository struct {
@@ -67,4 +69,16 @@ func (r *GormReservationSeatRepository) FindAllReservationSeats() ([]model.Reser
 	var reservationSeats []model.ReservationSeat
 	err := r.DB.Find(&reservationSeats).Error
 	return reservationSeats, err
+}
+
+func (r *GormReservationSeatRepository) FindReservationSeatByID(id uint) (*model.ReservationSeat, error) {
+	var seat model.ReservationSeat
+	if err := r.DB.First(&seat, id).Error; err != nil {
+		return nil, err
+	}
+	return &seat, nil
+}
+
+func (r *GormReservationSeatRepository) UpdateReservationSeat(seat *model.ReservationSeat) error {
+	return r.DB.Save(seat).Error
 }

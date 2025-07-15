@@ -121,3 +121,30 @@ func (h *ReservationSeatHandler) GetReservedSeatsByScreeningID() gin.HandlerFunc
 		c.JSON(http.StatusOK, reservedSeats)
 	}
 }
+
+func (h *ReservationSeatHandler) CancelReservationSeat() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idParam := c.Param("id")
+		id, err := strconv.ParseUint(idParam, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効な予約IDです", "details": err.Error()})
+			return
+		}
+
+		if err := h.Usecase.CancelReservationSeat(uint(id)); err != nil {
+			if err.Error() == "すでにキャンセル済みです" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "すでにキャンセル済みです",
+				})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error":   "予約のキャンセルに失敗しました",
+					"details": err.Error(),
+				})
+			}
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "予約をキャンセルしました"})
+	}
+}

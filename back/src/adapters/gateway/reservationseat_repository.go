@@ -75,3 +75,7 @@ func (r *GormReservationSeatRepository) GetReservationSeatsByScreeningID(screeni
 	}
 	return reservationSeats, nil
 }
+
+func (r *GormReservationSeatRepository) UpdateReservationSeat(seat *model.ReservationSeat) error {
+	return r.DB.Save(seat).Error
+}
