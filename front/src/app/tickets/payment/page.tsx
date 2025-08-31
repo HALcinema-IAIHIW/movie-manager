@@ -25,8 +25,6 @@ export default function payment() {
     const movieId=searchParams.get("movieId")
     const date = searchParams.get("date")
     const time = searchParams.get("time")
-    const screen = searchParams.get("screen")
-    const totalPrice = searchParams.get("totalPrice")
     const screeningId = searchParams.get("screeningId")
     const seatTicketsParam = searchParams.get("seatTickets");
     const parsedSeatTickets: SeatTicketForPayment[] = seatTicketsParam ? JSON.parse(seatTicketsParam) : [];
