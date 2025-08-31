@@ -99,6 +99,7 @@ body {
     font-family: var(--font-shippori), serif !important;
   }
 
+
   /* カードスタイル */
   .card-luxury {
     @apply bg-dark-lighter rounded-lg;

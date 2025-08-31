@@ -22,7 +22,7 @@ export default function payment() {
     const [error, setError] = useState<string | null>(null); // ★ エラーメッセージ状態
 
 
-    const movieId = searchParams.get("movieId")
+    const movieId=searchParams.get("movieId")
     const date = searchParams.get("date")
     const time = searchParams.get("time")
     const screen = searchParams.get("screen")
@@ -36,6 +36,9 @@ export default function payment() {
         .map(ticket => ticket.roleId)
         .filter(Boolean) // null や undefined の roleId を取り除く
         .join(',');
+    const screen=searchParams.get("screen")
+    const seatTickets=searchParams.get("seatTickets")
+    const totalPrice=searchParams.get("totalPrice")
 
     const TestUser = {
         name: "none",
@@ -45,7 +48,7 @@ export default function payment() {
     }
 
     // ラジオボタン処理
-    const [selCard,setCard] = useState("registed")
+    const [selCard,setCard] = useState("new")
     // ユーザーが無い時は初期値をnewの方にしてほしいです
     const HandleRadio = (data:any) =>{
         setCard(data.target.id);
@@ -161,8 +164,6 @@ export default function payment() {
             setIsLoading(false);
         }
     };
-
-
 
     return(
         <div id={"payment"}>

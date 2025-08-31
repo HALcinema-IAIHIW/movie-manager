@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Mail, Phone, CreditCard, Calendar, MapPin, Clock, QrCode, Info, Edit3, Save, Film } from "lucide-react"
+import {Mail, Phone, CreditCard, Calendar, MapPin, Clock, QrCode, Info, Edit3, Save, Film, CircleX} from "lucide-react"
 
 
 // ★Reservation 型の定義をバックエンドのUserReservationResponseに厳密に合わせるよ★
@@ -199,13 +199,21 @@ export default function MyPage() {
 
                                                 {/* アクションボタン */}
                                                 <div className="flex flex-col sm:flex-row gap-4">
-                                                    <button className="btn-luxury flex items-center justify-center gap-2 font-jp">
-                                                        <Info size={18} />
+                                                    <button
+                                                        className="btn-luxury flex items-center justify-center gap-2 font-jp">
+                                                        <Info size={18}/>
                                                         映画詳細
                                                     </button>
-                                                    <button className="btn-outline-luxury flex items-center justify-center gap-2 font-jp">
-                                                        <QrCode size={18} />
+                                                    <button
+                                                        className="btn-outline-luxury flex items-center justify-center gap-2 font-jp">
+                                                        <QrCode size={18}/>
                                                         QRコード
+                                                    </button>
+                                                    <button className="px-6 py-3 border-2 border-red-500 text-red-500 flex items-center justify-center gap-2 font-jp
+                                                            transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-gold-glow;">
+                                                        {/*　上映時間が近いと消える仕様にしたい　色はログアウトに合わせてred500　*/}
+                                                        <CircleX size={18}/>
+                                                        キャンセル
                                                     </button>
                                                 </div>
                                             </div>
