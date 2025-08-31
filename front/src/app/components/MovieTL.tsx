@@ -73,7 +73,6 @@ export default function MovieTL({ title, screen_id, date, showings }: MovieTLPro
                                                 ? "bg-accent/20 border-accent/30 text-text-muted cursor-not-allowed"
                                                 : "bg-gold/10 border-gold/30 text-gold hover:bg-gold/20 hover:border-gold/50 hover:shadow-gold-glow"
                                         }`}
-                                        disabled={Number(s.start_time.replace(":", "")) <= Number(Now)}
                                     >
                                         <div className="flex items-center justify-center gap-1 mb-2">
                                             <Clock size={14} />

@@ -21,11 +21,6 @@ func (r *GormRoleRepository) GetAllRoles() ([]model.Role, error) {
 	panic("implement me")
 }
 
-func (r *GormRoleRepository) GetRoleByName(name string) (*model.Role, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func NewGormRoleRepository(db *gorm.DB) *GormRoleRepository {
 	return &GormRoleRepository{DB: db}
 }
@@ -43,6 +38,16 @@ func (r *GormRoleRepository) GetRoleByID(id uint) (*model.Role, error) { // ★�
 	if err := r.DB.First(&role, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil // レコードが見つからない場合はnil, nilを返す
+		}
+		return nil, err
+	}
+	return &role, nil
+}
+func (r *GormRoleRepository) GetRoleByName(name string) (*model.Role, error) {
+	var role model.Role
+	if err := r.DB.Where("role_name = ?", name).First(&role).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
 		}
 		return nil, err
 	}

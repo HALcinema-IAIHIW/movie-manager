@@ -15,8 +15,9 @@ func NewSeatRoutes(handler *SeatHandler) *SeatRoutes {
 func (r *SeatRoutes) RegisterRoutes(engine *gin.Engine) {
 	seatGroup := engine.Group("/seats")
 	{
+		seatGroup.GET("/find/:screen_id/:seatIdStr", r.Handler.GetSeatByRowColumnScreenID())
 		seatGroup.POST("/", r.Handler.CreateSeat())
 		seatGroup.GET("/", r.Handler.GetSeats())
-		seatGroup.GET("/:screen_id", r.Handler.GetSeatsByScreenID())
+		seatGroup.GET("/by-screen/:screen_id", r.Handler.GetSeatsByScreenID())
 	}
 }
