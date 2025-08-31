@@ -5,18 +5,24 @@ import (
 	"modules/src/datastructure/response"
 )
 
-func ToRoleResponse(role model.Role) response.RoleResponse {
-	return response.RoleResponse{
+func ToRoleResponse(role *model.Role) *response.RoleResponse {
+	if role == nil {
+		return nil
+	}
+	return &response.RoleResponse{
 		ID:       role.ID,
 		RoleName: role.RoleName,
 		PriceYen: role.PriceYen,
 	}
 }
 
-func ToRoleResponseList(movies []model.Role) []response.RoleResponse {
-	var res []response.RoleResponse
-	for _, m := range movies {
-		res = append(res, ToRoleResponse(m))
+func ToRoleResponseList(roles []model.Role) []response.RoleResponse {
+	if roles == nil {
+		return []response.RoleResponse{}
 	}
-	return res
+	var roleResponses []response.RoleResponse
+	for i := range roles {
+		roleResponses = append(roleResponses, *ToRoleResponse(&roles[i])) // ToRoleResponse にポインタを渡す
+	}
+	return roleResponses
 }

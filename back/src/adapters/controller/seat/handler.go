@@ -1,6 +1,9 @@
 package seat
 
 import (
+	"errors"
+	"fmt"
+	"gorm.io/gorm"
 	"modules/src/adapters/presenter"
 	"modules/src/database/model"
 	"modules/src/datastructure/request"
@@ -8,6 +11,7 @@ import (
 	"modules/src/usecases"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -74,5 +78,58 @@ func (h *SeatHandler) GetSeats() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, presenter.ToSeatResponseList(seats))
+	}
+}
+
+func (h *SeatHandler) GetSeatByRowColumnScreenID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		screenIDParam := c.Param("screen_id")
+		seatIdStr := c.Param("seatIdStr")
+
+		// デバッグログ
+		fmt.Printf("DEBUG: GetSeatByRowColumnScreenID received - screenIDParam: '%s', seatIdStr: '%s'\n",
+			screenIDParam, seatIdStr)
+
+		// screenID の数値変換
+		screenIDUint64, err := strconv.ParseUint(screenIDParam, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効なスクリーンIDが指定されました", "details": fmt.Sprintf("'%s'を数値に変換できません: %v", screenIDParam, err)})
+			return
+		}
+		screenID := uint(screenIDUint64)
+
+		var rowParam string
+		var columnInt int
+
+		if len(seatIdStr) < 2 { // 最低でも"A1"のような2文字が必要
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効な座席ID形式が指定されました", "details": fmt.Sprintf("座席ID '%s'の形式が不正です", seatIdStr)})
+			return
+		}
+		rowParam = strings.ToUpper(seatIdStr[0:1])
+		colStr := seatIdStr[1:]
+
+		colVal, parseErr := strconv.Atoi(colStr)
+		if parseErr != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効な列番号が指定されました", "details": fmt.Sprintf("座席ID '%s'の列番号を数値に変換できません: %v", seatIdStr, parseErr)})
+			return
+		}
+		columnInt = colVal
+
+		// ユースケースを呼び出す
+		seat, err := h.Usecase.GetSeatByRowColumnScreenID(rowParam, columnInt, screenID)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{"error": "指定された座席が見つかりません"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "座席情報の取得に失敗しました", "details": err.Error()})
+			return
+		}
+		if seat == nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "指定された座席が見つかりません"})
+			return
+		}
+
+		c.JSON(http.StatusOK, presenter.ToSeatResponse(*seat))
 	}
 }

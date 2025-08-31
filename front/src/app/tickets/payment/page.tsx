@@ -7,16 +7,35 @@ export default function payment() {
 
     // typesから送られてきたparamsの取得
 
+    type SeatTicketForPayment = {
+        seatId: string;
+        roleId: string; // roleId を型に追加
+        price: number;
+        seatIdStr: string;
+        ticketTypeName: string;
+    }
+
+
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [isLoading, setIsLoading] = useState(false); // ★ ローディング状態
+    const [error, setError] = useState<string | null>(null); // ★ エラーメッセージ状態
 
 
     const movieId = searchParams.get("movieId")
     const date = searchParams.get("date")
     const time = searchParams.get("time")
     const screen = searchParams.get("screen")
-    const seatTickets = searchParams.get("seatTickets")
     const totalPrice = searchParams.get("totalPrice")
+    const screeningId = searchParams.get("screeningId")
+    const seatTicketsParam = searchParams.get("seatTickets");
+    const parsedSeatTickets: SeatTicketForPayment[] = seatTicketsParam ? JSON.parse(seatTicketsParam) : [];
+
+
+    const allRoleIds = parsedSeatTickets
+        .map(ticket => ticket.roleId)
+        .filter(Boolean) // null や undefined の roleId を取り除く
+        .join(',');
 
     const TestUser = {
         name: "none",
@@ -33,17 +52,129 @@ export default function payment() {
         console.log("Changed"+data.target.value)
     }
 
+    const handlePayment = async () => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            // --- 1. localStorageから認証情報を取得 ---
+            const userId = localStorage.getItem('userId');
+            const authToken = localStorage.getItem('authToken');
+
+            // 認証情報がない場合は処理を中断
+            if (!userId || !authToken) {
+                throw new Error('ログイン情報が見つかりません。再度ログインしてください。');
+            }
+
+            // --- 2. /purchases/ へのリクエストボディを生成 ---
+            const roleCounts = parsedSeatTickets.reduce((acc, ticket) => {
+                const roleId = Number(ticket.roleId);
+                if (!roleId) return acc;
+                acc[roleId] = (acc[roleId] || 0) + 1;
+                return acc;
+            }, {} as Record<number, number>);
+
+            const purchaseDetails = Object.entries(roleCounts).map(([role_id, quantity]) => ({
+                role_id: Number(role_id),
+                quantity,
+            }));
+
+            const purchaseRequestBody = {
+                user_id: Number(userId), // ★ localStorageから取得したuserIdを使用
+                screening_id: Number(screeningId),
+                purchase_time: new Date().toISOString(),
+                purchase_details: purchaseDetails,
+            };
+
+            console.log("Sending to /purchases/:", JSON.stringify(purchaseRequestBody, null, 2));
+
+
+            // --- 3. /purchases/ へのAPIリクエストを送信 (認証ヘッダー付き) ---
+            const purchaseResponse = await fetch('http://localhost:8080/purchases/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                },
+                body: JSON.stringify(purchaseRequestBody),
+            });
+
+            if (!purchaseResponse.ok) {
+                // エラーレスポンスの本文をテキストとして読み込む試み
+                const errorText = await purchaseResponse.text();
+                try {
+                    // JSONとしてパースできればパースする
+                    const errorData = JSON.parse(errorText);
+                    throw new Error(errorData.message || '購入情報の作成に失敗しました。');
+                } catch {
+                    // パースできなければテキストをそのまま表示
+                    throw new Error(errorText || '購入情報の作成に失敗しました。');
+                }
+            }
+
+            const purchaseResult = await purchaseResponse.json();
+            const purchaseId = purchaseResult.PurchaseID;
+
+            if (!purchaseId) {
+                throw new Error('レスポンスから購入IDが取得できませんでした。');
+            }
+
+            console.log("Purchase successful. Purchase ID:", purchaseId);
+
+
+            // --- 4. /reservationseats へのリクエストを送信 (認証ヘッダー付き) ---
+            const reservationPromises = parsedSeatTickets.map(ticket => {
+                const reservationRequestBody = {
+                    purchase_id: purchaseId,
+                    seat_id: Number(ticket.seatId),
+                };
+
+                return fetch('http://localhost:8080/reservationseats/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                    },
+                    body: JSON.stringify(reservationRequestBody),
+                });
+            });
+
+            const reservationResponses = await Promise.all(reservationPromises);
+
+            for (const res of reservationResponses) {
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText || '座席の予約に失敗しました。');
+                }
+            }
+
+            console.log("All seats reserved successfully.");
+
+            // --- 5. 成功した場合、完了ページに遷移 ---
+            sessionStorage.removeItem("seatSelection");
+            router.push('/tickets/complete');
+
+        } catch (err: any) {
+            console.error("Payment failed:", err);
+            setError(err.message || '決済処理中に予期せぬエラーが発生しました。');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
 
     return(
         <div id={"payment"}>
             <h1 className={"text-3xl "}>お支払方法選択</h1><br/>
-            {TestUser.name}
-            {movieId}
-            {date}
-            {time}
-            {screen}
-            {seatTickets}
-            {totalPrice}
+            {TestUser.name}/
+            {movieId}/
+            {date}/
+            {time}/
+            {screen}/
+            roleId:{allRoleIds}/
+            {totalPrice}/
+            {screeningId}
             {!TestUser.name && (
                 <div id={"inputPurchaser"}>
                     {/*  ログインしていない場合  */}
@@ -112,11 +243,18 @@ export default function payment() {
 
             }
             <div id={"decision"}>
-                <h3 id={"price"}>決済金額:<span>{totalPrice}</span></h3>
-                <button className={"w-100 flex items-center justify-center gap-2 py-3 px-4\n" +
-                    "                      bg-gradient-to-r from-gold to-gold-light text-darkest hover:shadow-gold-glow\n" +
-                    "                      rounded-lg font-medium transition-all duration-300 font-jp"}>
-                    決済
+                {/* ★ エラーメッセージの表示 */}
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+
+                <h3 id={"price"}>決済金額:<span>¥{Number(totalPrice).toLocaleString()}</span></h3>
+
+                {/* ★ 決済ボタンにonClickとdisabledを追加 */}
+                <button
+                    onClick={handlePayment}
+                    disabled={isLoading}
+                    className={"w-100 flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-gold to-gold-light text-darkest hover:shadow-gold-glow rounded-lg font-medium transition-all duration-300 font-jp disabled:opacity-50 disabled:cursor-not-allowed"}
+                >
+                    {isLoading ? '処理中...' : '決済'}
                 </button>
             </div>
 

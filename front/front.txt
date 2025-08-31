@@ -6,7 +6,9 @@ cdでC:\IW31\movie-manager\front\frontまで移動して
 Ittaliana
 英字
 Playfair Display
-日本語部nNotoSerif JP
+
+日本語部
+NotoSerif JP
 
 今回の課題でいるページ
 トップページ
@@ -24,4 +26,8 @@ Movie 映画の一覧表示
 トップページ
 施設案内
 component 出来た人がやる
+
+#2575fc
+
+curl -X POST \http://localhost:8080/roles \-H "Content-Type: application/json" \-d "{\"role_name\": \"大学生\", \"price_yen\": 1200}"
 

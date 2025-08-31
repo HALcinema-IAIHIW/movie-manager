@@ -1,6 +1,10 @@
 package role
 
 import (
+	"errors"
+	"fmt"
+	"gorm.io/gorm"
+	"log"
 	"modules/src/adapters/presenter"
 	"modules/src/database/model"
 	"modules/src/datastructure/request"
@@ -38,7 +42,7 @@ func (h *RoleHandler) CreateRoles() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "スクリーンの登録に失敗しました"})
 			return
 		}
-		c.JSON(http.StatusCreated, presenter.ToRoleResponse(*role))
+		c.JSON(http.StatusCreated, presenter.ToRoleResponse(role))
 	}
 }
 
@@ -50,5 +54,29 @@ func (h *RoleHandler) GetRoles() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, presenter.ToRoleResponseList(role))
+	}
+}
+
+func (h *RoleHandler) GetRoleByName() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		roleNameParam := c.Param("name") // URLパスパラメータからロール名を取得
+
+		role, err := h.Usecase.GetRoleByName(roleNameParam) // ユースケースを呼び出す
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("ロール '%s' が見つかりません", roleNameParam)})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "ロール情報の取得に失敗しました", "details": err.Error()})
+			return
+		}
+		if role == nil { // ユースケースがnilを返す可能性も考慮
+			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("ロール '%s' が見つかりません", roleNameParam)})
+			return
+		}
+		roleResponse := presenter.ToRoleResponse(role)
+
+		log.Printf("取得したロールID: %v", roleResponse.ID)
+		c.JSON(http.StatusOK, presenter.ToRoleResponse(role)) // presenterを使ってレスポンスを整形
 	}
 }

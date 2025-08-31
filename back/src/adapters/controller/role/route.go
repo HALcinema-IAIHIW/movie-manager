@@ -17,4 +17,5 @@ func (r *RoleRouter) RegisterRoutes(engine *gin.Engine) {
 	group := engine.Group("/roles")
 	group.POST("/", r.handler.CreateRoles())
 	group.GET("/", r.handler.GetRoles())
+	group.GET("/:name", r.handler.GetRoleByName())
 }
