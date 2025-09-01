@@ -471,7 +471,6 @@ export default function SeatSelection() {
             column,
           })
         }
-        alert("座席の予約に成功しました。");
 
         const seatSelectionData = {
           screen_id: screenId,

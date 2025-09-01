@@ -16,17 +16,19 @@ export default function payment() {
     }
 
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const router = useRouter();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const searchParams = useSearchParams();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [isLoading, setIsLoading] = useState(false); // ★ ローディング状態
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [error, setError] = useState<string | null>(null); // ★ エラーメッセージ状態
 
 
     const movieId=searchParams.get("movieId")
     const date = searchParams.get("date")
     const time = searchParams.get("time")
-    const screen = searchParams.get("screen")
-    const totalPrice = searchParams.get("totalPrice")
     const screeningId = searchParams.get("screeningId")
     const seatTicketsParam = searchParams.get("seatTickets");
     const parsedSeatTickets: SeatTicketForPayment[] = seatTicketsParam ? JSON.parse(seatTicketsParam) : [];
@@ -37,7 +39,7 @@ export default function payment() {
         .filter(Boolean) // null や undefined の roleId を取り除く
         .join(',');
     const screen=searchParams.get("screen")
-    const seatTickets=searchParams.get("seatTickets")
+    //const seatTickets=searchParams.get("seatTickets")
     const totalPrice=searchParams.get("totalPrice")
 
     const TestUser = {
@@ -48,6 +50,7 @@ export default function payment() {
     }
 
     // ラジオボタン処理
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [selCard,setCard] = useState("new")
     // ユーザーが無い時は初期値をnewの方にしてほしいです
     const HandleRadio = (data:any) =>{
@@ -62,10 +65,10 @@ export default function payment() {
         try {
             // --- 1. localStorageから認証情報を取得 ---
             const userId = localStorage.getItem('userId');
-            const authToken = localStorage.getItem('authToken');
+            const token = localStorage.getItem('token');
 
             // 認証情報がない場合は処理を中断
-            if (!userId || !authToken) {
+            if (!userId || !token) {
                 throw new Error('ログイン情報が見つかりません。再度ログインしてください。');
             }
 
@@ -97,7 +100,7 @@ export default function payment() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                    'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
                 },
                 body: JSON.stringify(purchaseRequestBody),
             });
@@ -136,7 +139,7 @@ export default function payment() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                        'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
                     },
                     body: JSON.stringify(reservationRequestBody),
                 });

@@ -152,8 +152,8 @@ export default function MyPage() {
                                 <p className="text-text-secondary">現在の予約はありません。</p>
                             ) : (
                                 // 複数の予約がある可能性があるので、mapでレンダリング
-                                reservations.map((reservationData) => (
-                                    <div key={reservationData.purchase_id} className="card-luxury p-8 mb-6 last:mb-0">
+                                reservations.map((reservationData , index) => (
+                                    <div key={index} className="card-luxury p-8 mb-6 last:mb-0">
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
                                             {/* 映画ポスター */}
                                             <div className="lg:col-span-1">
