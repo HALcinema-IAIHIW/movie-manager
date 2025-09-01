@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { ArrowLeft, ArrowRight, Users, Calendar, Clock, MapPin, Ticket } from "lucide-react"
+import {parse} from "date-fns";
 
 // 券種の型定義 (roleId を含むように変更)
 type TicketType = {
@@ -199,11 +200,16 @@ export default function TicketTypeSelection() {
     // 前のページに戻る
     const handleBack = () => {
         const params = new URLSearchParams()
-        params.set("movieId", movieInfo?.id || "")
-        params.set("date", movieInfo?.date || "")
-        params.set("time", movieInfo?.time || "")
-        params.set("screen", movieInfo?.screen || "")
+        // この辺の情報いらないかも　座席の情報渡して選択状態にするぐらいか？
+        // params.set("movieId", movieInfo?.id || "")
+        // params.set("date", movieInfo?.date || "")
+        // params.set("time", movieInfo?.time || "")
+        // params.set("screen", movieInfo?.screen || "")
+        // screening_idがscIdとして渡されている必要がある
 
+        if (currentScreeningId) {
+            params.set("scId", currentScreeningId);
+        }
         router.push(`/tickets/seats?${params.toString()}`)
     }
 
