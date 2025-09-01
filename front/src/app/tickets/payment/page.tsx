@@ -163,6 +163,11 @@ export default function payment() {
         }
     };
 
+    const handleBack = () => {
+        // typesに必要な情報はsessionStrageにあるのでそのまま遷移で問題なさそう？
+        // 後でなんか起きたら怖いかも
+        router.push(`/tickets/types?`)
+    }
     return(
         <div id={"payment"}>
             <h1 className={"text-3xl "}>お支払方法選択</h1><br/>
@@ -241,11 +246,19 @@ export default function payment() {
             )
 
             }
-            <div id={"decision"}>
+            <div id={"decision"} className={"flex flex-col"}>
                 {/* ★ エラーメッセージの表示 */}
                 {error && <p className="text-red-500 mb-4">{error}</p>}
 
-                <h3 id={"price"}>決済金額:<span>¥{Number(totalPrice).toLocaleString()}</span></h3>
+                <h3 id={"price"} className={"w-3/4 mx-auto"}>決済金額:<span>¥{Number(totalPrice).toLocaleString()}</span></h3>
+                <div id={"decisionButtons"}  className={"w-full flex flex-row justify-between align-items-center gap-80"}>
+                <button
+                    onClick={handleBack}
+                    disabled={isLoading}
+                    className={"w-50 bg-dark-lighter flex items-center justify-center gap-2 py-3 px-4 border border-accent/30text-text-secondary hover:text-text-primary hover:border-accent/50 rounded-lg transition-all duration-300 font-jp"}
+                >
+                券種選択に戻る
+                </button>
 
                 {/* ★ 決済ボタンにonClickとdisabledを追加 */}
                 <button
@@ -255,6 +268,9 @@ export default function payment() {
                 >
                     {isLoading ? '処理中...' : '決済'}
                 </button>
+            </div>
+
+
             </div>
 
         </div>
