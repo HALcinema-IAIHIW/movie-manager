@@ -18,8 +18,8 @@ export default function payment() {
 
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [isLoading, setIsLoading] = useState(false); // ★ ローディング状態
-    const [error, setError] = useState<string | null>(null); // ★ エラーメッセージ状態
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
 
     const movieId=searchParams.get("movieId")
@@ -82,10 +82,12 @@ export default function payment() {
 
         try {
             // --- 1. localStorageから認証情報を取得 ---
+
             // ページを開いたときにuseEffectで取得するようにしました
 
+
             // 認証情報がない場合は処理を中断
-            if (!userId || !authToken) {
+            if (!userId || !token) {
                 throw new Error('ログイン情報が見つかりません。再度ログインしてください。');
             }
 
@@ -117,7 +119,7 @@ export default function payment() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                    'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
                 },
                 body: JSON.stringify(purchaseRequestBody),
             });
@@ -156,7 +158,7 @@ export default function payment() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                        'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
                     },
                     body: JSON.stringify(reservationRequestBody),
                 });
