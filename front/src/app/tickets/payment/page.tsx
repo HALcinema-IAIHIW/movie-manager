@@ -38,8 +38,7 @@ export default function payment() {
         saveCard: false, // チェックボックスの状態
     });
     const [userData, setUserData] = useState<any>(null);
-    const [isUserChecked, setIsUserChecked] = useState(false);
-
+    const [isUserChecked, setIsUserChecked] = useState(false); // ログイン状態のチェック完了を管理
     // フォーム入力値を更新するハンドラ
     const handleCardFormChange = (field: keyof typeof creditCardForm, value: string | boolean) => {
         setCreditCardForm(prev => ({ ...prev, [field]: value }));
@@ -73,12 +72,36 @@ export default function payment() {
     },[]);
     console.log(userId);
     useEffect(() => {
-        const getauthToken = localStorage.getItem("token")
-        if(getauthToken){
-            setauthToken(getauthToken);
-        }
-    },[]);
-    // console.log(authToken);
+        const initialize = async () => {
+            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('token');
+
+            if (userId && token) {
+                try {
+                    const response = await fetch(`http://localhost:8080/users/${userId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setUserData(data);
+                        // 取得したデータにカード番号があれば'registed'を初期値に
+                        if (data.card_number) {
+                            setCard("registed");
+                        }
+                    } else {
+                        // トークン切れなどで取得失敗した場合
+                        setUserData(null);
+                    }
+                } catch (err) {
+                    console.error("ユーザー情報取得APIエラー:", err);
+                    setUserData(null);
+                }
+            }
+            setIsUserChecked(true);
+        };
+
+        initialize();
+    }, []);
 
 
 
@@ -257,35 +280,33 @@ export default function payment() {
             roleId:{allRoleIds}/
             {totalPrice}/
             {screeningId}
-            {!userId && (
-                <div id={"inputPurchaser"}>
-                    {/*  ログインしていない場合  */}
+            {isUserChecked && (
+                <>
+                    {/* ログインしていない場合 (userDataがnull) */}
+                    {!userData && (
+                        <div id={"inputPurchaser"}>
+                            <h2>購入者情報入力</h2>
+                            <hr/>
+                            <form action="#" id={"Purchaser"}>
+                                {/* ... */}
+                            </form>
+                        </div>
+                    )}
 
-                    <h2>購入者情報入力</h2>
-                    <hr/>
-                    <form action="#" id={"Purchaser"}>
-                        <label htmlFor="PurName" className={"payLabel"}>氏名</label>
-                        <input type="text" className={"payInput"} id={"PurName"} name={"PurName"}/><br/>
-                        <label htmlFor="PurMail" className={"payLabel"}>メールアドレス</label>
-                        <input type="email" className={"payInput"} id={"PurMail"} name={"Purmail"}/><br/>
-                        <label htmlFor="PurTel" className={"payLabel"}>電話番号</label>
-                        <input type="text" className={"payInput"} id={"PurTel"} name={"PurTel"}/>
-                    </form>
-                </div>
-            )}
-
-            {/*会員の場合この範囲を表示*/}
-            {userId && (
-                <div id={"userRadio"} className={"mb-10"}>
-                    <div className={"flex w-3/4 mx-auto"}>
-                        <input type="radio" name={"selectCredit"} id={"registed"} className={"mr-2"}
-                               checked={selCard === "registed"} onChange={HandleRadio}/>登録されたクレジットで支払う
-                    </div>
-                    <div className={"flex w-3/4 mx-auto"}>
-                        <input type={"radio"} name={"selectCredit"} id={"new"} className={"mr-2"}
-                               checked={selCard === "new"} onChange={HandleRadio}/>新しくクレジット情報を入力する
-                    </div>
-                </div>
+                    {/* 会員の場合 (userDataが存在する) */}
+                    {userData && (
+                        <div id={"userRadio"} className={"mb-10"}>
+                            <div className={"flex w-3/4 mx-auto"}>
+                                <input type="radio" name={"selectCredit"} id={"registed"} className={"mr-2"}
+                                       checked={selCard === "registed"} onChange={HandleRadio}/>登録されたクレジットで支払う
+                            </div>
+                            <div className={"flex w-3-4 mx-auto"}>
+                                <input type={"radio"} name={"selectCredit"} id={"new"} className={"mr-2"}
+                                       checked={selCard === "new"} onChange={HandleRadio}/>新しくクレジット情報を入力する
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
 
             {/*  会員表示ここまで */}
