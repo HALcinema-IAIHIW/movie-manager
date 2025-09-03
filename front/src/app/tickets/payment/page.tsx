@@ -1,5 +1,5 @@
 "use client"
-import { useState} from "react";
+import {use, useEffect, useState} from "react";
 import {useRouter,useSearchParams} from "next/navigation";
 import "./payment.css"
 
@@ -45,6 +45,29 @@ export default function payment() {
         RoleName: "一般"
     }
 
+    // ユーザー情報
+    const [userId,setUserId] = useState('');
+
+    const [authToken,setauthToken] = useState('');
+
+    useEffect(() => {
+        const getUserId = localStorage.getItem("userId")
+        if(getUserId){
+            setUserId(getUserId);
+        }
+    },[]);
+    console.log(userId);
+    useEffect(() => {
+        const getauthToken = localStorage.getItem("token")
+        if(getauthToken){
+            setauthToken(getauthToken);
+        }
+    },[]);
+    // console.log(authToken);
+
+
+
+
     // ラジオボタン処理
     const [selCard,setCard] = useState("new")
     // ユーザーが無い時は初期値をnewの方にしてほしいです
@@ -59,8 +82,9 @@ export default function payment() {
 
         try {
             // --- 1. localStorageから認証情報を取得 ---
-            const userId = localStorage.getItem('userId');
-            const token = localStorage.getItem('token');
+
+            // ページを開いたときにuseEffectで取得するようにしました
+
 
             // 認証情報がない場合は処理を中断
             if (!userId || !token) {
@@ -153,7 +177,15 @@ export default function payment() {
 
             // --- 5. 成功した場合、完了ページに遷移 ---
             sessionStorage.removeItem("seatSelection");
-            router.push('/tickets/complete');
+
+            const params = new URLSearchParams()
+            params.set("date",date || "")
+            params.set("time",time || "")
+            params.set("totalPrice",totalPrice || "")
+            params.set("screen",screen || "")
+            params.set("seatTickets",seatTickets || "")
+
+            router.push(`/tickets/completed?${params.toString()}`);
 
         } catch (err: any) {
             console.error("Payment failed:", err);
@@ -171,7 +203,7 @@ export default function payment() {
     return(
         <div id={"payment"}>
             <h1 className={"text-3xl "}>お支払方法選択</h1><br/>
-            {TestUser.name}/
+            {userId}/
             {movieId}/
             {date}/
             {time}/
@@ -179,7 +211,7 @@ export default function payment() {
             roleId:{allRoleIds}/
             {totalPrice}/
             {screeningId}
-            {!TestUser.name && (
+            {!userId && (
                 <div id={"inputPurchaser"}>
                     {/*  ログインしていない場合  */}
 
@@ -197,7 +229,7 @@ export default function payment() {
             )}
 
             {/*会員の場合この範囲を表示*/}
-            {TestUser.name && (
+            {userId && (
                 <div id={"userRadio"} className={"mb-10"}>
                     <div className={"flex w-3/4 mx-auto"}>
                         <input type="radio" name={"selectCredit"} id={"registed"} className={"mr-2"}
