@@ -82,7 +82,7 @@ export default function payment() {
 
         try {
             // --- 1. localStorageから認証情報を取得 ---
-            // ページを開いたときにuseEffectで取得　このページでログイン、ログアウトしたときあらためてuseEffectするようにしたい
+            // ページを開いたときにuseEffectで取得するようにしました
 
             // 認証情報がない場合は処理を中断
             if (!userId || !authToken) {
@@ -175,7 +175,15 @@ export default function payment() {
 
             // --- 5. 成功した場合、完了ページに遷移 ---
             sessionStorage.removeItem("seatSelection");
-            router.push('/tickets/complete');
+
+            const params = new URLSearchParams()
+            params.set("date",date || "")
+            params.set("time",time || "")
+            params.set("totalPrice",totalPrice || "")
+            params.set("screen",screen || "")
+            params.set("seatTickets",seatTickets || "")
+
+            router.push(`/tickets/completed?${params.toString()}`);
 
         } catch (err: any) {
             console.error("Payment failed:", err);
