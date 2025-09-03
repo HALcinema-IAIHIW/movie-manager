@@ -42,6 +42,7 @@ div#payment input.payInput{
     width: 260px;
     border: none;
     border-radius: 0 10px 10px 0;
+    color: black;
 }
 
 

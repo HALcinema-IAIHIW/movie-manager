@@ -1,5 +1,5 @@
 "use client"
-import { useState} from "react";
+import {use, useEffect, useState} from "react";
 import {useRouter,useSearchParams} from "next/navigation";
 import "./payment.css"
 
@@ -20,6 +20,8 @@ export default function payment() {
     const router = useRouter();
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const searchParams = useSearchParams();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [isLoading, setIsLoading] = useState(false); // ★ ローディング状態
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -39,7 +41,7 @@ export default function payment() {
         .filter(Boolean) // null や undefined の roleId を取り除く
         .join(',');
     const screen=searchParams.get("screen")
-    //const seatTickets=searchParams.get("seatTickets")
+    const seatTickets=searchParams.get("seatTickets")
     const totalPrice=searchParams.get("totalPrice")
 
     const TestUser = {
@@ -48,6 +50,29 @@ export default function payment() {
         password: "test",
         RoleName: "一般"
     }
+
+    // ユーザー情報
+    const [userId,setUserId] = useState('');
+
+    const [authToken,setauthToken] = useState('');
+
+    useEffect(() => {
+        const getUserId = localStorage.getItem("userId")
+        if(getUserId){
+            setUserId(getUserId);
+        }
+    },[]);
+    console.log(userId);
+    useEffect(() => {
+        const getauthToken = localStorage.getItem("token")
+        if(getauthToken){
+            setauthToken(getauthToken);
+        }
+    },[]);
+    // console.log(authToken);
+
+
+
 
     // ラジオボタン処理
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -100,7 +125,7 @@ export default function payment() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
+                    'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
                 },
                 body: JSON.stringify(purchaseRequestBody),
             });
@@ -139,7 +164,7 @@ export default function payment() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
+                        'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
                     },
                     body: JSON.stringify(reservationRequestBody),
                 });
@@ -158,7 +183,15 @@ export default function payment() {
 
             // --- 5. 成功した場合、完了ページに遷移 ---
             sessionStorage.removeItem("seatSelection");
-            router.push('/tickets/complete');
+
+            const params = new URLSearchParams()
+            params.set("date",date || "")
+            params.set("time",time || "")
+            params.set("totalPrice",totalPrice || "")
+            params.set("screen",screen || "")
+            params.set("seatTickets",seatTickets || "")
+
+            router.push(`/tickets/completed?${params.toString()}`);
 
         } catch (err: any) {
             console.error("Payment failed:", err);
@@ -168,10 +201,15 @@ export default function payment() {
         }
     };
 
+    const handleBack = () => {
+        // typesに必要な情報はsessionStrageにあるのでそのまま遷移で問題なさそう？
+        // 後でなんか起きたら怖いかも
+        router.push(`/tickets/types?`)
+    }
     return(
         <div id={"payment"}>
             <h1 className={"text-3xl "}>お支払方法選択</h1><br/>
-            {TestUser.name}/
+            {userId}/
             {movieId}/
             {date}/
             {time}/
@@ -179,7 +217,7 @@ export default function payment() {
             roleId:{allRoleIds}/
             {totalPrice}/
             {screeningId}
-            {!TestUser.name && (
+            {!userId && (
                 <div id={"inputPurchaser"}>
                     {/*  ログインしていない場合  */}
 
@@ -197,7 +235,7 @@ export default function payment() {
             )}
 
             {/*会員の場合この範囲を表示*/}
-            {TestUser.name && (
+            {userId && (
                 <div id={"userRadio"} className={"mb-10"}>
                     <div className={"flex w-3/4 mx-auto"}>
                         <input type="radio" name={"selectCredit"} id={"registed"} className={"mr-2"}
@@ -246,11 +284,19 @@ export default function payment() {
             )
 
             }
-            <div id={"decision"}>
+            <div id={"decision"} className={"flex flex-col"}>
                 {/* ★ エラーメッセージの表示 */}
                 {error && <p className="text-red-500 mb-4">{error}</p>}
 
-                <h3 id={"price"}>決済金額:<span>¥{Number(totalPrice).toLocaleString()}</span></h3>
+                <h3 id={"price"} className={"w-3/4 mx-auto"}>決済金額:<span>¥{Number(totalPrice).toLocaleString()}</span></h3>
+                <div id={"decisionButtons"}  className={"w-full flex flex-row justify-between align-items-center gap-80"}>
+                <button
+                    onClick={handleBack}
+                    disabled={isLoading}
+                    className={"w-50 bg-dark-lighter flex items-center justify-center gap-2 py-3 px-4 border border-accent/30text-text-secondary hover:text-text-primary hover:border-accent/50 rounded-lg transition-all duration-300 font-jp"}
+                >
+                券種選択に戻る
+                </button>
 
                 {/* ★ 決済ボタンにonClickとdisabledを追加 */}
                 <button
@@ -260,6 +306,9 @@ export default function payment() {
                 >
                     {isLoading ? '処理中...' : '決済'}
                 </button>
+            </div>
+
+
             </div>
 
         </div>
