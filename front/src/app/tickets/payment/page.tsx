@@ -202,15 +202,8 @@ export default function payment() {
     }
     return(
         <div id={"payment"}>
-            <h1 className={"text-3xl "}>お支払方法選択</h1><br/>
-            {userId}/
-            {movieId}/
-            {date}/
-            {time}/
-            {screen}/
-            roleId:{allRoleIds}/
-            {totalPrice}/
-            {screeningId}
+            <h1 className={"text-3xl mb-10 "}>お支払方法選択</h1><br/>
+
             {!userId && (
                 <div id={"inputPurchaser"}>
                     {/*  ログインしていない場合  */}
@@ -231,13 +224,15 @@ export default function payment() {
             {/*会員の場合この範囲を表示*/}
             {userId && (
                 <div id={"userRadio"} className={"mb-10"}>
-                    <div className={"flex w-3/4 mx-auto"}>
+                    <div className={"flex w-3/4 mx-auto mb-5 text-lg selCredit" }>
                         <input type="radio" name={"selectCredit"} id={"registed"} className={"mr-2"}
-                               checked={selCard === "registed"} onChange={HandleRadio}/>登録されたクレジットで支払う
+                               checked={selCard === "registed"} onChange={HandleRadio}/>
+                        <label htmlFor={"registed"} className={"radioText"}>登録されたクレジットで支払う</label>
                     </div>
-                    <div className={"flex w-3/4 mx-auto"}>
-                        <input type={"radio"} name={"selectCredit"} id={"new"} className={"mr-2"}
-                               checked={selCard === "new"} onChange={HandleRadio}/>新しくクレジット情報を入力する
+                    <div className={"flex w-3/4 mx-auto text-lg"}>
+                        <input type={"radio"} name={"selectCredit"} id={"new"} className={"mr-2 "}
+                               checked={selCard === "new"} onChange={HandleRadio}/>
+                        <label htmlFor={"new"} className={"radioText"}>新しくクレジット情報を入力する</label>
                     </div>
                 </div>
             )}
@@ -283,11 +278,11 @@ export default function payment() {
                 {error && <p className="text-red-500 mb-4">{error}</p>}
 
                 <h3 id={"price"} className={"w-3/4 mx-auto"}>決済金額:<span>¥{Number(totalPrice).toLocaleString()}</span></h3>
-                <div id={"decisionButtons"}  className={"w-full flex flex-row justify-between align-items-center gap-80"}>
+            <div id={"decisionButtons"}  className={"w-full my-auto flex flex-row justify-between align-items-center gap-80"}>
                 <button
                     onClick={handleBack}
                     disabled={isLoading}
-                    className={"w-50 bg-dark-lighter flex items-center justify-center gap-2 py-3 px-4 border border-accent/30text-text-secondary hover:text-text-primary hover:border-accent/50 rounded-lg transition-all duration-300 font-jp"}
+                    className={"w-50 text-nowrap bg-dark-lighter flex items-center justify-center gap-2 py-3 px-4 border border-accent/30text-text-secondary hover:text-text-primary hover:border-accent/50 rounded-lg transition-all duration-300 font-jp"}
                 >
                 券種選択に戻る
                 </button>
@@ -296,13 +291,11 @@ export default function payment() {
                 <button
                     onClick={handlePayment}
                     disabled={isLoading}
-                    className={"w-100 flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-gold to-gold-light text-darkest hover:shadow-gold-glow rounded-lg font-medium transition-all duration-300 font-jp disabled:opacity-50 disabled:cursor-not-allowed"}
+                    className={"w-100 text-nowrap flex items-center justify-center flex-nowrap gap-2 py-3 px-4 bg-gradient-to-r from-gold to-gold-light text-darkest hover:shadow-gold-glow rounded-lg font-medium transition-all duration-300 font-jp disabled:opacity-50 disabled:cursor-not-allowed"}
                 >
                     {isLoading ? '処理中...' : '決済'}
                 </button>
             </div>
-
-
             </div>
 
         </div>
