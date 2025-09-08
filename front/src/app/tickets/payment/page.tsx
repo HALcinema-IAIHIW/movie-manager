@@ -1,5 +1,5 @@
 "use client"
-import {useEffect, useState} from "react";
+import {use, useEffect, useState} from "react";
 import {useRouter,useSearchParams} from "next/navigation";
 import "./payment.css"
 
@@ -20,10 +20,8 @@ export default function payment() {
     const router = useRouter();
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const searchParams = useSearchParams();
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [isLoading, setIsLoading] = useState(false); // ★ ローディング状態
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [error, setError] = useState<string | null>(null); // ★ エラーメッセージ状態
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
 
     const movieId=searchParams.get("movieId")
@@ -121,8 +119,6 @@ export default function payment() {
 
         try {
             // --- 1. localStorageから認証情報を取得 ---
-            const userId = localStorage.getItem('userId');
-            const token = localStorage.getItem('token');
 
             // 認証情報がない場合は処理を中断
             if (!userId || !token) {
@@ -381,7 +377,7 @@ export default function payment() {
                     </button>
                 </div>
 
-
+            </div>
             </div>
 
         </div>
