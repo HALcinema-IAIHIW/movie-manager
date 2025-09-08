@@ -43,6 +43,7 @@ div#payment label.payLabel{
     border: none;
     border-radius: 10px 0 0 10px;
 }
+
 div#payment input.payInput{
     padding: 10px 25px;
     margin-bottom: 50px;

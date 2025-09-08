@@ -10,6 +10,13 @@ type GormUserRepository struct {
 	DB *gorm.DB
 }
 
+func (r *GormUserRepository) Update(user *model.User) error {
+	// Saveメソッドは、userオブジェクトの主キー(ID)を元に、
+	// レコードの全フィールドを更新します。
+	result := r.DB.Save(user)
+	return result.Error
+}
+
 func (r *GormUserRepository) Create(user *model.User) error {
 	return r.DB.Create(user).Error
 }
