@@ -8,11 +8,14 @@ import (
 
 type User struct {
 	gorm.Model
-	Name     string
-	Email    string `gorm:"unique"`
-	Password string
-	RoleID   uint
-	Role     Role `gorm:"foreignKey:RoleID" json:"role"`
+	Name           string
+	Email          string `gorm:"unique"`
+	Password       string
+	RoleID         uint
+	Role           Role `gorm:"foreignKey:RoleID" json:"role"`
+	PhoneNumber    string
+	CardNumber     string
+	CardExpiration *time.Time
 }
 
 type Role struct {

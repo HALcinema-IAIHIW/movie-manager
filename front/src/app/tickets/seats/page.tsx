@@ -493,7 +493,7 @@ export default function SeatSelection() {
 
     return (
         <div className="min-h-screen pt-24">
-            <p>確認用:{scId}</p>
+            {/*<p>確認用:{scId}</p>*/}
             {/* ヒーローセクション */}
             <section className="relative h-[20vh] md:h-[30vh] overflow-hidden">
                 <div className="absolute inset-0">

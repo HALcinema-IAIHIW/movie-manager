@@ -25,4 +25,5 @@ func (r *UserRouter) RegisterRoutes(engine *gin.Engine) {
 	group.POST("/login", r.handler.Login())
 	group.POST("/logout", r.handler.Logout())
 	group.GET("/me/reservations", r.handler.GetLoggedInUserReservations())
+	group.POST("/update/:id", r.handler.UpdateUser())
 }
