@@ -1,5 +1,5 @@
 "use client"
-import {useState} from "react"
+import {useState, useEffect} from "react"
 import {useRouter, useSearchParams} from "next/navigation"
 import Image from "next/image"
 import {ArrowLeft, CreditCard, User, Calendar, Clock, MapPin, CheckCircle} from "lucide-react"
@@ -43,6 +43,23 @@ export default function payment() {
 		RoleName: "一般",
 	}
 
+	const [userId, setUserId] = useState("")
+	const [token, setToken] = useState("")
+
+	useEffect(() => {
+		const getUserId = localStorage.getItem("userId")
+		if (getUserId) {
+			setUserId(getUserId)
+		}
+	}, [])
+
+	useEffect(() => {
+		const getToken = localStorage.getItem("token")
+		if (getToken) {
+			setToken(getToken)
+		}
+	}, [])
+
 	// ラジオボタン処理
 	const [selCard, setCard] = useState("new")
 	// ユーザーが無い時は初期値をnewの方にしてほしいです
@@ -56,10 +73,6 @@ export default function payment() {
 		setError(null)
 
 		try {
-			// --- 1. localStorageから認証情報を取得 ---
-			const userId = localStorage.getItem("userId")
-			const token = localStorage.getItem("token")
-
 			// 認証情報がない場合は処理を中断
 			if (!userId || !token) {
 				throw new Error("ログイン情報が見つかりません。再度ログインしてください。")
@@ -152,7 +165,15 @@ export default function payment() {
 
 			// --- 5. 成功した場合、完了ページに遷移 ---
 			sessionStorage.removeItem("seatSelection")
-			router.push("/tickets/complete")
+
+			const params = new URLSearchParams()
+			params.set("date", date || "")
+			params.set("time", time || "")
+			params.set("totalPrice", totalPrice || "")
+			params.set("screen", screen || "")
+			params.set("seatTickets", seatTickets || "")
+
+			router.push(`/tickets/completed?${params.toString()}`)
 		} catch (err: any) {
 			console.error("Payment failed:", err)
 			setError(err.message || "決済処理中に予期せぬエラーが発生しました。")
@@ -213,10 +234,10 @@ export default function payment() {
 						</div>
 					</div>
 
+					{/*購入者情報入力*/}
 					<div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 						<div className="xl:col-span-2 space-y-8">
-							{/* 購入者情報入力 */}
-							{!TestUser.name && (
+							{!userId && (
 								<div className="card-luxury p-8">
 									<h3 className="text-2xl font-bold text-text-primary mb-6 flex items-center gap-2 font-jp">
 										<User size={24} className="text-gold"/>
@@ -267,8 +288,8 @@ export default function payment() {
 								</div>
 							)}
 
-							{/* 支払い方法選択 */}
-							{TestUser.name && (
+							{/*支払方法入力*/}
+							{userId && (
 								<div className="card-luxury p-8">
 									<h3 className="text-2xl font-bold text-text-primary mb-6 flex items-center gap-2 font-jp">
 										<CreditCard size={24} className="text-gold"/>
