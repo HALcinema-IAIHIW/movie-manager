@@ -60,10 +60,10 @@ export default function payment() {
         try {
             // --- 1. localStorageから認証情報を取得 ---
             const userId = localStorage.getItem('userId');
-            const authToken = localStorage.getItem('authToken');
+            const token = localStorage.getItem('token');
 
             // 認証情報がない場合は処理を中断
-            if (!userId || !authToken) {
+            if (!userId || !token) {
                 throw new Error('ログイン情報が見つかりません。再度ログインしてください。');
             }
 
@@ -95,7 +95,7 @@ export default function payment() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                    'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
                 },
                 body: JSON.stringify(purchaseRequestBody),
             });
@@ -134,7 +134,7 @@ export default function payment() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                        'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
                     },
                     body: JSON.stringify(reservationRequestBody),
                 });

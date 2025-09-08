@@ -13,14 +13,16 @@ type ReservationSeatResponse struct {
 }
 
 type UserReservationResponse struct {
-	PurchaseID        uint   `json:"purchase_id"`
-	ReservationSeatID uint   `json:"reservation_seat_id"`
-	MovieTitle        string `json:"movieTitle"`
-	Date              string `json:"date"`
-	Time              string `json:"time"`
-	EndTime           string `json:"endTime"`
-	Screen            string `json:"screen"`
-	Seat              string `json:"seat"`
-	PosterURL         string `json:"poster"`
-	TimeUntil         string `json:"timeUntil"`
+	PurchaseID        uint       `json:"purchase_id"`
+	ReservationSeatID uint       `json:"reservation_seat_id"`
+	MovieTitle        string     `json:"movieTitle"`
+	Date              string     `json:"date"`
+	Time              string     `json:"time"`
+	EndTime           string     `json:"endTime"`
+	Screen            string     `json:"screen"`
+	Seat              string     `json:"seat"`
+	PosterURL         string     `json:"poster"`
+	TimeUntil         string     `json:"timeUntil"`
+	IsCancelled       bool       `json:"is_cancelled"`
+	CancelledAt       *time.Time `json:"cancelled_at,omitempty"`
 }

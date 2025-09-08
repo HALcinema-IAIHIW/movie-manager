@@ -145,6 +145,8 @@ func (h *ReservationSeatHandler) CancelReservationSeat() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "予約をキャンセルしました"})
+		c.JSON(http.StatusOK, gin.H{
+			"message": "予約をキャンセルしました",
+		})
 	}
 }
