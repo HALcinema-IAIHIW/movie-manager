@@ -157,7 +157,7 @@ export default function payment() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                    'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
                 },
                 body: JSON.stringify(purchaseRequestBody),
             });
@@ -196,7 +196,7 @@ export default function payment() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`, // ★ 認証トークンをヘッダーに追加
+                        'Authorization': `Bearer ${token}`, // ★ 認証トークンをヘッダーに追加
                     },
                     body: JSON.stringify(reservationRequestBody),
                 });
@@ -224,8 +224,10 @@ export default function payment() {
                 // ユーザー更新APIを呼び出す (PATCHメソッド)
                 // 決済自体は成功しているので、ここでのエラーはコンソールに出力するに留め、ユーザーの画面遷移は妨げない
                 try {
-                    const updateUserResponse = await fetch(`http://localhost:8080/users/${userId}`, {
-                        method: 'PATCH', // 更新なのでPATCHが適切
+                    console.log("APIに送信するuserId:", userId);
+                    console.log("APIに送信するtoken:", token);
+                    const updateUserResponse = await fetch(`http://localhost:8080/users/update/${userId}`, {
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`,
@@ -235,7 +237,7 @@ export default function payment() {
 
                     if (!updateUserResponse.ok) {
                         const updateErrorData = await updateUserResponse.json();
-                        console.warn('カード情報の更新に失敗しました:', updateErrorData.error);
+                        console.warn('カード情報の更新に失敗しました:', updateErrorData);
                     } else {
                         console.log('カード情報が正常に更新されました。');
                     }

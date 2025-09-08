@@ -186,20 +186,7 @@ func (h *UserHandler) UpdateUser() gin.HandlerFunc {
 			return
 		}
 
-		// 2. 認可：ログイン中のユーザーIDを取得
-		loggedInUserIDVal, exists := c.Get("userID")
-		if !exists {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "認証が必要です"})
-			return
-		}
-		loggedInUserID := loggedInUserIDVal.(uint)
-
-		if uint(targetUserID) != loggedInUserID {
-			c.JSON(http.StatusForbidden, gin.H{"error": "この操作を行う権限がありません"})
-			return
-		}
-
-		// 3. リクエストボディをバインド
+		// 2. リクエストボディをバインド
 		var req request.UpdateUserRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -218,6 +205,7 @@ func (h *UserHandler) UpdateUser() gin.HandlerFunc {
 			CardNumber:     req.CardNumber,
 			CardExpiration: req.CardExpiration,
 		}
+		log.Printf("Usecaseに渡す更新データ: %+v", updateInput)
 
 		err = h.UserUC.UpdateUser(updateInput)
 		if err != nil {
@@ -226,6 +214,7 @@ func (h *UserHandler) UpdateUser() gin.HandlerFunc {
 			} else if err == usecases.ErrEmailExists {
 				c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			} else {
+				log.Printf("ユーザー更新処理で予期せぬエラーが発生しました: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "ユーザー情報の更新に失敗しました"})
 			}
 			return

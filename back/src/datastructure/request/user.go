@@ -24,5 +24,5 @@ type UpdateUserRequest struct {
 	RoleName       *string `json:"role_name"`
 	PhoneNumber    *string `json:"phone"`
 	CardNumber     *string `json:"card_number"`
-	CardExpiration *string `json:"card_expiration" binding:"omitempty,custom_date_format"`
+	CardExpiration *string `json:"card_expiration"`
 }
