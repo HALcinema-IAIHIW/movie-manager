@@ -119,7 +119,8 @@ export default function payment() {
 
         try {
             // --- 1. localStorageから認証情報を取得 ---
-
+            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('token');
             // 認証情報がない場合は処理を中断
             if (!userId || !token) {
                 throw new Error('ログイン情報が見つかりません。再度ログインしてください。');
@@ -377,7 +378,6 @@ export default function payment() {
                     </button>
                 </div>
 
-            </div>
             </div>
 
         </div>
