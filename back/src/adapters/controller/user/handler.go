@@ -36,10 +36,13 @@ func (h *UserHandler) CreateUser() gin.HandlerFunc {
 		}
 
 		user, err := h.UserUC.RegisterUser(usecases.RegisterUserInput{
-			Name:     req.Name,
-			Email:    req.Email,
-			Password: req.Password,
-			RoleName: req.RoleName,
+			Name:           req.Name,
+			Email:          req.Email,
+			Password:       req.Password,
+			RoleName:       req.RoleName,
+			PhoneNumber:    req.PhoneNumber,
+			CardNumber:     req.CardNumber,
+			CardExpiration: req.CardExpiration,
 		})
 		if err != nil {
 			if err == usecases.ErrEmailExists {
@@ -90,10 +93,13 @@ func (h *UserHandler) GetUserByID() gin.HandlerFunc {
 		}
 
 		res := response.UserResponse{
-			ID:       user.ID,
-			Name:     user.Name,
-			Email:    user.Email,
-			RoleName: user.Role.RoleName,
+			ID:             user.ID,
+			Name:           user.Name,
+			Email:          user.Email,
+			RoleName:       user.Role.RoleName,
+			PhoneNumber:    user.PhoneNumber,
+			CardNumber:     user.CardNumber,
+			CardExpiration: user.CardExpiration,
 		}
 
 		c.JSON(http.StatusOK, res)
@@ -123,10 +129,13 @@ func (h *UserHandler) Login() gin.HandlerFunc {
 			Message: "ログイン成功",
 			Token:   token,
 			User: response.UserResponse{
-				ID:       user.ID,
-				Name:     user.Name,
-				Email:    user.Email,
-				RoleName: user.Role.RoleName,
+				ID:             user.ID,
+				Name:           user.Name,
+				Email:          user.Email,
+				RoleName:       user.Role.RoleName,
+				PhoneNumber:    user.PhoneNumber,
+				CardNumber:     user.CardNumber,
+				CardExpiration: user.CardExpiration,
 			},
 		})
 	}
@@ -164,5 +173,54 @@ func (h *UserHandler) GetLoggedInUserReservations() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, reservations)
+	}
+}
+
+func (h *UserHandler) UpdateUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 1. URLから更新対象のユーザーIDを取得
+		targetUserIDStr := c.Param("id")
+		targetUserID, err := strconv.ParseUint(targetUserIDStr, 10, 32)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効なユーザーIDです"})
+			return
+		}
+
+		// 2. リクエストボディをバインド
+		var req request.UpdateUserRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// 4. Usecaseへの入力データを作成
+		// この時点でUsecaseには更新対象のIDと、更新したいデータ(nilでないもの)が渡される
+		updateInput := usecases.UpdateUserInput{
+			ID:             uint(targetUserID),
+			Name:           req.Name,
+			Email:          req.Email,
+			Password:       req.Password,
+			RoleName:       req.RoleName,
+			PhoneNumber:    req.PhoneNumber,
+			CardNumber:     req.CardNumber,
+			CardExpiration: req.CardExpiration,
+		}
+		log.Printf("Usecaseに渡す更新データ: %+v", updateInput)
+
+		err = h.UserUC.UpdateUser(updateInput)
+		if err != nil {
+			if err == usecases.ErrUserNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			} else if err == usecases.ErrEmailExists {
+				c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			} else {
+				log.Printf("ユーザー更新処理で予期せぬエラーが発生しました: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "ユーザー情報の更新に失敗しました"})
+			}
+			return
+		}
+
+		// 6. 成功レスポンス
+		c.JSON(http.StatusOK, gin.H{"message": "ユーザー情報が正常に更新されました"})
 	}
 }

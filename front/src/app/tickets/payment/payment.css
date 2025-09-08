@@ -25,6 +25,13 @@ div#inputPurchaser, div#inputCredit{
     align-items: center;
 }
 
+
+input[type=radio]:checked + label.radioText {
+    border: 2px #fff;
+    border-style: none none solid none;
+
+}
+
 /*入力フォームデザイン　共通*/
 div#payment label.payLabel{
     display: inline-block;
@@ -36,12 +43,14 @@ div#payment label.payLabel{
     border: none;
     border-radius: 10px 0 0 10px;
 }
+
 div#payment input.payInput{
     padding: 10px 25px;
     margin-bottom: 50px;
     width: 260px;
     border: none;
     border-radius: 0 10px 10px 0;
+    color: black;
 }
 
 
