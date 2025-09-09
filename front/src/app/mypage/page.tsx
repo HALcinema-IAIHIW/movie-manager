@@ -19,6 +19,8 @@ type Reservation = {
     seat: string;       // 座席番号 例: "A1"
     poster: string;     // Movie.PosterPath からくるURL
     timeUntil: string;  // "残り X時間 Y分 Z秒" または "上映済み"
+    is_cancelled: boolean;
+    cancelled_at?: string;
 }
 
 // CollectionItem 型（変更なし）
@@ -47,8 +49,7 @@ export default function MyPage() {
     const [loadingCollection, setLoadingCollection] = useState(false); // 鑑賞履歴はフェッチしないので、ロード済みと設定
     const [errorReservations, setErrorReservations] = useState<string | null>(null);
     const [errorCollection, setErrorCollection] = useState<string | null>(null); // 鑑賞履歴はフェッチしないので、エラーなしと設定
-
-
+    
     // --- データフェッチング ---
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -82,7 +83,8 @@ export default function MyPage() {
                     throw new Error(errorData.error || `予約情報の取得に失敗しました: ${response.status}`);
                 }
                 const data: Reservation[] = await response.json();
-                setReservations(data);
+                console.log("取得した予約情報:", data);
+                setReservations(data); // キャンセル済みも含めて state にセット
             } catch (err: unknown) { 
                 console.error("予約情報の取得エラー:", err);
                 if (err instanceof Error) {
@@ -101,6 +103,49 @@ export default function MyPage() {
         setLoadingCollection(false);
         setErrorCollection(null); // エラーがない場合
     }, []); // コンポーネントがマウントされたときに一度だけ実行
+
+      // --- キャンセル処理 ---
+    const handleCancel = async (reservationSeatId: number) => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("ログインしてください。");
+            return;
+        }
+        if (!confirm("本当にキャンセルしますか？")) return;
+
+        try {
+            const res = await fetch(`http://localhost:8080/reservationseats/${reservationSeatId}/cancel`, {
+                method: "PUT",
+                mode: "cors",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) throw new Error("キャンセルに失敗しました");
+        
+
+            setReservations((prev) =>
+              prev.map((r) =>
+                r.reservation_seat_id === reservationSeatId
+                  ? { ...r, is_cancelled: true, timeUntil: "キャンセル済み", cancelled_at: new Date().toISOString() }
+                  : r
+              )
+            );
+
+        
+            alert("予約をキャンセルしました。");
+        } catch (err: unknown) {
+            console.error("キャンセルエラー:", err);
+            alert(err instanceof Error ? err.message : "不明なエラーが発生しました。");
+        }
+    };  
+
+    const canCancel = (reservation: Reservation) => {
+      return !reservation.is_cancelled;
+    };
+
 
     const handleSave = () => {
         setIsEditing(false)
@@ -152,8 +197,14 @@ export default function MyPage() {
                                 <p className="text-text-secondary">現在の予約はありません。</p>
                             ) : (
                                 // 複数の予約がある可能性があるので、mapでレンダリング
-                                reservations.map((reservationData) => (
-                                    <div key={reservationData.purchase_id} className="card-luxury p-8 mb-6 last:mb-0">
+                                reservations
+                                .filter(r => !r.is_cancelled)
+                                .map((reservationData) => (  
+                                    <div
+                                        key={`${reservationData.purchase_id}-${reservationData.reservation_seat_id}`}
+                                        className="card-luxury p-8 mb-6 last:mb-0"
+                                    > 
+                                
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
                                             {/* 映画ポスター */}
                                             <div className="lg:col-span-1">
@@ -209,12 +260,18 @@ export default function MyPage() {
                                                         <QrCode size={18}/>
                                                         QRコード
                                                     </button>
-                                                    <button className="px-6 py-3 border-2 border-red-500 text-red-500 flex items-center justify-center gap-2 font-jp
-                                                            transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-gold-glow;">
-                                                        {/*　上映時間が近いと消える仕様にしたい　色はログアウトに合わせてred500　*/}
-                                                        <CircleX size={18}/>
-                                                        キャンセル
-                                                    </button>
+{canCancel(reservationData) ? (
+  <button
+    onClick={() => handleCancel(reservationData.reservation_seat_id)}
+    className="px-6 py-3 border-2 border-red-500 text-red-500 flex items-center justify-center gap-2 font-jp
+               transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-gold-glow"
+  >
+    <CircleX size={18} /> キャンセル
+  </button>
+) : (
+  <span className="text-red-500 font-jp">キャンセル済み</span>
+)}
+
                                                 </div>
                                             </div>
                                         </div>
