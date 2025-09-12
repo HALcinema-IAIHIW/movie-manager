@@ -194,7 +194,9 @@ export default function SeatSelection() {
                 // 予約済み座席のステータスを更新
                 const updatedSeats = initialSeatData.map(seat => {
                     // reservedSeatsData の seat_number (表示用ID) と initialSeatData の seat.id (表示用ID) を比較
-                    const isReserved = reservedSeatsData.some(reservedSeat => reservedSeat.seat_number === seat.id);
+                    const isReserved = reservedSeatsData.some(
+                        reservedSeat => reservedSeat.seat_number === seat.id && !reservedSeat.is_cancelled
+                    );
                     if (isReserved) {
                         return { ...seat, status: "reserved" as SeatStatus };
                     }
