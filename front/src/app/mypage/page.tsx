@@ -143,6 +143,7 @@ export default function MyPage() {
 
         
             alert("予約をキャンセルしました。");
+            window.location.reload();
         } catch (err: unknown) {
             console.error("キャンセルエラー:", err);
             alert(err instanceof Error ? err.message : "不明なエラーが発生しました。");
