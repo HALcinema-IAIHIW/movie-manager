@@ -10,6 +10,7 @@ type UserRepository interface {
 	FindByEmail(email string) (*model.User, error)
 	FindByID(id uint) (*model.User, error)
 	FindAll() ([]model.User, error)
+	Update(user *model.User) error
 }
 
 type GormUserRepository struct {
@@ -46,4 +47,9 @@ func (r *GormUserRepository) FindAll() ([]model.User, error) {
 	var users []model.User
 	err := r.db.Preload("Role").Find(&users).Error // Roleをプリロード
 	return users, err
+}
+
+func (r *GormUserRepository) Update(user *model.User) error {
+	result := r.db.Save(user)
+	return result.Error
 }

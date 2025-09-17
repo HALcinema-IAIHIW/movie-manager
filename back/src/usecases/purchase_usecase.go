@@ -6,11 +6,12 @@ import (
 	"strconv" // strconvをインポート
 	"time"
 
-	"gorm.io/gorm"
 	"modules/src/database/model"
 	"modules/src/datastructure/request"
 	"modules/src/datastructure/response"
 	"modules/src/repository"
+
+	"gorm.io/gorm"
 )
 
 type PurchaseUsecase struct {
@@ -140,6 +141,8 @@ func (uc *PurchaseUsecase) GetUserReservations(userID uint) ([]response.UserRese
 				Seat:              seat.Row + strconv.Itoa(seat.Column),      // 座席番号 (例: "A-5")
 				PosterURL:         movie.PosterPath,                          // 映画ポスターのパス
 				TimeUntil:         timeUntilStr,                              // 上映までの残り時間
+				IsCancelled:       rs.IsCancelled,
+				CancelledAt:       rs.CancelledAt,
 			})
 		}
 	}

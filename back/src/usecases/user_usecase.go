@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"modules/src/config"
+	"strconv"
 	"strings"
+	"time"
 
 	"modules/src/database/model"
 	"modules/src/repository"
@@ -13,13 +15,32 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrEmailExists = errors.New("email already exists")
+var (
+	ErrUserNotFound    = errors.New("ユーザーが見つかりません")
+	ErrEmailExists     = errors.New("そのメールアドレスは既に使用されています")
+	ErrInvalidPassword = errors.New("パスワードが正しくありません")
+	// 必要に応じて他のカスタムエラーもここに追加
+)
 
 type RegisterUserInput struct {
-	Name     string
-	Email    string
-	Password string
-	RoleName string // これをRoleIDに直接変更することも検討
+	Name           string
+	Email          string
+	Password       string
+	RoleName       string // これをRoleIDに直接変更することも検討
+	PhoneNumber    string
+	CardNumber     string
+	CardExpiration *time.Time
+}
+
+type UpdateUserInput struct {
+	ID             uint // どのユーザーを更新するか
+	Name           *string
+	Email          *string
+	Password       *string
+	RoleName       *string
+	PhoneNumber    *string
+	CardNumber     *string
+	CardExpiration *string
 }
 
 type UserUsecase struct {
@@ -32,6 +53,40 @@ func NewUserUsecase(userRepo repository.UserRepository, roleRepo repository.Role
 		UserRepo: userRepo,
 		RoleRepo: roleRepo,
 	}
+}
+
+func parseExpirationDate(s string) (time.Time, error) {
+	// "/"で月と年を分割
+	parts := strings.Split(s, "/")
+	if len(parts) != 2 {
+		return time.Time{}, errors.New("有効期限のフォーマットが不正です。MM/YY形式で入力してください")
+	}
+
+	// 月を数値に変換
+	month, err := strconv.Atoi(parts[0])
+	if err != nil || month < 1 || month > 12 {
+		return time.Time{}, errors.New("有効期限の「月」が不正です")
+	}
+
+	// 年を数値に変換
+	year, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return time.Time{}, errors.New("有効期限の「年」が不正です")
+	}
+
+	if year < 100 {
+		year += 2000
+	}
+
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		loc = time.UTC
+	}
+
+	firstDayOfMonth := time.Date(year, time.Month(month), 1, 23, 59, 59, 0, loc)
+	lastDayOfMonth := firstDayOfMonth.AddDate(0, 1, -1)
+
+	return lastDayOfMonth, nil
 }
 
 func (uc *UserUsecase) RegisterUser(input RegisterUserInput) (*model.User, error) {
@@ -108,4 +163,55 @@ func (uc *UserUsecase) GetUser() ([]model.User, error) {
 
 func (uc *UserUsecase) GetUserByID(id uint) (*model.User, error) {
 	return uc.UserRepo.FindByID(id)
+}
+
+func (uc *UserUsecase) UpdateUser(input UpdateUserInput) error {
+	user, err := uc.UserRepo.FindByID(input.ID)
+	if err != nil {
+
+		return ErrUserNotFound
+	}
+
+	if input.Name != nil {
+		user.Name = *input.Name
+	}
+
+	if input.PhoneNumber != nil {
+		user.PhoneNumber = *input.PhoneNumber
+	}
+
+	if input.Email != nil && user.Email != *input.Email {
+		existingUser, _ := uc.UserRepo.FindByEmail(*input.Email)
+		if existingUser != nil {
+			return ErrEmailExists
+		}
+		user.Email = *input.Email
+	}
+
+	if input.Password != nil && *input.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+		user.Password = string(hashedPassword)
+	}
+
+	if input.CardNumber != nil {
+		user.CardNumber = *input.CardNumber
+	}
+
+	if input.CardExpiration != nil {
+
+		t, err := parseExpirationDate(*input.CardExpiration)
+		if err != nil {
+			return err
+		}
+		user.CardExpiration = &t
+	}
+
+	if err := uc.UserRepo.Update(user); err != nil {
+		return err
+	}
+
+	return nil // 成功
 }
