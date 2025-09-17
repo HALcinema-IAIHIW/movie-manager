@@ -68,22 +68,20 @@ export default function MovieTL({ title, screen_id, date, showings }: MovieTLPro
                                 <Link href={{pathname:"/tickets/seats",query:{scId:s.screening_id}}}>
                                     {/*  <Link href={`/tickets/seats/}`}>*/}
                                     <button
-                                        className={`w-full p-4 rounded-lg border transition-all duration-300 text-center ${
-                                            Number(s.start_time.replace(":", "")) <= Number(Now)
-                                                ? "bg-accent/20 border-accent/30 text-text-muted cursor-not-allowed"
-                                                : "bg-gold/10 border-gold/30 text-gold hover:bg-gold/20 hover:border-gold/50 hover:shadow-gold-glow"
-                                        }`}
+                                        className="w-full p-4 rounded-lg border transition-all duration-300 text-center
+           bg-gold/10 border-gold/30 text-gold
+           hover:bg-gold/20 hover:border-gold/50 hover:shadow-gold-glow"
                                     >
                                         <div className="flex items-center justify-center gap-1 mb-2">
                                             <Clock size={14} />
                                             <span className="text-lg font-bold font-playfair">{s.start_time}</span>
                                         </div>
                                         <div className="text-xs font-jp">
-                                            {Number(s.start_time.replace(":", "")) <= Number(Now) ? (
+                                            {/* {Number(s.start_time.replace(":", "")) <= Number(Now) ? (
                                                 <span>販売時間外</span>
-                                            ) : (
+                                            ) : ( */}
                                                 <span>販売中</span>
-                                            )}
+                                            {/* )} */}
                                         </div>
                                     </button>
                                 </Link>

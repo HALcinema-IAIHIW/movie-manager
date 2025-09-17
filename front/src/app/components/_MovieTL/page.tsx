@@ -4,9 +4,6 @@ import "./MovieTL.css";
 import { MovieTLProps } from "@/app/types/schedule";
 import Link from "next/link";
 
-
-
-
 // TODO:もう１段階Component分けしたい
 
 export default function MovieTL({ title, screen_id, date,showings }: MovieTLProps) {
@@ -59,11 +56,11 @@ export default function MovieTL({ title, screen_id, date,showings }: MovieTLProp
                         <br/>
                         <span>{s.start_time}</span>
                         <br/>
-                        {Number(s.start_time.replace(":", "")) <= Number(Now) ? (
+                        {/* {Number(s.start_time.replace(":", "")) <= Number(Now) ? (
                             <p>販売時間外</p>
-                        ) : (
+                        ) : ( */}
                             <p>販売中</p>
-                        )}
+                        {/* )} */}
                     </button>
                 </Link>
 

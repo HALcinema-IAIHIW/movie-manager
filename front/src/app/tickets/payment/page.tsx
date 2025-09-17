@@ -3,7 +3,7 @@ import {use, useEffect, useState} from "react";
 import {useRouter,useSearchParams} from "next/navigation";
 import "./payment.css"
 
-export default function payment() {
+export default function Payment() {
 
     // typesから送られてきたparamsの取得
 
@@ -60,7 +60,7 @@ export default function payment() {
     // ユーザー情報
     const [userId,setUserId] = useState('');
 
-    const [authToken,setauthToken] = useState('');
+    const [token,setauthToken] = useState('');
 
     useEffect(() => {
         const getUserId = localStorage.getItem("userId")
@@ -121,6 +121,7 @@ export default function payment() {
             // --- 1. localStorageから認証情報を取得 ---
             const userId = localStorage.getItem('userId');
             const token = localStorage.getItem('token');
+
             // 認証情報がない場合は処理を中断
             if (!userId || !token) {
                 throw new Error('ログイン情報が見つかりません。再度ログインしてください。');
