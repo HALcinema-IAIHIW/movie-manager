@@ -22,6 +22,6 @@ func (r *ReservationSeatRouter) RegisterRoutes(engine *gin.Engine) {
 		reservationSeatGroup.GET("/", r.handler.GetAllReservationSeats())
 		reservationSeatGroup.GET("/screening/:screeningID", r.handler.GetReservedSeatsByScreeningID())
 		reservationSeatGroup.GET("/screen/:screenID", r.handler.GetReservedSeatsByScreenID())
-		reservationSeatGroup.PUT("/:id/cancel", r.handler.CancelReservationSeat())
+		reservationSeatGroup.POST("/:id/cancel", r.handler.CancelReservationSeat())
 	}
 }
