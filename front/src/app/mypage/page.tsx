@@ -115,7 +115,7 @@ export default function MyPage() {
 
         try {
             const res = await fetch(`http://localhost:8080/reservationseats/${reservationSeatId}/cancel`, {
-                method: "PUT",
+                method: "POST",
                 mode: "cors",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -123,19 +123,27 @@ export default function MyPage() {
                 },
             });
 
-            if (!res.ok) throw new Error("キャンセルに失敗しました");
-        
-
-            setReservations((prev) =>
-              prev.map((r) =>
-                r.reservation_seat_id === reservationSeatId
-                  ? { ...r, is_cancelled: true, timeUntil: "キャンセル済み", cancelled_at: new Date().toISOString() }
-                  : r
-              )
-            );
+            if (!res.ok) {
+                let errorMessage = "キャンセルに失敗しました"; // デフォルトのメッセージ
+                try {
+                    // サーバーからのエラー詳細をJSONとして取得試みる
+                    const errorData = await res.json();
+                    // errorDataに "error" というキーがあれば、その値をメッセージにする
+                    if (errorData && errorData.error) {
+                        errorMessage = errorData.error;
+                    }
+                } catch (jsonError) {
+                    // JSONの解析に失敗した場合 (例: サーバーがHTMLのエラーページを返した)
+                    console.error("JSON解析エラー:", jsonError);
+                    errorMessage = `サーバーエラーが発生しました (ステータス: ${res.status})`;
+                }
+                // サーバーからの具体的なメッセージでエラーを発生させる
+                throw new Error(errorMessage);
+            }
 
         
             alert("予約をキャンセルしました。");
+            window.location.reload();
         } catch (err: unknown) {
             console.error("キャンセルエラー:", err);
             alert(err instanceof Error ? err.message : "不明なエラーが発生しました。");

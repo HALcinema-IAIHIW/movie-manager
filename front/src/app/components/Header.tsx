@@ -250,7 +250,6 @@ export default function Header() {
           }
 
           setIsLoggedIn(true)
-          alert("ログインに成功しました！")
           toggleMemberPanel()
         } else {
           alert("ログインは成功しましたが、認証トークンがありませんでした。")
@@ -334,7 +333,6 @@ export default function Header() {
 
       if (response.ok) {
         console.log("ログアウト成功:", data)
-        alert(data.message)
       } else {
         console.warn("ログアウト失敗:", data)
         alert("ログアウトに失敗しました")
