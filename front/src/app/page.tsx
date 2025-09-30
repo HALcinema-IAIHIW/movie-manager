@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Play, Info, ChevronLeft, ChevronRight, Calendar, MapPin } from "lucide-react"
 import type { MovieTLResponse } from "@/app/types/movie"
-// import { se } from "date-fns/locale"
+import { se } from "date-fns/locale"
 
 // ニュース・お知らせデータ
 const newsData = [
