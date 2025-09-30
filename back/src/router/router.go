@@ -10,6 +10,9 @@ import (
 func SetupRouter(h *di.Handlers) *gin.Engine {
 	r := gin.Default()
 
+	// r.Static("/images", "../front/public/images")
+	r.Static("/uploads/posters", "../front/public/uploads/posters")
+
 	// CORS許可
 
 	// 公式CORSミドルウェア(go get github.com/gin-contrib/cors)があるとのこと

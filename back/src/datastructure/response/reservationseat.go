@@ -21,7 +21,7 @@ type UserReservationResponse struct {
 	EndTime           string     `json:"endTime"`
 	Screen            string     `json:"screen"`
 	Seat              string     `json:"seat"`
-	PosterURL         string     `json:"poster"`
+	PosterPath        string     `json:"poster_path"`
 	TimeUntil         string     `json:"timeUntil"`
 	IsCancelled       bool       `json:"is_cancelled"`
 	CancelledAt       *time.Time `json:"cancelled_at,omitempty"`

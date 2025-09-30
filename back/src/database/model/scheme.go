@@ -27,10 +27,12 @@ type Role struct {
 type Movie struct {
 	gorm.Model
 	Title       string `gorm:"not null"`
+	SubTitle    string
 	Description string
 	ReleaseDate time.Time
 	Genre       string
 	Director    string
+	Cast        string
 	PosterPath  string
 	Duration    int
 }
@@ -72,6 +74,7 @@ type Screening struct {
 	Duration          int       `gorm:"not null"`
 
 	ScreeningPeriod ScreeningPeriod `gorm:"foreignKey:ScreeningPeriodID"`
+	Movie           Movie           `gorm:"-"` // ← 疑似フィールド（Preloadではなくマッピング用）
 }
 
 // 1回の購入トランザクション

@@ -139,7 +139,7 @@ func (uc *PurchaseUsecase) GetUserReservations(userID uint) ([]response.UserRese
 				EndTime:           endTime.Format("15:04"),                   // 例: "12:00"
 				Screen:            strconv.FormatUint(uint64(screen.ID), 10), // スクリーンIDを文字列に変換
 				Seat:              seat.Row + strconv.Itoa(seat.Column),      // 座席番号 (例: "A-5")
-				PosterURL:         movie.PosterPath,                          // 映画ポスターのパス
+				PosterPath:        movie.PosterPath,                          // 映画ポスターのパス
 				TimeUntil:         timeUntilStr,                              // 上映までの残り時間
 				IsCancelled:       rs.IsCancelled,
 				CancelledAt:       rs.CancelledAt,

@@ -65,9 +65,9 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 		c.JSON(http.StatusCreated, response.ScreeningResponse{
 			ID: result.ID,
 			Movie: response.MovieInfo{
-				ID:        result.ScreeningPeriod.Movie.ID,
-				Title:     result.ScreeningPeriod.Movie.Title,
-				PosterUrl: result.ScreeningPeriod.Movie.PosterPath,
+				ID:         result.ScreeningPeriod.Movie.ID,
+				Title:      result.ScreeningPeriod.Movie.Title,
+				PosterPath: result.ScreeningPeriod.Movie.PosterPath,
 			},
 			Screen: response.ScreenInfo{
 				ID: result.ScreeningPeriod.Screen.ID,
@@ -117,12 +117,12 @@ func (h *ScreeningHandler) GetScreeningsByDate() gin.HandlerFunc {
 
 			if _, exists := movieMap[key]; !exists {
 				movieMap[key] = &response.MovieTLResponse{
-					MovieId: movie.ID,
-					Title:   movie.Title,
-					// PosterURL: movie.PosterURL,
-					ScreenID: screen.ID,
-					Showings: []response.ShowingInfo{},
-					Date:     s.Date.Format("2006-01-02"),
+					MovieId:    movie.ID,
+					Title:      movie.Title,
+					PosterPath: movie.PosterPath,
+					ScreenID:   screen.ID,
+					Showings:   []response.ShowingInfo{},
+					Date:       s.Date.Format("2006-01-02"),
 				}
 			}
 

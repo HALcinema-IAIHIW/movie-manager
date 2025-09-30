@@ -3,9 +3,9 @@ package response
 import "time"
 
 type MovieInfo struct {
-	ID        uint   `json:"id"`
-	Title     string `json:"title"`
-	PosterUrl string `json:"posterUrl"`
+	ID         uint   `json:"id"`
+	Title      string `json:"title"`
+	PosterPath string `json:"poster_path"`
 }
 
 type ScreenInfo struct {
@@ -29,10 +29,10 @@ type ShowingInfo struct {
 }
 
 type MovieTLResponse struct {
-	MovieId uint   `json:"movie_id"`
-	Title   string `json:"title"`
-	// PosterURL string        `json:"poster_url"`
-	ScreenID uint          `json:"screen_id"`
-	Showings []ShowingInfo `json:"showings"`
-	Date     string        `json:"date"`
+	MovieId    uint          `json:"movie_id"`
+	Title      string        `json:"title"`
+	PosterPath string        `json:"poster_path"`
+	ScreenID   uint          `json:"screen_id"`
+	Showings   []ShowingInfo `json:"showings"`
+	Date       string        `json:"date"`
 }
