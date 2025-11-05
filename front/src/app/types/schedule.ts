@@ -10,6 +10,7 @@ export type MovieTLProps = {
   title: string;
   screen_id: number;
   date: string;
+  poster_path?:string;
   showings: ShowingInfo[];
 };
 

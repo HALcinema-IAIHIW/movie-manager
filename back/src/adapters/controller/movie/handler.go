@@ -10,6 +10,7 @@ import (
 
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -43,11 +44,14 @@ func (h *MovieHandler) CreateMovie() gin.HandlerFunc {
 
 		movie := &model.Movie{
 			Title:       req.Title,
+			SubTitle:    req.SubTitle,
 			Description: req.Description,
 			ReleaseDate: releaseDate,
 			Genre:       req.Genre,
 			Director:    req.Director,
+			Cast:        strings.Join(req.Cast, ","),
 			Duration:    req.Duration,
+			PosterPath:  req.PosterPath,
 		}
 
 		if err := h.Usecase.CreateMovie(movie); err != nil {

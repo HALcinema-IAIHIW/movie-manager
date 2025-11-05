@@ -13,6 +13,7 @@ func main() {
 	}
 
 	r := initializer.SetupRouter()
+
 	// サーバー起動
 	r.Run()
 }

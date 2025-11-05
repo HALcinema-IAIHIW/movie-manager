@@ -5,17 +5,31 @@ import { use } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Clock, Calendar, User, Play, Ticket } from "lucide-react"
-import { MovieData, type Movie } from "@/app/components/AllMovies"
+// import { MovieData, type Movie } from "@/app/components/AllMovies"
+import type { MovieTLResponse } from "@/app/types/movie"
 
 const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
-  const [movie, setMovie] = useState<Movie | undefined>(undefined)
-  const movieParams = use(params)
+  const { id } = use(params)
+  const [movie, setMovie] = useState<MovieTLResponse | null>(null)
 
   useEffect(() => {
-    const found = MovieData.find((m) => m.id === Number(movieParams.id))
-    setMovie(found)
-  }, [movieParams.id])
+  const fetchMovie = async () => {
+    try {
+      
+      const res = await fetch(`http://localhost:8080/movies/${id}`)
+      const data = await res.json()
+      setMovie(data)
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
+  fetchMovie()
+  }, [id])
+
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  
   if (!movie) {
     return (
         <div className="min-h-screen pt-24 flex items-center justify-center">
@@ -36,8 +50,8 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
           {/* 背景画像 */}
           <div className="absolute inset-0">
             <Image
-                src={movie.moviePicture || "/placeholder.svg"}
-                alt={movie.name}
+                src={movie.poster_path || "/placeholder.svg"}
+                alt={movie.title}
                 fill
                 className="object-cover"
                 priority
@@ -67,7 +81,7 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
                 </span>
                 </div>
 
-                <h1 className="text-4xl md:text-6xl font-bold text-text-primary mb-4 font-jp">{movie.name}</h1>
+                <h1 className="text-4xl md:text-6xl font-bold text-text-primary mb-4 font-jp">{movie.title}</h1>
 
                 <div className="flex flex-wrap items-center gap-6 text-text-secondary mb-6">
                   <div className="flex items-center gap-2">
@@ -76,7 +90,7 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Calendar size={16} className="text-gold" />
-                    <span className="font-playfair">{movie.releaseDate}</span>
+                    <span className="font-playfair">{movie.release_date}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <User size={16} className="text-gold" />
@@ -111,8 +125,8 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
                 <div className="card-luxury p-0 overflow-hidden max-w-md mx-auto">
                   <div className="relative aspect-[2/3]">
                     <Image
-                        src={movie.moviePicture || "/placeholder.svg"}
-                        alt={movie.name}
+                        src={movie.poster_path || "/placeholder.svg"}
+                        alt={movie.title}
                         fill
                         className="object-cover"
                     />
@@ -125,7 +139,7 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
                 {/* あらすじ */}
                 <div className="card-luxury p-8">
                   <h2 className="text-2xl font-bold text-gold mb-6 font-jp">あらすじ</h2>
-                  <p className="text-text-secondary leading-relaxed font-jp">{movie.summary}</p>
+                  <p className="text-text-secondary leading-relaxed font-jp">{movie.description}</p>
                 </div>
 
                 {/* キャスト */}
@@ -161,7 +175,7 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-text-primary mb-2 font-jp">公開日</h3>
-                      <p className="text-text-secondary font-playfair">{movie.releaseDate}</p>
+                      <p className="text-text-secondary font-playfair">{movie.release_date}</p>
                     </div>
                   </div>
                 </div>

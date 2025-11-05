@@ -6,7 +6,7 @@ import Link from "next/link";
 
 // TODO:もう１段階Component分けしたい
 
-export default function MovieTL({ title, screen_id, date,showings }: MovieTLProps) {
+export default function MovieTL({ title, screen_id, date,showings,poster_path }: MovieTLProps) {
     // Day,Movieを元にリスト取得
     // 開始時間がTime型になっていないので導入時比較処理も修正する
     // 登録が必ず時系列順というわけでは無いなら並べ変え処理も入れた方が良いか？
@@ -44,7 +44,9 @@ export default function MovieTL({ title, screen_id, date,showings }: MovieTLProp
         <p key={s.screening_id}>screenigID: {s.screening_id}</p>
       ))}
       <div className="Movie-TL">
-        <div className="Poster bg-gray-500">poster</div>
+        <div className="Poster bg-gray-500">
+          poster        
+        </div>
         <div className="TlButtons">
           {showings?.map((s) => (
             <div className="inline" key={s.screening_id}>

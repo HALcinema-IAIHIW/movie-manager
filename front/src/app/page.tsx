@@ -4,126 +4,8 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Play, Info, ChevronLeft, ChevronRight, Calendar, MapPin } from "lucide-react"
-
-// カルーセルのデータ（実際の映画データに置き換え可能）
-const heroMovies = [
-  {
-    id: 1,
-    title: "インターステラー",
-    subtitle: "時空を超えた愛の物語",
-    image: "/images/hero-movie-1.jpg",
-    description: "人類の未来をかけた壮大な宇宙の旅。愛が時空を超える感動の物語。",
-    genre: "SF・ドラマ",
-  },
-  {
-    id: 2,
-    title: "ブレードランナー 2049",
-    subtitle: "未来への問いかけ",
-    image: "/images/hero-movie-1.jpg",
-    description: "人間とは何かを問う、美しく哲学的なSF傑作の続編。",
-    genre: "SF・スリラー",
-  },
-  {
-    id: 3,
-    title: "ラ・ラ・ランド",
-    subtitle: "夢と愛のミュージカル",
-    image: "/images/hero-movie-1.jpg",
-    description: "ロサンゼルスを舞台に繰り広げられる、夢と愛の美しい物語。",
-    genre: "ミュージカル・ロマンス",
-  },
-]
-
-// 映画データ
-const moviesData = {
-  nowShowing: [
-    {
-      id: 1,
-      title: "インターステラー",
-      image: "/images/movie-poster-1.jpg",
-      genre: "SF・ドラマ",
-      duration: "169分",
-    },
-    {
-      id: 2,
-      title: "ブレードランナー 2049",
-      image: "/images/movie-poster-1.jpg",
-      genre: "SF・スリラー",
-      duration: "164分",
-    },
-    {
-      id: 3,
-      title: "ラ・ラ・ランド",
-      image: "/images/movie-poster-1.jpg",
-      genre: "ミュージカル",
-      duration: "128分",
-    },
-    {
-      id: 4,
-      title: "ダンケルク",
-      image: "/images/movie-poster-1.jpg",
-      genre: "戦争・ドラマ",
-      duration: "106分",
-    },
-    {
-      id: 5,
-      title: "アバター",
-      image: "/images/movie-poster-1.jpg",
-      genre: "SF・アドベンチャー",
-      duration: "162分",
-    },
-    {
-      id: 6,
-      title: "トップガン マーヴェリック",
-      image: "/images/movie-poster-1.jpg",
-      genre: "アクション",
-      duration: "131分",
-    },
-  ],
-  comingSoon: [
-    {
-      id: 7,
-      title: "デューン 砂の惑星PART2",
-      image: "/images/coming-soon-1.jpg",
-      releaseDate: "2024.03.15",
-      genre: "SF・アドベンチャー",
-    },
-    {
-      id: 8,
-      title: "オッペンハイマー",
-      image: "/images/coming-soon-2.jpg",
-      releaseDate: "2024.03.29",
-      genre: "ドラマ・歴史",
-    },
-    {
-      id: 9,
-      title: "ミッション：インポッシブル",
-      image: "/images/coming-soon-3.jpg",
-      releaseDate: "2024.04.12",
-      genre: "アクション・スリラー",
-    },
-    {
-      id: 10,
-      title: "ファンタスティック・ビースト",
-      image: "/images/coming-soon-4.jpg",
-      releaseDate: "2024.04.26",
-      genre: "ファンタジー",
-    },
-    {
-      id: 11,
-      title: "ジョン・ウィック",
-      image: "/images/coming-soon-5.jpg",
-      releaseDate: "2024.05.10",
-      genre: "アクション",
-    },
-    {
-      id: 12,
-      title: "スパイダーマン",
-      image: "/images/coming-soon-6.jpg",
-      releaseDate: "2024.05.24",
-      genre: "アクション・SF",
-    },
-  ],
-}
+import type { MovieTLResponse } from "@/app/types/movie"
+import { se } from "date-fns/locale"
 
 // ニュース・お知らせデータ
 const newsData = [
@@ -148,12 +30,35 @@ const newsData = [
 ]
 
 export default function Home() {
+
+  const [heroMovies, setHeroMovies] = useState<MovieTLResponse[]>([])
+  const [nowShowing, setNowShowing] = useState<MovieTLResponse[]>([])
+  const [comingSoon, setComingSoon] = useState<MovieTLResponse[]>([])
+
   // カルーセルの状態管理
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
   // タブの状態管理
   const [activeTab, setActiveTab] = useState("nowShowing")
+
+  // 映画データ取得
+  useEffect(() => {
+    fetch("http://localhost:8080/movies/")
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
+      .then((data: MovieTLResponse[]) => {
+        const today = new Date()
+        const now = data.filter(movie => new Date(movie.release_date) <= today)
+        const coming = data.filter(movie => new Date(movie.release_date) > today)
+
+        setNowShowing(now)
+        setComingSoon(coming)
+        setHeroMovies(now.slice(0, 3))
+      })
+  }, [])
 
   // カルーセルの自動再生
   useEffect(() => {
@@ -197,7 +102,7 @@ export default function Home() {
                 {/* 背景画像 */}
                 <div className="absolute inset-0">
                   <Image
-                      src={movie.image || "/placeholder.svg"}
+                      src={movie.poster_path || "/placeholder.svg"}
                       alt={movie.title}
                       fill
                       className="object-cover"
@@ -326,13 +231,13 @@ export default function Home() {
                 className={`transition-all duration-500 ${activeTab === "nowShowing" ? "opacity-100" : "opacity-0 hidden"}`}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                {moviesData.nowShowing.map((movie) => (
+                {nowShowing.map((movie) => (
                     <div key={movie.id} className="group">
                       <div className="card-luxury p-0 overflow-hidden">
                         {/* 映画ポスター */}
                         <div className="relative aspect-[2/3] overflow-hidden">
                           <Image
-                              src={movie.image || "/placeholder.svg"}
+                              src={`http://localhost:8080${movie.poster_path}`}
                               alt={movie.title}
                               fill
                               className="object-cover transition-transform duration-500
@@ -392,13 +297,13 @@ export default function Home() {
                 className={`transition-all duration-500 ${activeTab === "comingSoon" ? "opacity-100" : "opacity-0 hidden"}`}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                {moviesData.comingSoon.map((movie) => (
+                {comingSoon.map((movie) => (
                     <div key={movie.id} className="group">
                       <div className="card-luxury p-0 overflow-hidden">
                         {/* 映画ポスター */}
                         <div className="relative aspect-[2/3] overflow-hidden">
                           <Image
-                              src={movie.image || "/placeholder.svg"}
+                              src={movie.poster_path || "/placeholder.svg"}
                               alt={movie.title}
                               fill
                               className="object-cover transition-all duration-500
@@ -436,7 +341,7 @@ export default function Home() {
                           </h3>
                           <div className="flex items-center gap-2 text-sm text-text-muted mb-3">
                             <Calendar size={14} />
-                            <span className="font-playfair">{movie.releaseDate}</span>
+                            <span className="font-playfair">{movie.release_date}</span>
                           </div>
                           <p className="text-sm text-text-muted font-shippori font-jp">{movie.genre}</p>
                         </div>
