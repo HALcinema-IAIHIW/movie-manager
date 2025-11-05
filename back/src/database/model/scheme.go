@@ -16,12 +16,19 @@ type User struct {
 	PhoneNumber    string
 	CardNumber     string
 	CardExpiration *time.Time
+	Admin          *Admin `gorm:"foreignKey:UserID" json:"admin,omitempty"`
 }
 
 type Role struct {
 	ID       uint   `gorm:"primaryKey"`
 	RoleName string `gorm:"unique;not null" json:"role"` // "一般", "大学生", "中学生～高校生", "小学生、幼児"
 	PriceYen int    `gorm:"not null"`                    // チケット価格
+}
+
+type Admin struct {
+	gorm.Model
+	UserID uint  `gorm:"not null;uniqueIndex"`
+	User   *User `gorm:"foreignKey:UserID"`
 }
 
 type Movie struct {
