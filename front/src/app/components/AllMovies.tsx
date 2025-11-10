@@ -1,102 +1,63 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Calendar, Play, Info } from 'lucide-react'
-
-// 映画データの型定義
-export type Movie = {
-    id: number
-    name: string
-    moviePicture: string
-    summary: string
-    cast: string[]
-    genre: string
-    duration: string
-    releaseDate: string
-    director: string
-}
-
-// 映画データ
-export const MovieData: Movie[] = [
-    {
-        id: 1,
-        name: "インターステラー",
-        moviePicture: "/images/movie-poster-1.jpg",
-        summary:
-            "人類の未来をかけた壮大な宇宙の旅。愛が時空を超える感動の物語。地球の環境悪化により人類滅亡の危機が迫る中、元NASA宇宙飛行士のクーパーは、人類を救うための秘密ミッションに参加することになる。",
-        cast: ["マシュー・マコノヒー", "アン・ハサウェイ", "ジェシカ・チャステイン", "マイケル・ケイン"],
-        genre: "SF・ドラマ",
-        duration: "169分",
-        releaseDate: "2014.11.22",
-        director: "クリストファー・ノーラン",
-    },
-    {
-        id: 2,
-        name: "ブレードランナー 2049",
-        moviePicture: "/images/movie-poster-2.jpg",
-        summary:
-            "人間とは何かを問う、美しく哲学的なSF傑作の続編。2049年、新たなブレードランナーKが、社会の根幹を揺るがす秘密を発見する。",
-        cast: ["ライアン・ゴズリング", "ハリソン・フォード", "アナ・デ・アルマス", "ジャレッド・レト"],
-        genre: "SF・スリラー",
-        duration: "164分",
-        releaseDate: "2017.10.27",
-        director: "ドゥニ・ヴィルヌーヴ",
-    },
-    {
-        id: 3,
-        name: "ラ・ラ・ランド",
-        moviePicture: "/images/movie-poster-3.jpg",
-        summary:
-            "ロサンゼルスを舞台に繰り広げられる、夢と愛の美しい物語。女優を目指すミアとジャズピアニストのセバスチャンの恋愛を描いたミュージカル映画。",
-        cast: ["ライアン・ゴズリング", "エマ・ストーン", "ジョン・レジェンド", "ローズマリー・デウィット"],
-        genre: "ミュージカル・ロマンス",
-        duration: "128分",
-        releaseDate: "2017.02.24",
-        director: "デイミアン・チャゼル",
-    },
-    {
-        id: 4,
-        name: "ダンケルク",
-        moviePicture: "/images/movie-poster-4.jpg",
-        summary:
-            "第二次世界大戦の史実に基づく戦争映画。1940年、フランスのダンケルクで包囲された連合軍兵士たちの脱出作戦を描く。",
-        cast: ["フィオン・ホワイトヘッド", "トム・グリン＝カーニー", "ジャック・ローデン", "ハリー・スタイルズ"],
-        genre: "戦争・ドラマ",
-        duration: "106分",
-        releaseDate: "2017.09.09",
-        director: "クリストファー・ノーラン",
-    },
-    {
-        id: 5,
-        name: "アバター",
-        moviePicture: "/images/movie-poster-5.jpg",
-        summary:
-            "美しい惑星パンドラを舞台にした壮大なSFアドベンチャー。人類とナヴィ族の対立と共存を描いた革新的な映像体験。",
-        cast: ["サム・ワーシントン", "ゾーイ・サルダナ", "シガーニー・ウィーバー", "スティーヴン・ラング"],
-        genre: "SF・アドベンチャー",
-        duration: "162分",
-        releaseDate: "2009.12.23",
-        director: "ジェームズ・キャメロン",
-    },
-    {
-        id: 6,
-        name: "トップガン マーヴェリック",
-        moviePicture: "/images/movie-poster-6.jpg",
-        summary: "伝説のパイロット、マーヴェリックの新たな挑戦。最新技術と人間ドラマが融合した航空アクション映画の傑作。",
-        cast: ["トム・クルーズ", "マイルズ・テラー", "ジェニファー・コネリー", "ジョン・ハム"],
-        genre: "アクション・ドラマ",
-        duration: "131分",
-        releaseDate: "2022.05.27",
-        director: "ジョセフ・コシンスキー",
-    },
-]
+import type { MovieTLResponse } from "@/app/types/movie"
 
 export default function AllMovies() {
     const [selectedGenre, setSelectedGenre] = useState<string>("all")
+    const [movies, setMovies] = useState<MovieTLResponse[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    
+    //映画データ取得
+    useEffect(() => {
+        fetch("http://localhost:8080/movies/")
+            .then((res) => {
+                if (!res.ok) throw new Error("Failed to fetch")
+                return res.json()
+              })
+            .then((data: MovieTLResponse[]) => {
+                const today = new Date()
 
-    // ジャンルでフィルタリング
+
+                // 公開済み映画のみを取得
+                const nowShowing = data
+                  .filter((movie) => new Date(movie.release_date) <= today)
+                  .sort(
+                    (a, b) =>
+                      new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
+                  )
+
+        
+                setMovies(nowShowing)
+            })
+            .catch((err) => {
+                console.error(err)
+                setError(err.message)
+            })
+            .finally(() => setLoading(false))
+    }, [])
+    
+    if (loading) {
+        return (
+          <div className="text-center py-16 text-text-muted font-jp">
+            読み込み中です...
+          </div>
+        )
+    }
+
+    if (error) {
+        return (
+          <div className="text-center py-16 text-red-500 font-jp">
+            データ取得に失敗しました：{error}
+          </div>
+        )
+    }
+
+    // 映画ジャンル
     const genres = [
         "all",
         "SF・ドラマ",
@@ -108,7 +69,9 @@ export default function AllMovies() {
     ]
 
     const filteredMovies =
-        selectedGenre === "all" ? MovieData : MovieData.filter((movie) => movie.genre === selectedGenre)
+        selectedGenre === "all"
+        ? movies
+        : movies.filter((movie) => movie.genre === selectedGenre)
 
     return (
         <div className="space-y-12">
@@ -137,8 +100,13 @@ export default function AllMovies() {
                             {/* 映画ポスター */}
                             <div className="relative aspect-[2/3] overflow-hidden">
                                 <Image
-                                    src={movie.moviePicture || "/placeholder.svg"}
-                                    alt={movie.name}
+                                    src={movie.poster_path
+                                        ? movie.poster_path.startsWith("http")
+                                            ? movie.poster_path
+                                            : `http://localhost:8080${movie.poster_path}`
+                                        : "/placeholder.svg"
+                                    }
+                                    alt={movie.title}
                                     fill
                                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                                 />
@@ -164,15 +132,15 @@ export default function AllMovies() {
 
                             {/* 映画情報 */}
                             <div className="p-4">
-                                <h3 className="font-medium text-text-primary mb-2 line-clamp-2 font-jp">{movie.name}</h3>
+                                <h3 className="font-medium text-text-primary mb-2 line-clamp-2 font-jp">{movie.title}</h3>
                                 <div className="flex items-center justify-between text-sm text-text-muted mb-3">
                                     <span className="font-jp">{movie.genre}</span>
-                                    <span className="font-jp">{movie.duration}</span>
+                                    <span className="font-jp">{movie.duration}分</span>
                                 </div>
                                 <div className="flex items-center justify-end mb-3">
                                     <div className="flex items-center gap-1 text-xs text-text-muted">
                                         <Calendar size={12} />
-                                        <span className="font-playfair">{movie.releaseDate}</span>
+                                        <span className="font-playfair">{movie.release_date}</span>
                                     </div>
                                 </div>
                                 <Link

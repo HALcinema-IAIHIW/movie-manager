@@ -51,39 +51,52 @@ export default function Home() {
       })
       .then((data: MovieTLResponse[]) => {
         const today = new Date()
-        const now = data.filter(movie => new Date(movie.release_date) <= today)
-        const coming = data.filter(movie => new Date(movie.release_date) > today)
+        
+        const now = data
+          .filter(movie => new Date(movie.release_date) <= today)
+          .sort((a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime());
+
+        const coming = data
+          .filter(movie => new Date(movie.release_date) > today)
+          .sort((a, b) => new Date(a.release_date).getTime() - new Date(b.release_date).getTime());
 
         setNowShowing(now)
         setComingSoon(coming)
         setHeroMovies(now.slice(0, 3))
       })
+      .catch(err => console.error(err));
   }, [])
 
   // カルーセルの自動再生
   useEffect(() => {
-    if (!isAutoPlaying) return
+    if (!isAutoPlaying || heroMovies.length === 0) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev === heroMovies.length - 1 ? 0 : prev + 1))
+      setCurrentSlide((prev) =>
+      prev === heroMovies.length - 1 ? 0 : prev + 1
+    );
     }, 6000) // 6秒間隔に変更
 
     return () => clearInterval(interval)
-  }, [isAutoPlaying])
+  }, [isAutoPlaying, heroMovies]);
 
   // スライド操作関数
-  const prevSlide = () => {
+  const pauseAutoPlay = () => {
     setIsAutoPlaying(false)
+    setTimeout(() => setIsAutoPlaying(true), 6000)
+  }
+  const prevSlide = () => {
+    pauseAutoPlay()
     setCurrentSlide((prev) => (prev === 0 ? heroMovies.length - 1 : prev - 1))
   }
 
   const nextSlide = () => {
-    setIsAutoPlaying(false)
+    pauseAutoPlay()
     setCurrentSlide((prev) => (prev === heroMovies.length - 1 ? 0 : prev + 1))
   }
 
   const goToSlide = (index: number) => {
-    setIsAutoPlaying(false)
+    pauseAutoPlay()
     setCurrentSlide(index)
   }
 
@@ -276,7 +289,7 @@ export default function Home() {
                           </h3>
                           <div className="flex items-center justify-between text-sm text-text-muted mb-3">
                             <span className="font-shippori font-jp">{movie.genre}</span>
-                            <span className="font-shippori font-jp">{movie.duration}</span>
+                            <span className="font-shippori font-jp">{movie.duration}分</span>
                           </div>
                           <Link
                               href={`/tickets/schedule/${movie.id}`}
