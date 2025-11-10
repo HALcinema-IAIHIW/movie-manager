@@ -42,7 +42,7 @@ func NewInitializer() (*Initializer, error) {
 	}
 
 	// ハンドラ生成（DIコンテナ的にまとめてる想定）
-	handlers := di.NewHandlers(db)
+	handlers := di.NewHandlers(db, env)
 
 	// Gin Engine初期化
 	engine := gin.Default()
