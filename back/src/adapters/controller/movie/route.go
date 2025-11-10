@@ -18,4 +18,6 @@ func (r *MovieRouter) RegisterRoutes(engine *gin.Engine) {
 	group.POST("/", r.handler.CreateMovie())
 	group.GET("/", r.handler.GetMovies())
 	group.GET("/:movie_id", r.handler.GetMovieById())
+	group.POST("/:movie_id/poster", r.handler.UploadPoster())
+	group.GET("/:movie_id/poster", r.handler.GetPoster())
 }

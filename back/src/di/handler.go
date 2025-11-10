@@ -11,6 +11,7 @@ import (
 	"modules/src/adapters/controller/seat"
 	"modules/src/adapters/controller/user"
 	"modules/src/adapters/gateway"
+	"modules/src/config"
 	"modules/src/repository"
 	"modules/src/usecases"
 
@@ -29,7 +30,7 @@ type Handlers struct {
 	ReservationSeat *reservationseat.ReservationSeatHandler
 }
 
-func NewHandlers(db *gorm.DB) *Handlers {
+func NewHandlers(db *gorm.DB, env config.Env) *Handlers {
 
 	// role r
 	roleRepo := gateway.NewGormRoleRepository(db)
@@ -44,7 +45,7 @@ func NewHandlers(db *gorm.DB) *Handlers {
 	// Movie
 	movieRepo := gateway.NewGormMovieRepository(db)
 	movieUC := &usecases.MovieUsecase{MovieRepo: movieRepo}
-	movieHandler := movie.NewMovieHandler(movieUC)
+	movieHandler := movie.NewMovieHandler(movieUC, env.PosterStoragePath, env.FileServerBaseURL)
 
 	// Screen
 	screenRepo := gateway.NewGormScreenRepository(db)

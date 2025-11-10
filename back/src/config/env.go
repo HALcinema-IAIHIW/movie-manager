@@ -21,11 +21,25 @@ type Env struct {
 	MongoUser     string
 	MongoPassword string
 	MongoDatabase string
+
+	// File Server 用
+	FileServerBaseURL string
+	PosterStoragePath string
 }
 
 func LoadEnv() Env {
 	if err := godotenv.Load(); err != nil {
 		log.Printf(".envファイルが見つかりません")
+	}
+
+	posterStoragePath := os.Getenv("POSTER_STORAGE_PATH")
+	if posterStoragePath == "" {
+		posterStoragePath = "storage/posters"
+	}
+
+	fileServerBaseURL := os.Getenv("FILE_SERVER_BASE_URL")
+	if fileServerBaseURL == "" {
+		fileServerBaseURL = "http://localhost:8081/posters"
 	}
 
 	return Env{
@@ -42,5 +56,9 @@ func LoadEnv() Env {
 		MongoUser:     os.Getenv("MONGO_USER"),
 		MongoPassword: os.Getenv("MONGO_PASSWORD"),
 		MongoDatabase: os.Getenv("MONGO_DATABASE"),
+
+		// File Server
+		FileServerBaseURL: fileServerBaseURL,
+		PosterStoragePath: posterStoragePath,
 	}
 }

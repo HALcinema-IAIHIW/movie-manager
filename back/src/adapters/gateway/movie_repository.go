@@ -32,3 +32,9 @@ func (r *GormMovieRepository) GetMovieByID(id uint) (*model.Movie, error) {
 	}
 	return &movie, nil
 }
+
+func (r *GormMovieRepository) UpdatePosterPath(id uint, posterPath string) error {
+	return r.DB.Model(&model.Movie{}).
+		Where("id = ?", id).
+		Update("poster_path", posterPath).Error
+}
