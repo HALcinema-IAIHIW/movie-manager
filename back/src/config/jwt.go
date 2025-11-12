@@ -12,6 +12,11 @@ import (
 // !!! 本番環境では、環境変数から読み込むなど、より安全な方法で管理してください !!!
 var JWTSecret = []byte("your_super_secret_jwt_key_please_change_me")
 
+// GetJWTSecret はJWTの秘密鍵を返します
+func GetJWTSecret() string {
+	return string(JWTSecret)
+}
+
 // Claims はJWTのペイロードに含まれるカスタムクレームです
 type Claims struct {
 	UserID               uint   `json:"user_id"`
