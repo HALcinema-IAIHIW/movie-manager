@@ -15,7 +15,7 @@ func ToScreeningResponse(screening model.Screening) response.ScreeningResponse {
 		Movie: response.MovieInfo{
 			ID:         screening.ScreeningPeriod.Movie.ID,
 			Title:      screening.ScreeningPeriod.Movie.Title,
-			PosterPath: util.BuildPosterURL(screening.ScreeningPeriod.Movie.PosterPath),
+			PosterPath: util.BuildPosterPath(screening.ScreeningPeriod.Movie.PosterPath),
 		},
 		Screen: response.ScreenInfo{
 			ID: screening.ScreeningPeriod.Screen.ID,
@@ -51,8 +51,8 @@ func BuildMovieTLResponse(screenings []model.Screening) []response.MovieTLRespon
 			mtl = response.MovieTLResponse{
 				MovieId: movie.ID,
 				Title:   movie.Title,
-				// PosterPath: util.BuildPosterURL(movie.PosterPath),
-				PosterPath: util.BuildPosterURL(movie.PosterPath),
+				// PosterPath: util.BuildPosterPath(movie.PosterPath),
+				PosterPath: util.BuildPosterPath(movie.PosterPath),
 				ScreenID:   s.ScreeningPeriod.ScreenID,
 				Showings:   []response.ShowingInfo{},
 				Date:       s.Date.Format("2006-01-02"),

@@ -100,15 +100,10 @@ export default function AllMovies() {
                             {/* 映画ポスター */}
                             <div className="relative aspect-[2/3] overflow-hidden">
                                 <Image
-                                    src={movie.poster_path
-                                        ? movie.poster_path.startsWith("http")
-                                            ? movie.poster_path
-                                            : `http://localhost:8080${movie.poster_path}`
-                                        : "/placeholder.svg"
-                                    }
-                                    alt={movie.title}
-                                    fill
-                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                  src={movie.poster_path || "/placeholder.svg"}
+                                  alt={movie.title}
+                                  fill
+                                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                                 />
 
                                 {/* ホバー時のオーバーレイ */}

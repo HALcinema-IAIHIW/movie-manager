@@ -37,7 +37,7 @@ func (h *MovieHandler) Routes() module.Route {
 	return NewMovieRoutes(h)
 }
 
-func (h *MovieHandler) buildPosterURL(filename string) string {
+func (h *MovieHandler) buildPosterPath(filename string) string {
 	base := strings.TrimSuffix(h.posterBaseURL, "/")
 	cleanName := strings.TrimLeft(filename, "/")
 	return fmt.Sprintf("%s/%s", base, cleanName)
@@ -90,13 +90,13 @@ func (h *MovieHandler) UploadPoster() gin.HandlerFunc {
 			return
 		}
 
-		posterURL := h.buildPosterURL(filename)
-		if _, err := h.Usecase.UpdateMoviePoster(id, posterURL); err != nil {
+		posterPath := h.buildPosterPath(filename)
+		if _, err := h.Usecase.UpdateMoviePoster(id, posterPath); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "映画ポスター情報の更新に失敗しました"})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"poster_url": posterURL})
+		c.JSON(http.StatusOK, gin.H{"poster_path": posterPath})
 	}
 }
 
@@ -125,7 +125,7 @@ func (h *MovieHandler) GetPoster() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"poster_url": movie.PosterPath})
+		c.JSON(http.StatusOK, gin.H{"poster_path": movie.PosterPath})
 	}
 }
 
@@ -152,7 +152,7 @@ func (h *MovieHandler) CreateMovie() gin.HandlerFunc {
 			Director:    req.Director,
 			Cast:        strings.Join(req.Cast, ","),
 			Duration:    req.Duration,
-			PosterPath:  req.PosterPath,
+			PosterPath:  "",
 		}
 
 		if err := h.Usecase.CreateMovie(movie); err != nil {
