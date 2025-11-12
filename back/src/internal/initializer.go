@@ -30,10 +30,13 @@ func NewInitializer() (*Initializer, error) {
 	// マイグレーション
 	if err := db.AutoMigrate(
 		&model.User{},
+		&model.Role{},
+		&model.Admin{},
 		&model.Movie{},
 		&model.Seat{},
-		&model.Screening{},
 		&model.Screen{},
+		&model.ScreeningPeriod{},
+		&model.Screening{},
 		&model.Purchase{},
 		&model.PurchaseDetail{},
 		&model.ReservationSeat{},
