@@ -15,10 +15,9 @@ func ToMovieResponse(movie model.Movie) response.MovieResponse {
 		ReleaseDate: movie.ReleaseDate.Format("2006-01-02"),
 		Genre:       movie.Genre,
 		Director:    movie.Director,
-		// Cast:        cast,
-		Cast:       strings.Split(movie.Cast, ","),
-		Duration:   movie.Duration,
-		PosterPath: movie.PosterPath,
+		Cast:        strings.Split(movie.Cast, ","),
+		Duration:    movie.Duration,
+		PosterPath:  movie.PosterPath,
 	}
 }
 
