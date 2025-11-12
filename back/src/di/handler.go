@@ -1,6 +1,7 @@
 package di
 
 import (
+	"modules/src/adapters/controller/admin"
 	"modules/src/adapters/controller/movie"
 	"modules/src/adapters/controller/period"
 	"modules/src/adapters/controller/purchase"
@@ -20,6 +21,7 @@ import (
 
 type Handlers struct {
 	User            *user.UserHandler
+	Admin           *admin.AdminHandler
 	Movie           *movie.MovieHandler
 	Screen          *screen.ScreenHandler
 	Seat            *seat.SeatHandler
@@ -77,8 +79,12 @@ func NewHandlers(db *gorm.DB, env config.Env) *Handlers {
 	reservationseatUsecase := usecases.NewReservationSeatUsecase(reservationseatRepo)
 	reservationseatHandler := reservationseat.NewReservationSeatHandler(reservationseatUsecase)
 
+	// Admin
+	adminHandler := admin.NewAdminHandler(userUC, movieUC, periodUC, screeningUC)
+
 	return &Handlers{
 		User:            userHandler,
+		Admin:           adminHandler,
 		Movie:           movieHandler,
 		Screen:          screenHandler,
 		Seat:            seatHandler,

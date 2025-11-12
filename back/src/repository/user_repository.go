@@ -11,6 +11,7 @@ type UserRepository interface {
 	FindByID(id uint) (*model.User, error)
 	FindAll() ([]model.User, error)
 	Update(user *model.User) error
+	IsAdmin(userID uint) (bool, error)
 }
 
 type GormUserRepository struct {
@@ -52,4 +53,13 @@ func (r *GormUserRepository) FindAll() ([]model.User, error) {
 func (r *GormUserRepository) Update(user *model.User) error {
 	result := r.db.Save(user)
 	return result.Error
+}
+
+func (r *GormUserRepository) IsAdmin(userID uint) (bool, error) {
+	var count int64
+	err := r.db.Table("admins").Where("user_id = ? AND deleted_at IS NULL", userID).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
