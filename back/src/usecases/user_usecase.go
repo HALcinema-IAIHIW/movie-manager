@@ -124,6 +124,30 @@ func (uc *UserUsecase) RegisterUser(input RegisterUserInput) (*model.User, error
 	return user, nil
 }
 
+func (uc *UserUsecase) PromoteToAdmin(userID uint) error {
+	user, err := uc.UserRepo.FindByID(userID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrUserNotFound
+		}
+		return err
+	}
+	if user == nil {
+		return ErrUserNotFound
+	}
+
+	isAdmin, err := uc.UserRepo.IsAdmin(user.ID)
+	if err != nil {
+		return err
+	}
+	if isAdmin {
+		return errors.New("既に管理者です")
+	}
+
+	admin := &model.Admin{UserID: user.ID}
+	return uc.UserRepo.CreateAdmin(admin)
+}
+
 func (uc *UserUsecase) LoginUser(email, password string) (string, *model.User, error) {
 	user, err := uc.UserRepo.FindByEmail(strings.ToLower(email))
 	if err != nil {

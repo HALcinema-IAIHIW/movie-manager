@@ -12,6 +12,7 @@ type UserRepository interface {
 	FindAll() ([]model.User, error)
 	Update(user *model.User) error
 	IsAdmin(userID uint) (bool, error)
+	CreateAdmin(admin *model.Admin) error
 }
 
 type GormUserRepository struct {
@@ -62,4 +63,8 @@ func (r *GormUserRepository) IsAdmin(userID uint) (bool, error) {
 		return false, err
 	}
 	return count > 0, nil
+}
+
+func (r *GormUserRepository) CreateAdmin(admin *model.Admin) error {
+	return r.db.Create(admin).Error
 }
