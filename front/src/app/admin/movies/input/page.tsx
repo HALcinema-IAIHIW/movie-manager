@@ -53,9 +53,16 @@ export default function MovieInput() {
       // プレビュー画像の作成
       const reader = new FileReader()
       reader.onload = (e) => {
-        setPosterPreview(e.target?.result as string)
+        const result = e.target?.result as string
+        sessionStorage.setItem("posterPreview", result)
       }
       reader.readAsDataURL(file)
+    } else {
+      // ファイル選択がキャンセルされた場合の処理
+      setFormData(prev => ({ ...prev, posterFile: null }))
+      setPosterPreview(null)
+      sessionStorage.removeItem("posterPreview")
+      sessionStorage.removeItem("hasPosterFile")
     }
   }
 
