@@ -12,7 +12,7 @@ import "swiper/css/navigation"
 // import { MovieSchedule } from "../types/schedule";
 
 // コンポーネント
-import MovieTL from "@/app/components/MovieTL"
+import MovieTL from "./components/MovieTL"
 
 // fetch
 import { fetchScreeningsByDate } from "../../libs/api/api"

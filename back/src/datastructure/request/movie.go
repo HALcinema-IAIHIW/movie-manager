@@ -9,5 +9,4 @@ type CreateMovieRequest struct {
 	Director    string   `json:"director"`
 	Cast        []string `json:"cast"`
 	Duration    int      `json:"duration" binding:"required"`
-	PosterPath  string   `json:"poster_path"`
 }
