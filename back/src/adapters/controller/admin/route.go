@@ -25,6 +25,8 @@ func (r *AdminRouter) RegisterRoutes(engine *gin.Engine) {
 
 	// 管理者ログイン（認証不要）
 	adminGroup.POST("/login", r.handler.AdminLogin())
+	// 既存ユーザーの管理者昇格（認証不要で単一エンドポイント）
+	adminGroup.POST("/promote", r.handler.PromoteAdmin())
 
 	// 管理者専用エンドポイント（認証必要）
 	protected := adminGroup.Group("/")

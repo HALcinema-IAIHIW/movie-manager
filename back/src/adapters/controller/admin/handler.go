@@ -18,23 +18,62 @@ import (
 )
 
 type AdminHandler struct {
-	UserUC     *usecases.UserUsecase
-	MovieUC    *usecases.MovieUsecase
-	PeriodUC   *usecases.PeriodUsecase
+	UserUC      *usecases.UserUsecase
+	MovieUC     *usecases.MovieUsecase
+	PeriodUC    *usecases.PeriodUsecase
 	ScreeningUC *usecases.ScreeningUsecase
 }
 
 func NewAdminHandler(userUC *usecases.UserUsecase, movieUC *usecases.MovieUsecase, periodUC *usecases.PeriodUsecase, screeningUC *usecases.ScreeningUsecase) *AdminHandler {
 	return &AdminHandler{
-		UserUC:     userUC,
-		MovieUC:    movieUC,
-		PeriodUC:   periodUC,
+		UserUC:      userUC,
+		MovieUC:     movieUC,
+		PeriodUC:    periodUC,
 		ScreeningUC: screeningUC,
 	}
 }
 
 func (h *AdminHandler) Routes() module.Route {
 	return NewAdminRoutes(h)
+}
+
+// PromoteAdmin 既存ユーザーを管理者に昇格
+func (h *AdminHandler) PromoteAdmin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req request.AdminPromoteRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":   "入力形式が間違っています",
+				"details": err.Error(),
+			})
+			return
+		}
+
+		if err := h.UserUC.PromoteToAdmin(req.UserID); err != nil {
+			if errors.Is(err, usecases.ErrUserNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{
+					"error": "対象ユーザーが見つかりません",
+				})
+				return
+			}
+			if err.Error() == "既に管理者です" {
+				c.JSON(http.StatusConflict, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error":   "管理者昇格に失敗しました",
+				"details": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusCreated, gin.H{
+			"message": "管理者に昇格しました",
+			"user_id": req.UserID,
+		})
+	}
 }
 
 // AdminLogin 管理者専用ログイン
@@ -135,7 +174,7 @@ func (h *AdminHandler) CreateMovie() gin.HandlerFunc {
 		var req request.CreateMovieRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "入力形式が間違っています",
+				"error":   "入力形式が間違っています",
 				"details": err.Error(),
 			})
 			return
@@ -175,14 +214,14 @@ func (h *AdminHandler) CreateMovie() gin.HandlerFunc {
 		// 映画を作成
 		if err := h.MovieUC.CreateMovie(movie); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "映画の作成に失敗しました",
+				"error":   "映画の作成に失敗しました",
 				"details": err.Error(),
 			})
 			return
 		}
 
 		c.JSON(http.StatusCreated, gin.H{
-			"message": "映画が正常に作成されました",
+			"message":  "映画が正常に作成されました",
 			"movie_id": movie.ID,
 		})
 	}
@@ -194,7 +233,7 @@ func (h *AdminHandler) CreateScreeningPeriod() gin.HandlerFunc {
 		var req request.PeriodRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "入力形式が間違っています",
+				"error":   "入力形式が間違っています",
 				"details": err.Error(),
 			})
 			return
@@ -227,14 +266,14 @@ func (h *AdminHandler) CreateScreeningPeriod() gin.HandlerFunc {
 		// 上映期間を作成
 		if err := h.PeriodUC.CreatePeriod(period); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "上映期間の作成に失敗しました",
+				"error":   "上映期間の作成に失敗しました",
 				"details": err.Error(),
 			})
 			return
 		}
 
 		c.JSON(http.StatusCreated, gin.H{
-			"message": "上映期間が正常に作成されました",
+			"message":   "上映期間が正常に作成されました",
 			"period_id": period.ID,
 		})
 	}
@@ -246,7 +285,7 @@ func (h *AdminHandler) CreateScreening() gin.HandlerFunc {
 		var req request.CreateScreeningRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "入力形式が間違っています",
+				"error":   "入力形式が間違っています",
 				"details": err.Error(),
 			})
 			return
@@ -263,14 +302,14 @@ func (h *AdminHandler) CreateScreening() gin.HandlerFunc {
 		_, err := h.ScreeningUC.CreateScreening(screening)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "上映スケジュールの作成に失敗しました",
+				"error":   "上映スケジュールの作成に失敗しました",
 				"details": err.Error(),
 			})
 			return
 		}
 
 		c.JSON(http.StatusCreated, gin.H{
-			"message": "上映スケジュールが正常に作成されました",
+			"message":      "上映スケジュールが正常に作成されました",
 			"screening_id": screening.ID,
 		})
 	}

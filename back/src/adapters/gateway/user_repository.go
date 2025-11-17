@@ -54,6 +54,10 @@ func (r *GormUserRepository) IsAdmin(userID uint) (bool, error) {
 	return count > 0, nil
 }
 
+func (r *GormUserRepository) CreateAdmin(admin *model.Admin) error {
+	return r.DB.Create(admin).Error
+}
+
 func NewGormUserRepository(db *gorm.DB) *GormUserRepository {
 	return &GormUserRepository{DB: db}
 }
