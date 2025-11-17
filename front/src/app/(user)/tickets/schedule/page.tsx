@@ -12,11 +12,11 @@ import "swiper/css/navigation"
 // import { MovieSchedule } from "../types/schedule";
 
 // コンポーネント
-import MovieTL from "./components/MovieTL"
+import MovieTL from "@/app/(user)/tickets/schedule/components/MovieTL"
 
 // fetch
-import { fetchScreeningsByDate } from "../../libs/api/api"
-import type { MovieTLProps } from "../../types/schedule"
+import { fetchScreeningsByDate } from "../../../libs/api/api"
+import type { MovieTLProps } from "../../../types/schedule"
 
 // TODO: 今日の日付から7日間の映画上映情報取得
 // TODO: その日付を使ってエンドポイントに投げる

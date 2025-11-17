@@ -185,7 +185,6 @@ export default function TicketTypeSelection() {
             return {
                 seatId: st.seatId, // APIから取得した座席ID
                 roleId: roleId, // APIから取得したロールID
-                price: st.ticketType.price,
                 seatIdStr: st.seatIdStr, // 表示用に元の文字列も残しておく
                 ticketTypeName: st.ticketType.name,
             };

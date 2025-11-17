@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Users, MapPin, Calendar, Clock } from "lucide-react"
-import { createSeat } from "../../libs/api/seat"
+import { createSeat } from "../../../libs/api/seat"
 
 // 座席の状態を定義
 type SeatStatus = "available" | "reserved" | "selected"

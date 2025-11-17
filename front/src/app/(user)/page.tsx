@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react"
 import type { MovieTLResponse } from "@/app/types/movie"
-import { HeroSection } from "./components/HeroSection"
-import { MovieSection } from "./components/MovieSection"
-import { NewsInfoSection } from "./components/NewsInfoSection"
+import { HeroSection } from "../components/HeroSection"
+import { MovieSection } from "../components/MovieSection"
+import { NewsInfoSection } from "../components/NewsInfoSection"
 
 export default function Home() {
   const [heroMovies, setHeroMovies] = useState<MovieTLResponse[]>([])
