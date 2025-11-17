@@ -53,16 +53,20 @@ export default function MovieConfirm() {
     try {
       const token = localStorage.getItem("adminToken")
 
-      // フォームデータの作成
-      const movieFormData = new FormData()
-      movieFormData.append("title", formData.title)
-      movieFormData.append("subtitle", formData.subtitle)
-      movieFormData.append("description", formData.description)
-      movieFormData.append("release_date", formData.releaseDate)
-      movieFormData.append("genre", formData.genre)
-      movieFormData.append("director", formData.director)
-      movieFormData.append("cast", formData.cast)
-      movieFormData.append("duration", formData.duration)
+      // 1. JSONオブジェクトを構築 (castとdurationの型を合わせる)
+      const dataToSend = {
+        title: formData.title,
+        subtitle: formData.subtitle,
+        description: formData.description,
+        release_date: formData.releaseDate,
+        genre: formData.genre,
+        director: formData.director,
+        // cast: 現在は文字列だが、サーバーが配列を期待するならここで配列に変換が必要
+        cast: formData.cast.split(',').map(item => item.trim()), // カンマ区切り文字列を配列に変換
+        // poster_path: ファイルの代わりにパスを送る場合、ここで指定
+        poster_path: posterPreview ? posterPreview.replace("data:image/jpeg;base64,", "") : null, // 例としてプレビューURLを使用
+        duration: parseInt(formData.duration, 10), // 文字列を数値に変換
+      }
 
       // ポスター画像がある場合は追加（実際のファイルオブジェクトは再取得が必要）
       // 注意: セッションストレージにはファイルオブジェクトを保存できないため、
@@ -71,10 +75,12 @@ export default function MovieConfirm() {
       const response = await fetch("http://localhost:8080/admin/movies", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`
-          // Content-Typeはformdata使用時は設定しない
+          "Authorization": `Bearer ${token}`,
+          // 2. Content-TypeをJSONに設定
+          "Content-Type": "application/json"
         },
-        body: movieFormData
+        // 3. JSON文字列として送信
+        body: JSON.stringify(dataToSend)
       })
 
       if (!response.ok) {
