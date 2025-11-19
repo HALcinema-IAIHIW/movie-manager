@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Playfair_Display } from "next/font/google"
 import { Shippori_Mincho } from "next/font/google"
-import "./globals.css"
+import "../globals.css"
 import Header from "@/app/layout/Header"
 import Footer from "@/app/layout/Footer"
 
@@ -45,13 +45,14 @@ export default function RootLayout({
             }}
         >
         {/* ヘッダー */}
-        {/*<Header />*/}
+        <Header />
+        {/*header*/}
 
         {/* メインコンテンツ */}
         <main className="flex-1">{children}</main>
 
         {/* フッター */}
-        {/*<Footer />*/}
+        <Footer />
         </body>
         </html>
     )

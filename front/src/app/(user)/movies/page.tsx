@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import AllMovies from "./components/AllMovies"
+import AllMovies from "@/app/(user)/movies/components/AllMovies"
 
 const Movies = () => {
     return (
