@@ -16,7 +16,10 @@ FROM alpine:3.20
 WORKDIR /app
 
 ENV PORT=8080 \
-    POSTER_STORAGE_PATH=/app/storage/posters
+    POSTER_STORAGE_PATH=/app/storage/posters \
+    TZ=Asia/Tokyo
+
+RUN apk add --no-cache tzdata
 
 # 既定のファイルサーバーURLはホスト側アクセスを想定
 ENV FILE_SERVER_BASE_URL=http://localhost:8081/posters

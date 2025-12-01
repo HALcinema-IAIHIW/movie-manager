@@ -3,7 +3,6 @@ package role
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"log"
 	"modules/src/adapters/presenter"
 	"modules/src/database/model"
@@ -11,6 +10,8 @@ import (
 	"modules/src/module"
 	"modules/src/usecases"
 	"net/http"
+
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,7 +40,7 @@ func (h *RoleHandler) CreateRoles() gin.HandlerFunc {
 			PriceYen: req.PriceYen,
 		}
 		if err := h.Usecase.CreateRole(role); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "スクリーンの登録に失敗しました"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "roleの登録に失敗しました"})
 			return
 		}
 		c.JSON(http.StatusCreated, presenter.ToRoleResponse(role))

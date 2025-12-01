@@ -10,6 +10,7 @@ interface MovieData {
   subtitle: string
   description: string
   releaseDate: string
+  endDate: string
   genre: string
   director: string
   cast: string
@@ -23,6 +24,7 @@ export default function MovieInput() {
     subtitle: "",
     description: "",
     releaseDate: "",
+    endDate:"",
     genre: "",
     director: "",
     cast: "",
@@ -238,15 +240,41 @@ export default function MovieInput() {
                     />
                   </div>
                 </div>
-
-                {/* ジャンル */}
+                {/* 上映終了予定日 */}
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-2 font-shippori">
-                    ジャンル <span className="text-red-400">*</span>
+                    上映終了予定日 <span className="text-red-400">*</span>
+
                   </label>
-                  <select
-                    value={formData.genre}
-                    onChange={(e) => handleInputChange("genre", e.target.value)}
+                  <div className={"relative"}>
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Calendar size={18} className="text-text-muted"/>
+                    </div>
+                    <input
+                        type="date"
+                        value={formData.endDate}
+                        onChange={(e) => handleInputChange("endDate", e.target.value)}
+
+                        required
+                        className="block w-full pl-10 pr-3 py-3 border border-accent/20 bg-darker/50
+                        rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
+                    />
+                  </div>
+
+
+                </div>
+
+              </div>
+            </div>
+
+            {/* ジャンル */}
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-2 font-shippori">
+                ジャンル <span className="text-red-400">*</span>
+              </label>
+              <select
+                  value={formData.genre}
+                  onChange={(e) => handleInputChange("genre", e.target.value)}
                     required
                     className="block w-full px-3 py-3 border border-accent/20 bg-darker/50
                       rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
@@ -322,6 +350,7 @@ export default function MovieInput() {
                     placeholder="主演俳優名、共演者名など（カンマ区切りで入力）"
                   />
                 </div>
+          </form>
               </div>
             </div>
 
@@ -389,9 +418,6 @@ export default function MovieInput() {
                 {isLoading ? "処理中..." : "入力内容を確認する"}
               </button>
             </div>
-          </form>
-        </div>
-      </div>
     </div>
   )
 }

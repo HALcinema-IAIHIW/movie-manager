@@ -4,6 +4,7 @@ import { Playfair_Display } from "next/font/google"
 import { Shippori_Mincho } from "next/font/google"
 import "../globals.css"
 
+
 // 英字フォントの設定 - Playfair Display
 const playfairDisplay = Playfair_Display({
     subsets: ["latin"],
@@ -44,7 +45,15 @@ export default function layout({
         >
         {/*<h1>アドミンヘッダ</h1>*/}
         {/* メインコンテンツ */}
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">{children}
+        <br/>
+            <Link
+                href="/"
+                className=""
+            > return to top </Link>
+        </main>
+
+
 
 
         </body>
