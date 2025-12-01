@@ -3,8 +3,7 @@ import type { Metadata } from "next"
 import { Playfair_Display } from "next/font/google"
 import { Shippori_Mincho } from "next/font/google"
 import "../globals.css"
-import Link from "next/link"
-import Footer from "@/app/layout/Footer"
+
 
 // 英字フォントの設定 - Playfair Display
 const playfairDisplay = Playfair_Display({
