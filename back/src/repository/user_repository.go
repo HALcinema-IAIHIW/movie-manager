@@ -2,6 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
+	"log"
 	"modules/src/database/model"
 )
 
@@ -58,10 +59,19 @@ func (r *GormUserRepository) Update(user *model.User) error {
 
 func (r *GormUserRepository) IsAdmin(userID uint) (bool, error) {
 	var count int64
+
+	// GORMのDB操作でエラーが発生した場合、errに具体的なDBエラーが入ります
 	err := r.db.Table("admins").Where("user_id = ? AND deleted_at IS NULL", userID).Count(&count).Error
+
 	if err != nil {
+		// 🚨 ログに出力する処理を追加 🚨
+		// (Goの標準logパッケージや、使用しているロギングライブラリを使用)
+		log.Printf("DB Error during Admin check for user %d: %v", userID, err)
+
+		// このエラーが http.StatusInternalServerError の原因です
 		return false, err
 	}
+
 	return count > 0, nil
 }
 

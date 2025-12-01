@@ -16,6 +16,22 @@ interface MovieData {
   duration: string
 }
 
+interface MovieData {
+  title: string
+  subtitle: string
+  description: string
+  releaseDate: string
+  genre: string
+  director: string
+  cast: string
+  duration: string
+}
+
+interface MovieResponse {
+  movie_id: number;
+  message?: string;
+}
+
 export default function MovieConfirm() {
   const [formData, setFormData] = useState<MovieData | null>(null)
   const [posterPreview, setPosterPreview] = useState<string | null>(null)
@@ -46,6 +62,18 @@ export default function MovieConfirm() {
     setHasPosterFile(hasFile)
   }, [router])
 
+  const dataURLtoFile = (dataurl: string, filename: string): File => {
+    const arr = dataurl.split(',')
+    const mime = arr[0].match(/:(.*?);/)?.[1]
+    const bstr = atob(arr[1])
+    let n = bstr.length
+    const u8arr = new Uint8Array(n)
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n)
+    }
+    return new File([u8arr], filename, { type: mime })
+  }
+
   const handleSubmit = async () => {
     if (!formData) return
 
@@ -53,16 +81,20 @@ export default function MovieConfirm() {
     try {
       const token = localStorage.getItem("adminToken")
 
-      // フォームデータの作成
-      const movieFormData = new FormData()
-      movieFormData.append("title", formData.title)
-      movieFormData.append("subtitle", formData.subtitle)
-      movieFormData.append("description", formData.description)
-      movieFormData.append("release_date", formData.releaseDate)
-      movieFormData.append("genre", formData.genre)
-      movieFormData.append("director", formData.director)
-      movieFormData.append("cast", formData.cast)
-      movieFormData.append("duration", formData.duration)
+      // 1. JSONオブジェクトを構築 (castとdurationの型を合わせる)
+      const dataToSend = {
+        title: formData.title,
+        subtitle: formData.subtitle,
+        description: formData.description,
+        release_date: formData.releaseDate,
+        genre: formData.genre,
+        director: formData.director,
+        // cast: 現在は文字列だが、サーバーが配列を期待するならここで配列に変換が必要
+        cast: formData.cast.split(',').map(item => item.trim()), // カンマ区切り文字列を配列に変換
+        // poster_path: ファイルの代わりにパスを送る場合、ここで指定
+        poster_path: null,
+        duration: parseInt(formData.duration, 10), // 文字列を数値に変換
+      }
 
       // ポスター画像がある場合は追加（実際のファイルオブジェクトは再取得が必要）
       // 注意: セッションストレージにはファイルオブジェクトを保存できないため、
@@ -71,14 +103,47 @@ export default function MovieConfirm() {
       const response = await fetch("http://localhost:8080/admin/movies", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`
-          // Content-Typeはformdata使用時は設定しない
+          "Authorization": `Bearer ${token}`,
+          // 2. Content-TypeをJSONに設定
+          "Content-Type": "application/json"
         },
-        body: movieFormData
+        // 3. JSON文字列として送信
+        body: JSON.stringify(dataToSend)
       })
 
       if (!response.ok) {
         throw new Error("映画情報の登録に失敗しました")
+      }
+
+      const movieData: MovieResponse = await response.json()
+
+      console.log("Backend Response:", movieData)
+      console.log("Extracted ID:", movieData.movie_id)
+      console.log("Poster Preview Exists:", !!posterPreview)
+
+      const newMovieId = movieData.movie_id
+
+      if (posterPreview && newMovieId) {
+        // Base64をFileオブジェクトに変換
+        const imageFile = dataURLtoFile(posterPreview, "poster.jpg")
+
+        const formDataUpload = new FormData()
+        // Postmanの設定に合わせてキー名を "poster" に設定
+        formDataUpload.append("poster", imageFile)
+
+        const imageRes = await fetch(`http://localhost:8080/movies/${newMovieId}/poster`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            // Content-Typeは指定しない (browserが自動でboundaryを設定するため)
+          },
+          body: formDataUpload
+        })
+
+        if (!imageRes.ok) {
+          console.error("画像のアップロードに失敗しました")
+          alert("映画情報は登録されましたが、画像のアップロードに失敗しました。")
+        }
       }
 
       // セッションストレージをクリア
