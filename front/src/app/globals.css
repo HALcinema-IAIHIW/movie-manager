@@ -135,6 +135,7 @@ body {
   .hover-glow {
     @apply transition-all duration-300 hover:shadow-gold-glow;
   }
+
 }
 
 /* フォーカス時のアウトライン（アクセシビリティ） */

@@ -38,7 +38,7 @@ export default function layout({
     return (
         <html lang="ja" className="scroll-smooth">
         <body
-            className={` ${playfairDisplay.variable} ${shipporiMincho.variable}
+            className={`${playfairDisplay.variable} ${shipporiMincho.variable}
           bg-darkest text-text-primary min-h-screen flex flex-col antialiased`}
             style={{
                 fontFamily: "var(--font-shippori), serif",
