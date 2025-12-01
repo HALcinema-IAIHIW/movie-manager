@@ -49,7 +49,7 @@ seed-roles: wait-schema
 	"INSERT INTO roles (role_name, price_yen) VALUES" \
 	"    ('一般', 1800)," \
 	"    ('大学生', 1500)," \
-	"    ('中学生～高校生', 1200)," \
+	"    ('中学生~高校生', 1200)," \
 	"    ('小学生、幼児', 800)" \
 	"ON CONFLICT (role_name) DO UPDATE SET" \
 	"    price_yen = EXCLUDED.price_yen;" \
