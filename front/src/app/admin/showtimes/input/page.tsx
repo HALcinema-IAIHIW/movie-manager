@@ -52,7 +52,7 @@ export default function ShowtimeInput() {
     // 映画とスクリーンの情報を取得
     fetchMovies()
     fetchScreens()
-  }, [router])
+  }, [])
 
   const fetchMovies = async () => {
     try {
@@ -107,24 +107,60 @@ export default function ShowtimeInput() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault(); // フォームリロード防止
 
-    // バリデーション
-    if (!formData.movieId || !formData.screenId || !formData.startDate || !formData.endDate) {
-      alert("すべての必須項目を入力してください")
-      return
-    }
-
-    if (formData.showtimes.some(st => !st.date || !st.startTime)) {
-      alert("すべての上映日時を入力してください")
-      return
-    }
-
-    // 確認ページに遷移
-    sessionStorage.setItem("showtimeData", JSON.stringify(formData))
-    router.push("/admin/showtimes/confirm")
+  // バリデーション
+  if (!formData.movieId || !formData.screenId || !formData.startDate || !formData.endDate) {
+    alert("すべての必須項目を入力してください");
+    return;
   }
+  if (formData.showtimes.some(st => !st.date || !st.startTime)) {
+    alert("すべての上映日時を入力してください");
+    return;
+  }
+
+  const selectedMovie = movies.find(m => m.id === parseInt(formData.movieId));
+  if (!selectedMovie) {
+    alert("正しい映画が選択されていません");
+    return;
+  }
+
+  // --- period データ ---
+  const periodPayload = {
+    movieID: Number(formData.movieId),
+    screenID: Number(formData.screenId),
+    startDate: formData.startDate,
+    endDate: formData.endDate
+  };
+
+  // --- screenings データ ---
+  const screeningsPayload = formData.showtimes.map(st => {
+    const isoDate = `${st.date}T00:00:00+09:00`;
+    const isoStart = `${st.date}T${st.startTime}:00+09:00`;
+    return {
+      screening_period_id: null, // 確認ページで埋める
+      date: isoDate,
+      start_time: isoStart,
+      duration: selectedMovie.duration
+    };
+  });
+
+  const saveData = {
+    period: periodPayload,
+    screenings: screeningsPayload
+  };
+
+  try {
+    sessionStorage.setItem("showtimeApiData", JSON.stringify(saveData));
+    console.log("Saved to sessionStorage:", saveData);
+
+    router.push("/admin/showtimes/confirm"); // ここで確実に遷移
+  } catch (error) {
+    console.error("Failed to save data or navigate:", error);
+  }
+};
+
 
   const selectedMovie = movies.find(m => m.id === parseInt(formData.movieId))
   const selectedScreen = screens.find(s => s.id === parseInt(formData.screenId))

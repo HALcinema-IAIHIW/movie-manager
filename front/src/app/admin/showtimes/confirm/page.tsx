@@ -43,15 +43,28 @@ export default function ShowtimeConfirm() {
       return
     }
 
-    const storedData = sessionStorage.getItem("showtimeData")
+    const storedData = sessionStorage.getItem("showtimeApiData")
     if (!storedData) {
       router.push("/admin/showtimes/input")
       return
     }
 
     const data = JSON.parse(storedData)
-    setFormData(data)
-    fetchMovieAndScreenData(data.movieId, data.screenId)
+
+    const showtimeData: ShowtimeData = {
+      movieId: data.period.movieID.toString(),
+      screenId: data.period.screenID.toString(),
+      startDate: data.period.startDate,
+      endDate: data.period.endDate,
+      showtimes: data.screenings.map((s: any) => ({
+        date: s.date,
+        startTime: s.start_time.split("T")[1].slice(0,5) // "HH:MM" に変換
+      }))
+    }
+
+    setFormData(showtimeData)
+    fetchMovieAndScreenData(showtimeData.movieId, showtimeData.screenId)
+  
   }, [router])
 
   const fetchMovieAndScreenData = async (movieId: string, screenId: string) => {
@@ -74,70 +87,73 @@ export default function ShowtimeConfirm() {
     }
   }
 
-  const handleSubmit = async () => {
-    if (!formData) return
+const handleSubmit = async () => {
+  if (!formData) return;
 
-    setIsLoading(true)
-    try {
-      const token = localStorage.getItem("adminToken")
+  setIsLoading(true);
+  try {
+    const token = localStorage.getItem("adminToken");
+    if (!token) throw new Error("ログイン情報がありません");
 
-      // 上映期間の作成
-      const periodResponse = await fetch("http://localhost:8080/admin/screening-periods", {
+    // 1. 上映期間の作成
+    const periodResponse = await fetch("http://localhost:8080/admin/screening-periods", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        movieID: parseInt(formData.movieId),
+        screenID: parseInt(formData.screenId),
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+      }),
+    });
+
+    if (!periodResponse.ok) {
+      const err = await periodResponse.json();
+      throw new Error(`上映期間の作成に失敗しました: ${err?.error || periodResponse.statusText}`);
+    }
+
+    const periodData = await periodResponse.json();
+    console.log("periodData:", periodData);
+    const periodId = periodData.period_id;
+    if (!periodId) throw new Error("上映期間IDが取得できませんでした");
+
+    // 2. 上映スケジュールを順番に登録
+    for (const showtime of formData.showtimes) {
+      const dateOnly = showtime.date.split("T")[0]; // YYYY-MM-DD
+      const start_time = `${dateOnly}T${showtime.startTime}:00+09:00`;
+
+      const screeningResponse = await fetch("http://localhost:8080/admin/screenings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
-          movie_id: parseInt(formData.movieId),
-          screen_id: parseInt(formData.screenId),
-          start_date: formData.startDate,
-          end_date: formData.endDate
-        })
-      })
+          screening_period_id: periodId,
+          date: `${dateOnly}T00:00:00+09:00`,
+          start_time,
+          duration: movie?.duration || 120,
+        }),
+      });
 
-      if (!periodResponse.ok) {
-        throw new Error("上映期間の作成に失敗しました")
+      if (!screeningResponse.ok) {
+        const errText = await screeningResponse.text();
+        throw new Error(`上映スケジュール ${dateOnly} ${showtime.startTime} の作成に失敗しました: ${errText}`);
       }
-
-      const periodData = await periodResponse.json()
-      const periodId = periodData.id
-
-      // 各上映スケジュールの作成
-      const screenigPromises = formData.showtimes.map(async (showtime) => {
-        const response = await fetch("http://localhost:8080/admin/screenings", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            screening_period_id: periodId,
-            date: showtime.date,
-            start_time: `${showtime.date}T${showtime.startTime}:00Z`,
-            duration: movie?.duration || 120
-          })
-        })
-
-        if (!response.ok) {
-          throw new Error(`上映スケジュール${showtime.date} ${showtime.startTime}の作成に失敗しました`)
-        }
-
-        return response.json()
-      })
-
-      await Promise.all(screenigPromises)
-
-      // セッションストレージをクリア
-      sessionStorage.removeItem("showtimeData")
-
-      router.push("/admin/showtimes/complete")
-    } catch (error) {
-      alert(error instanceof Error ? error.message : "登録に失敗しました")
-    } finally {
-      setIsLoading(false)
     }
+
+    // 3. 完了処理
+    sessionStorage.removeItem("showtimeData");
+    router.push("/admin/showtimes/complete");
+  } catch (error) {
+    alert(error instanceof Error ? error.message : "登録に失敗しました");
+  } finally {
+    setIsLoading(false);
   }
+};
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -149,10 +165,9 @@ export default function ShowtimeConfirm() {
     })
   }
 
-  const formatTime = (timeString: string) => {
-    return timeString
-  }
+  const formatTime = (timeString: string) => timeString
 
+  // ←ここで null チェック
   if (!formData) {
     return (
       <div className="min-h-screen bg-darker flex items-center justify-center">
