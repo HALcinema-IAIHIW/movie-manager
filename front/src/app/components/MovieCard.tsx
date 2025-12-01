@@ -80,7 +80,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, type = "nowShowing" }) => 
 
           {type === "nowShowing" && (
             <Link
-              href={`/tickets/schedule/${movie.id}`}
+              href={`/tickets/schedule/`}
               className="block w-full text-center py-2 bg-gold/10 hover:bg-gold/20 text-gold text-sm font-medium transition-colors rounded font-shippori font-jp"
             >
               チケット購入
