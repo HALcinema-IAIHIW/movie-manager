@@ -3,7 +3,6 @@ import type { Metadata } from "next"
 import { Playfair_Display } from "next/font/google"
 import { Shippori_Mincho } from "next/font/google"
 import "../globals.css"
-import Footer from "@/app/layout/Footer"
 
 // 英字フォントの設定 - Playfair Display
 const playfairDisplay = Playfair_Display({
@@ -37,7 +36,7 @@ export default function layout({
     return (
         <html lang="ja" className="scroll-smooth">
         <body
-            className={` ${playfairDisplay.variable} ${shipporiMincho.variable}
+            className={`${playfairDisplay.variable} ${shipporiMincho.variable}
           bg-darkest text-text-primary min-h-screen flex flex-col antialiased`}
             style={{
                 fontFamily: "var(--font-shippori), serif",
