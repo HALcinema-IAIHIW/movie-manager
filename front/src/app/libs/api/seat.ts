@@ -1,19 +1,14 @@
-export type CreateSeatRequest = {
-  screen_id: number
-  row: string
-  column: number
-}
-
-export async function createSeat(seat: CreateSeatRequest): Promise<void> {
-  const res = await fetch("http://localhost:8080/seats/", {
-    method: "POST",
+export const getSeatsByScreenId = async (screenId: number)=> {
+  const res = await fetch(`http://localhost:8080/seats/by-screen/${screenId}`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(seat),
   })
 
   if (!res.ok) {
-    throw new Error(`座席の作成に失敗しました: ${res.statusText}`)
+    throw new Error("座席データの取得に失敗しました")
   }
+
+  return res.json()
 }

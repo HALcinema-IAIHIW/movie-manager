@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Film, Clock, Calendar, User, FileText, Image as ImageIcon } from "lucide-react"
+import "./showtimes.css"
 
 interface MovieData {
   title: string
