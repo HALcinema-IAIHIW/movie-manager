@@ -4,11 +4,15 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Calendar, Clock, ArrowLeft, Film, MapPin } from "lucide-react"
+import "../../movies/input/showtimes.css"
+import Form from "next/form";
 
 interface Movie {
   id: number
   title: string
   duration: number
+  startDate: string
+  endDate: string
   genre: string
 }
 
@@ -21,8 +25,8 @@ interface Screen {
 interface ShowtimeData {
   movieId: string
   screenId: string
-  startDate: string
-  endDate: string
+  // startDate: string
+  // endDate: string
   showtimes: Array<{
     date: string
     startTime: string
@@ -60,6 +64,7 @@ export default function ShowtimeInput() {
       if (response.ok) {
         const data = await response.json()
         setMovies(data)
+        // setFormData()
       }
     } catch (error) {
       console.error("映画データの取得に失敗しました:", error)
@@ -72,6 +77,7 @@ export default function ShowtimeInput() {
       if (response.ok) {
         const data = await response.json()
         setScreens(data)
+
       }
     } catch (error) {
       console.error("スクリーンデータの取得に失敗しました:", error)
@@ -111,7 +117,7 @@ const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault(); // フォームリロード防止
 
   // バリデーション
-  if (!formData.movieId || !formData.screenId || !formData.startDate || !formData.endDate) {
+  if (!formData.movieId || !formData.screenId) {
     alert("すべての必須項目を入力してください");
     return;
   }
@@ -130,8 +136,6 @@ const handleSubmit = (e: React.FormEvent) => {
   const periodPayload = {
     movieID: Number(formData.movieId),
     screenID: Number(formData.screenId),
-    startDate: formData.startDate,
-    endDate: formData.endDate
   };
 
   // --- screenings データ ---
@@ -206,7 +210,7 @@ const handleSubmit = (e: React.FormEvent) => {
                       <option value="">映画を選択してください</option>
                       {movies.map((movie) => (
                           <option key={movie.id} value={movie.id}>
-                            {movie.title} ({movie.duration}分)
+                            {movie.title}
                           </option>
                       ))}
                     </select>
@@ -244,35 +248,6 @@ const handleSubmit = (e: React.FormEvent) => {
                   </div>
                 </div>
 
-                {/* 上映開始日 */}
-                <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2 font-shippori">
-                    上映開始日 <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                      type="date"
-                      value={formData.startDate}
-                      onChange={(e) => handleInputChange("startDate", e.target.value)}
-                      required
-                      className="block w-full px-3 py-3 border border-accent/20 bg-darker/50
-                      rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
-                  />
-                </div>
-              </div>
-              <div>
-
-              <label className="block text-sm font-medium text-text-secondary mb-2 font-shippori">
-                上映終了予定日 <span className="text-red-400">*</span>
-              </label>
-                <input
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => handleInputChange("endDate", e.target.value)}
-                    required
-                    className={"rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"}
-                />
-
-
               </div>
 
             </div>
@@ -307,8 +282,8 @@ const handleSubmit = (e: React.FormEvent) => {
                             type="date"
                             value={showtime.date}
                             onChange={(e) => handleShowtimeChange(index, "date", e.target.value)}
-                            min={formData.startDate}
-                            max={formData.endDate}
+                            min={selectedMovie?.startDate}
+                            max={selectedMovie?.endDate}
                             className="block w-full pl-10 pr-3 py-2 border border-accent/20 bg-darker/50
                               rounded text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
                           />
