@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Film, Calendar, LogOut, Settings, Users } from "lucide-react"
+import { Film, Calendar, LogOut, Settings, Users, Armchair } from "lucide-react"
 
 export default function AdminMenu() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -94,6 +94,24 @@ export default function AdminMenu() {
               </div>
             </Link>
 
+            {/* 座席管理 */}
+            <Link href="/admin/seats" className="group">
+              <div className="card-luxury p-8 hover-glow transition-all duration-300 group-hover:scale-105">
+                <div className="flex flex-col items-center text-center">
+                  <div
+                    className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mb-6
+                    group-hover:bg-accent/20 transition-colors"
+                  >
+                    <Armchair size={32} className="text-accent" />
+                  </div>
+                  <h3 className="text-xl font-bold text-text-primary mb-3 font-jp">座席表登録</h3>
+                  <p className="text-text-muted text-sm font-shippori">
+                    スクリーン別に座席を一括登録・確認できます
+                  </p>
+                </div>
+              </div>
+            </Link>
+
             {/* システム設定 */}
             <div className="group">
               <div className="card-luxury p-8 transition-all duration-300 opacity-50 cursor-not-allowed">
@@ -122,25 +140,6 @@ export default function AdminMenu() {
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* クイックアクション */}
-          <div className="mt-12 p-6 card-luxury">
-            <h3 className="text-lg font-bold text-text-primary mb-4 font-jp">クイックアクション</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Link
-                href="/admin/movies/input"
-                className="btn-luxury text-center py-3 font-shippori"
-              >
-                新規映画登録
-              </Link>
-              <Link
-                href="/admin/showtimes/input"
-                className="btn-outline-luxury text-center py-3 font-shippori"
-              >
-                上映スケジュール追加
-              </Link>
             </div>
           </div>
         </div>
