@@ -233,7 +233,6 @@ export default function Header() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginForm), // stateから直接送信
       })
-
       if (response.ok) {
         const data = await response.json()
         console.log("ログイン成功レスポンス:", data)
@@ -255,6 +254,11 @@ export default function Header() {
           alert("ログインは成功しましたが、認証トークンがありませんでした。")
           console.error("ログイン成功時だがトークンなし:", data)
         }
+      }else{
+        const errors: FormErrors = {}
+        errors.failed= "メールアドレス または パスワードが間違っています"
+        console.error("ログイン失敗")
+        setLoginErrors(errors)
       }
     } catch (error) {
       console.error("ログインリクエスト中にエラー:", error)
@@ -489,6 +493,10 @@ export default function Header() {
                           {activeTab === "login" && (
                             <form onSubmit={handleLoginSubmit} className="space-y-4">
                               <div>
+                                {loginErrors.failed &&(
+                                <div className={" my-3 mx-8"}><p className={"mx-auto bg-red-500/50 px-1.5 py-2 text-center"}>{loginErrors.failed}</p></div>)}
+                                {/*　デザイン確認用　OKだったら消してください　*/}
+                                {/*<div className={" my-3 mx-8"}><p className={"mx-auto bg-red-500/50 px-1.5 py-2 text-center"}>メールアドレス または パスワードが間違っています</p></div>*/}
                                 <input
                                   type="email"
                                   placeholder="メールアドレス"
