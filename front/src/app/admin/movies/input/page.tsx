@@ -356,7 +356,7 @@ export default function MovieInput() {
             </div>
 
             {/* ポスター画像 */}
-            <div className="card-luxury p-8">
+            <div className="card-luxury p-8 mb-10">
               <h2 className="text-2xl font-bold text-text-primary mb-6 font-jp">ポスター画像</h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

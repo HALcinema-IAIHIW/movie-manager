@@ -8,3 +8,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 input[type="date"]::-webkit-calendar-picker-indicator:hover{
     background-color: #888;
 }
+
+/* タイマーアイコンの削除 */
+input[type="time"]::-webkit-calendar-picker-indicator{
+    display: none;
+}
