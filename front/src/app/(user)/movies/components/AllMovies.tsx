@@ -116,7 +116,7 @@ export default function AllMovies() {
                                             <Info size={20} />
                                         </Link>
                                         <Link
-                                            href={`/tickets/schedule/${movie.id}`}
+                                            href={`/tickets/schedule/`}
                                             className="w-12 h-12 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center justify-center transition-colors"
                                         >
                                             <Play size={20} />
