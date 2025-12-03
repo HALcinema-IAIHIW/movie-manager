@@ -39,8 +39,8 @@ export default function ShowtimeInput() {
   const [formData, setFormData] = useState<ShowtimeData>({
     movieId: "",
     screenId: "",
-    startDate: "",
-    endDate: "",
+    // startDate: "",
+    // endDate: "",
     showtimes: [{ date: "", startTime: "" }]
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -64,7 +64,6 @@ export default function ShowtimeInput() {
       if (response.ok) {
         const data = await response.json()
         setMovies(data)
-        // setFormData()
       }
     } catch (error) {
       console.error("映画データの取得に失敗しました:", error)
@@ -218,6 +217,7 @@ const handleSubmit = (e: React.FormEvent) => {
                   {selectedMovie && (
                       <div className="mt-2 text-sm text-text-muted font-shippori">
                         ジャンル: {selectedMovie.genre} | 上映時間: {selectedMovie.duration}分
+                        <br/>{selectedMovie.startDate} ~ {selectedMovie.endDate}
                       </div>
                   )}
                 </div>

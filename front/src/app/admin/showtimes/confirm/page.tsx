@@ -21,8 +21,8 @@ interface Screen {
 interface ShowtimeData {
   movieId: string
   screenId: string
-  startDate: string
-  endDate: string
+  // startDate: string
+  // endDate: string
   showtimes: Array<{
     date: string
     startTime: string
@@ -54,8 +54,8 @@ export default function ShowtimeConfirm() {
     const showtimeData: ShowtimeData = {
       movieId: data.period.movieID.toString(),
       screenId: data.period.screenID.toString(),
-      startDate: data.period.startDate,
-      endDate: data.period.endDate,
+      // startDate: data.period.startDate,
+      // endDate: data.period.endDate,
       showtimes: data.screenings.map((s: any) => ({
         date: s.date,
         startTime: s.start_time.split("T")[1].slice(0,5) // "HH:MM" に変換
@@ -105,8 +105,8 @@ const handleSubmit = async () => {
       body: JSON.stringify({
         movieID: parseInt(formData.movieId),
         screenID: parseInt(formData.screenId),
-        startDate: formData.startDate,
-        endDate: formData.endDate,
+        // startDate: formData.startDate,
+        // endDate: formData.endDate,
       }),
     });
 
@@ -239,12 +239,12 @@ const handleSubmit = async () => {
                   <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <Calendar size={20} className="text-gold" />
                   </div>
-                  <div>
-                    <h4 className="font-medium text-text-secondary mb-1 font-shippori">上映期間</h4>
-                    <p className="text-lg text-text-primary font-jp">
-                      {formatDate(formData.startDate)} ～ {formatDate(formData.endDate)}
-                    </p>
-                  </div>
+                  {/*<div>*/}
+                  {/*  <h4 className="font-medium text-text-secondary mb-1 font-shippori">上映期間</h4>*/}
+                  {/*  <p className="text-lg text-text-primary font-jp">*/}
+                  {/*    {formatDate(formData.startDate)} ～ {formatDate(formData.endDate)}*/}
+                  {/*  </p>*/}
+                  {/*</div>*/}
                 </div>
               </div>
             </div>
