@@ -47,10 +47,18 @@ export default function ScreenCreatePage() {
       })
       if (!res.ok) {
         const errText = await res.text()
-        throw new Error(errText || "スクリーン登録に失敗しました")
+        setScreenError(errText || "スクリーン登録に失敗しました")
+        return
       }
       const created = await res.json()
-      setScreenStatus(`スクリーン${created?.id ?? ""}を登録しました`)
+      const screen = created?.screen
+      const createdSeats = created?.created_seats
+      const message =
+        created?.message ??
+        (screen?.id
+          ? `スクリーン${screen.id}を登録し、座席を${createdSeats ?? 0}件生成しました`
+          : "スクリーンを登録しました")
+      setScreenStatus(message)
     } catch (error) {
       setScreenError(error instanceof Error ? error.message : "スクリーン登録に失敗しました")
     } finally {

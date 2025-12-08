@@ -133,3 +133,23 @@ func (h *SeatHandler) GetSeatByRowColumnScreenID() gin.HandlerFunc {
 		c.JSON(http.StatusOK, presenter.ToSeatResponse(*seat))
 	}
 }
+
+// スクリーンの最大行・列まで座席を一括生成
+func (h *SeatHandler) GenerateSeats() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		screenIDStr := c.Param("screen_id")
+		screenID, err := strconv.ParseUint(screenIDStr, 10, 32) // 10進数として解釈し、32bitに収まる値としてチェック
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効なスクリーンIDです"})
+			return
+		}
+
+		created, err := h.Usecase.GenerateSeatsByScreenID(uint(screenID)) // uint64にキャストしてます
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "座席の一括生成に失敗しました", "details": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusCreated, gin.H{"created_count": created})
+	}
+}

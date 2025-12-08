@@ -53,9 +53,9 @@ type Screen struct {
 
 type Seat struct {
 	gorm.Model
-	ScreenID uint   `gorm:"not null"`
-	Row      string `gorm:"not null"`
-	Column   int    `gorm:"not null"`
+	ScreenID uint   `gorm:"not null;uniqueIndex:idx_seat_screen_row_col"`
+	Row      string `gorm:"not null;uniqueIndex:idx_seat_screen_row_col"`
+	Column   int    `gorm:"not null;uniqueIndex:idx_seat_screen_row_col"`
 
 	Screen Screen `gorm:"foreignKey:ScreenID"`
 }
