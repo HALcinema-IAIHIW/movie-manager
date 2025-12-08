@@ -187,6 +187,7 @@ export default function TicketTypeSelection() {
                 roleId: roleId, // APIから取得したロールID
                 seatIdStr: st.seatIdStr, // 表示用に元の文字列も残しておく
                 ticketTypeName: st.ticketType.name,
+                price: st.ticketType.price
             };
         });
 
