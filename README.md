@@ -1,55 +1,54 @@
-# movie-manager
-仮想の映画館予約管理システムを構築したプロジェクト。映画ポスター登録/取得APIを中心に他メンバーへ共有するための手順とエンドポイント仕様をまとめる。
+# HALシネマ
 
-## 作業依頼
-- dockerでファイルサーバーを作る
-- 登録するエンドポイントを作成する
-  - その際、`back/src/database/model/scheme.go` にあるMovieテーブルと結びつけること
+## 概要
+映画館の上映作品・座席予約・決済・ポスター配信を一元管理するフルスタックプロジェクトです。
+バックエンドAPI（Go）と Next.js フロント、PostgreSQL/MongoDB、nginx ファイルサーバーで構成しています。
 
-## 調査・検証結果
-- `back/docker-compose.yml` の `file-server` (nginx) サービスを含め、Postgres と Mongo を `docker compose --env-file .env up -d` で起動し、`env GOCACHE=/tmp/go-build go run ./src/driver/main.go` でAPIを起動することで、バックエンドが正常に立ち上がることを確認。
-- 通常環境では `back/` で `go run ./src/driver/main.go` を実行するだけで Gin サーバーが起動する（本 CLI 環境では権限の都合で `GOCACHE` を `/tmp` に切り替えて実行した）。
-- `POST /movies/` に映画情報を送信すると `HTTP 201` と完了メッセージが返り、`GET /movies/` で登録内容が取得できた。
-- `POST /movies/1/poster` に PNG ファイルを送信すると `HTTP 200` と `poster_url` が返り、`back/storage/posters/` に `movie_1_<timestamp>.png` が保存され、Movieテーブルの `poster_path` に `http://localhost:8081/posters/...` が更新されることを確認。
-- `GET /movies/1` および `GET /movies/1/poster` で登録済みURLが取得でき、さらに `http://localhost:8081/posters/...` から直接ダウンロードした画像がアップロード元と一致するため、ファイルサーバー経由での配信も確認済み。
-- 検証終了後は `docker compose down` とプロセス停止で環境をクリーンアップ済み。テストデータ（映画1件と保存済みポスター1枚）は必要に応じて削除する。
+## 背景
+校内チームでのシネマ運営シミュレーション用に、上映作品管理や決済、画像配信などを実装しました。API と管理 UI を共有し、ローカル環境で一通りの動作確認ができるようにすることを目的としています。
 
-## Dockerでのバックエンド実行と保存先
-- `back/Dockerfile` を追加し、`docker-compose.yml` に `backend` サービスを定義。`docker compose --env-file .env up -d postgres-db mongo-db file-server backend` で全コンポーネントをDocker上で起動できる。
-- `backend` サービスは `POSTER_STORAGE_PATH=/app/storage/posters` を使い、`file-server` と共有する `poster-data` ボリュームにポスターを書き込む。ホストにマウントせず Docker ボリューム(`back_poster-data`)内に保存されるため、「Docker内に保存」される構成になる。
-- ホストからアップロード済みポスターを確認したい場合は `docker run --rm -v back_poster-data:/data alpine ls /data` などでボリュームを覗ける。もちろん `http://localhost:8081/posters/<ファイル>` からも取得可能。
-- `BACKEND_PORT` を指定して `BACKEND_PORT=8082 docker compose ...` のように起動すると、ホストポートを切り替えられる（コンテナ内は常に 8080 でリッスン）。`.env` の `POSTER_STORAGE_PATH`/`FILE_SERVER_BASE_URL` はホスト実行向けで、Docker実行時は compose の `environment` で上書きしている。
+## 技術スタック
+- フロントエンド: Next.js 15 / React 19 / TypeScript / Tailwind CSS を使用しています。
+- バックエンド: Go 1.24 / Gin / GORM を使用しています。
+- データベース: PostgreSQL / MongoDB を使用しています。
+- その他: Docker Compose / nginx ファイルサーバー / Makefile ユーティリティを併用しています。
 
-## curl例（Request & Response）
-- `POST /movies/`
-  - ```bash
-    curl -i -H "Content-Type: application/json" \
-      -d '{"title":"Test Movie","subtitle":"Sub","description":"Desc","release_date":"2025-01-01","genre":"Action","director":"Dir","cast":["Actor1","Actor2"],"duration":120}' \
-      http://localhost:8080/movies/
-    ```
-  - Response: `HTTP/1.1 201 Created` / `{"message":"映画登録が完了しました"}`
-- `GET /movies/`
-  - ```bash
-    curl -i http://localhost:8080/movies/
-    ```
-  - Response: `HTTP/1.1 200 OK` / `[{"id":1,"title":"Test Movie",...,"poster_path":""}]`
-- `POST /movies/1/poster`
-  - ```bash
-    curl -i -F "poster=@/path/to/poster.png" http://localhost:8080/movies/1/poster
-    ```
-  - Response: `HTTP/1.1 200 OK` / `{"poster_url":"http://localhost:8081/posters/movie_1_1762755888.png"}`
-- `GET /movies/1`
-  - ```bash
-    curl -i http://localhost:8080/movies/1
-    ```
-  - Response: `HTTP/1.1 200 OK` / `{"id":1,"title":"Test Movie",...,"poster_path":"http://localhost:8081/posters/movie_1_1762755888.png"}`
-- `GET /movies/1/poster`
-  - ```bash
-    curl -i http://localhost:8080/movies/1/poster
-    ```
-  - Response: `HTTP/1.1 200 OK` / `{"poster_url":"http://localhost:8081/posters/movie_1_1762755888.png"}`
-- nginxファイルサーバーからの取得
-  - ```bash
-    curl -i http://localhost:8081/posters/movie_1_1762755888.png --output poster.png
-    ```
-  - Response: `HTTP/1.1 200 OK`（バイナリを `poster.png` に保存）
+## 起動の仕方
+1. 環境変数を用意します: `cp back/.env.example back/.env` で必要に応じてポートやDB情報を調整してください。
+2. バックエンド一式を起動します: `cd back && make build`（初回のみ）→ `make up` で Postgres・Mongo・file-server・backend を立ち上げます。API は `http://localhost:8080`、ポスター配信は `http://localhost:8081/posters` で確認できます。
+3. 管理者ユーザーを作成します: `cd back && make seed-admin` を実行してください（roles投入とAPI疎通を待って自動で管理者を作成します）。必要に応じて `make reset-db` でDBとボリュームを初期化できます。
+4. フロントエンドを起動します: `cd front && npm install && npm run dev` を実行し、`http://localhost:3000` で画面を確認してください。
+
+### 管理者作成用 make コマンド（`make seed-admin`）の手順と内部動作
+- 実行手順: `cd back && make seed-admin`
+- 内部動作（簡潔版）:
+  - `make wait-schema` を通じて PostgreSQL が起動し、`roles` テーブルができるまでポーリングします。
+  - `make seed-roles` で料金テーブルを挿入・更新します。
+  - `curl POST /users/` により `admin@example.com` の管理者候補ユーザーを作成します（既存なら 409 を許容）。
+  - 応答ボディまたは `GET /users/` から `admin@example.com` の `user_id` を取得します。
+  - `curl POST /admin/promote` で該当ユーザーに管理者権限を付与します（201/409 を許容）。
+- 作成される管理者の認証情報: メールアドレスは `admin@example.com`、パスワードは `AdminPass123!` です。初回ログイン後に変更することをおすすめします。
+- `make` と `grep` が必須になるため、Windows の場合は `git bash` での実行をおすすめします。
+
+### 画面一覧
+#### ユーザー画面
+##### トップページ
+![トップページ](./img/top.png)
+##### 映画詳細ページ
+![映画詳細ページ](./img/movie_detail.png)
+##### スケジュールページ
+![スケジュールページ](./img/schedule.png)
+##### シート予約ページ
+![シート予約ページ](./img/seats.png)
+##### チケット予約ページ
+![チケット予約ページ](./img/tickets.png)
+##### ユーザーサインナップ・サインイン
+
+#### Admin画面
+##### アドミンログインページ
+![チケット予約ページ](./img/admin_login.png)
+※ `http://localhost:3000/admin/menu` でログインします。
+ただし、あらかじめ、メールアドレスがアドミン対象として登録されている必要があります。
+##### アドミン管理メニューページ
+![チケット予約ページ](./img/admin_menu.png)
+
