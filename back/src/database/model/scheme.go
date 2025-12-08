@@ -68,8 +68,8 @@ type ScreeningPeriod struct {
 	StartDate time.Time `gorm:"not null"`
 	EndDate   time.Time `gorm:"not null"`
 
-	Movie  Movie  `gorm:"foreignKey:MovieID"`
-	Screen Screen `gorm:"foreignKey:ScreenID"`
+	Movie  Movie  `gorm:"foreignKey:MovieID;references:ID"`
+	Screen Screen `gorm:"foreignKey:ScreenID;references:ID"`
 }
 
 // 上映スクリーン
@@ -80,7 +80,7 @@ type Screening struct {
 	StartTime         time.Time `gorm:"not null"`
 	Duration          int       `gorm:"not null"`
 
-	ScreeningPeriod ScreeningPeriod `gorm:"foreignKey:ScreeningPeriodID"`
+	ScreeningPeriod ScreeningPeriod `gorm:"foreignKey:ScreeningPeriodID;references:ID"`
 	Movie           Movie           `gorm:"-"` // ← 疑似フィールド（Preloadではなくマッピング用）
 }
 

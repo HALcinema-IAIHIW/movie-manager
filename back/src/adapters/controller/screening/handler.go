@@ -63,7 +63,8 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 		endTime := result.StartTime.Add(time.Duration(result.Duration) * time.Minute).Format("15:04")
 
 		c.JSON(http.StatusCreated, response.ScreeningResponse{
-			ID: result.ID,
+			ID:                result.ID,
+			ScreeningPeriodID: result.ScreeningPeriodID,
 			Movie: response.MovieInfo{
 				ID:         result.ScreeningPeriod.Movie.ID,
 				Title:      result.ScreeningPeriod.Movie.Title,
