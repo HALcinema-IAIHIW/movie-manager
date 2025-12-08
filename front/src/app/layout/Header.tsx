@@ -495,8 +495,6 @@ export default function Header() {
                               <div>
                                 {loginErrors.failed &&(
                                 <div className={" my-3 mx-8"}><p className={"mx-auto bg-red-500/50 px-1.5 py-2 text-center"}>{loginErrors.failed}</p></div>)}
-                                {/*　デザイン確認用　OKだったら消してください　*/}
-                                {/*<div className={" my-3 mx-8"}><p className={"mx-auto bg-red-500/50 px-1.5 py-2 text-center"}>メールアドレス または パスワードが間違っています</p></div>*/}
                                 <input
                                   type="email"
                                   placeholder="メールアドレス"
