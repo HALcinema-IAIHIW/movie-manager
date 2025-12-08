@@ -57,6 +57,7 @@ export default function MovieInput() {
       const reader = new FileReader()
       reader.onload = (e) => {
         const result = e.target?.result as string
+        setPosterPreview(result)
         sessionStorage.setItem("posterPreview", result)
       }
       reader.readAsDataURL(file)
@@ -351,9 +352,6 @@ export default function MovieInput() {
                     placeholder="主演俳優名、共演者名など（カンマ区切りで入力）"
                   />
                 </div>
-          </form>
-              </div>
-            </div>
 
             {/* ポスター画像 */}
             <div className="card-luxury p-8 mb-10">
@@ -419,6 +417,9 @@ export default function MovieInput() {
                 {isLoading ? "処理中..." : "入力内容を確認する"}
               </button>
             </div>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }
