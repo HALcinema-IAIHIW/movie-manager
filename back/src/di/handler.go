@@ -49,14 +49,12 @@ func NewHandlers(db *gorm.DB, env config.Env) *Handlers {
 	movieUC := &usecases.MovieUsecase{MovieRepo: movieRepo}
 	movieHandler := movie.NewMovieHandler(movieUC, env.PosterStoragePath, env.FileServerBaseURL)
 
-	// Screen
+	// Screen & Seat
 	screenRepo := gateway.NewGormScreenRepository(db)
-	screenUC := &usecases.ScreenUsecase{ScreenRepo: screenRepo}
-	screenHandler := screen.NewScreenHandler(screenUC)
-
-	//Seat
 	seatRepo := gateway.NewGormSeatRepository(db)
-	seatUC := &usecases.SeatUsecase{SeatRepo: seatRepo}
+	seatUC := &usecases.SeatUsecase{SeatRepo: seatRepo, ScreenRepo: screenRepo}
+	screenUC := &usecases.ScreenUsecase{ScreenRepo: screenRepo}
+	screenHandler := screen.NewScreenHandler(screenUC, seatUC)
 	seatHandler := seat.NewSeatHandler(seatUC)
 
 	// screening

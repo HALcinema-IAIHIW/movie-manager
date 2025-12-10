@@ -14,10 +14,11 @@ import (
 
 type ScreenHandler struct {
 	Usecase *usecases.ScreenUsecase
+	SeatUC  *usecases.SeatUsecase
 }
 
-func NewScreenHandler(uc *usecases.ScreenUsecase) *ScreenHandler {
-	return &ScreenHandler{Usecase: uc}
+func NewScreenHandler(uc *usecases.ScreenUsecase, seatUC *usecases.SeatUsecase) *ScreenHandler {
+	return &ScreenHandler{Usecase: uc, SeatUC: seatUC}
 }
 
 func (h *ScreenHandler) Routes() module.Route {
@@ -39,7 +40,19 @@ func (h *ScreenHandler) CreateScreen() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "スクリーンの登録に失敗しました"})
 			return
 		}
-		c.JSON(http.StatusCreated, presenter.ToScreenResponse(*screen))
+
+		// スクリーン作成直後に座席を自動生成
+		createdSeats, err := h.SeatUC.GenerateSeatsByScreenID(screen.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "座席の自動生成に失敗しました", "details": err.Error()})
+			return
+		}
+
+		res := presenter.ToScreenResponse(*screen)
+		c.JSON(http.StatusCreated, gin.H{
+			"screen":        res,
+			"created_seats": createdSeats,
+		})
 	}
 }
 
