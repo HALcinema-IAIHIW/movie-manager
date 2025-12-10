@@ -14,6 +14,14 @@ export default function ScreenCreatePage() {
   const [screenError, setScreenError] = useState<string | null>(null)
   const router = useRouter()
 
+  // Rowのアルファベット→数字変換
+  const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+  function RowNum(R){
+    return alpha.indexOf(R)+1;
+  }
+
+
   useEffect(() => {
     const token = localStorage.getItem("adminToken")
     if (!token) {
@@ -66,6 +74,8 @@ export default function ScreenCreatePage() {
     }
   }
 
+
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-darkest flex items-center justify-center">
@@ -87,11 +97,13 @@ export default function ScreenCreatePage() {
         </div>
       </header>
 
+
+
       <div className="container-luxury py-10">
         <div className="max-w-3xl mx-auto space-y-6">
           <div className="card-luxury p-6 flex items-start gap-4">
             <div className="w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center">
-              <Armchair size={22} className="text-accent" />
+              <Armchair size={22} className="text-accent"/>
             </div>
             <div>
               <h2 className="text-2xl font-bold text-text-primary mb-2 font-jp">上映スクリーンを登録</h2>
@@ -100,7 +112,24 @@ export default function ScreenCreatePage() {
               </p>
             </div>
           </div>
+          <div className={"card-luxury py-5"}>
+            <h2 className={"text-center text-xl"}>プレビュー</h2>
+            <div id={"bgpreview"} className={" m-5 p-5 border border-accent/20 bg-darker/50 text-text-primary"}>
+              {Array.from({ length:RowNum(screenMaxRow)}, (_, i) => (
+                  <div key={i} className={"flex flex-row justify-between items-center mb-5"}>
+                    <p className={"w-10 align-middle"}> {alpha[i]}</p>
+                    {Array.from({ length:screenMaxColumn}, (_, i) => (
 
+                        <div key={i} className={"p-2 w-10 h-10 bg-gold text-center align-middle rounded-md"}>{i + 1}</div>
+                    ))}
+                  </div>
+
+              ))}
+
+            </div>
+            <p className={"text-center"}>合計:{screenMaxColumn * RowNum(screenMaxRow)}席</p>
+
+          </div>
           <div className="card-luxury p-8 space-y-6">
             <form onSubmit={handleCreateScreen} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -109,11 +138,11 @@ export default function ScreenCreatePage() {
                     最大行 (例: J)
                   </label>
                   <input
-                    type="text"
-                    maxLength={1}
-                    value={screenMaxRow}
-                    onChange={(e) => setScreenMaxRow(e.target.value.toUpperCase())}
-                    className="w-full px-3 py-3 rounded-lg border border-accent/20 bg-darker/50 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
+                      type="text"
+                      maxLength={1}
+                      value={screenMaxRow}
+                      onChange={(e) => setScreenMaxRow(e.target.value.toUpperCase())}
+                      className="w-full px-3 py-3 rounded-lg border border-accent/20 bg-darker/50 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
                   />
                 </div>
                 <div>
@@ -121,26 +150,26 @@ export default function ScreenCreatePage() {
                     最大列 (例: 12)
                   </label>
                   <input
-                    type="number"
-                    min={1}
-                    value={screenMaxColumn}
-                    onChange={(e) => setScreenMaxColumn(Number(e.target.value))}
-                    className="w-full px-3 py-3 rounded-lg border border-accent/20 bg-darker/50 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
+                      type="number"
+                      min={1}
+                      value={screenMaxColumn}
+                      onChange={(e) => setScreenMaxColumn(Number(e.target.value))}
+                      className="w-full px-3 py-3 rounded-lg border border-accent/20 bg-darker/50 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
                   />
                 </div>
                 <div className="flex items-end">
                   <button
-                    type="submit"
-                    disabled={screenCreating}
-                    className="btn-luxury w-full py-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                      type="submit"
+                      disabled={screenCreating}
+                      className="btn-luxury w-full py-3 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {screenCreating ? (
-                      <span className="flex items-center gap-2 justify-center">
-                        <Loader2 size={18} className="animate-spin" />
+                        <span className="flex items-center gap-2 justify-center">
+                        <Loader2 size={18} className="animate-spin"/>
                         登録中...
                       </span>
                     ) : (
-                      "スクリーンを登録"
+                        "スクリーンを登録"
                     )}
                   </button>
                 </div>
@@ -148,14 +177,14 @@ export default function ScreenCreatePage() {
             </form>
 
             {screenError && (
-              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-200 text-sm">
-                {screenError}
-              </div>
+                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-200 text-sm">
+                  {screenError}
+                </div>
             )}
             {screenStatus && (
-              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-sm">
-                {screenStatus}
-              </div>
+                <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-sm">
+                  {screenStatus}
+                </div>
             )}
           </div>
         </div>
