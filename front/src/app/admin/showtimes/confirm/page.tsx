@@ -24,7 +24,7 @@ interface ShowtimeData {
   screenId: string
   startDate: string
   endDate: string
-  periodId?: number // ★デバッグ用に追加
+  periodId?: number
   showtimes: Array<{
     date: string
     startTime: string
@@ -95,7 +95,6 @@ export default function ShowtimeConfirm() {
     if (!movieId) return;
 
     try {
-      // Goのルーター設定で group.GET("/:movieid", ...) となっていると想定
       const url = `http://localhost:8080/periods/${movieId}`
       console.log(`Fetching period data from: ${url}`)
 
@@ -104,10 +103,6 @@ export default function ShowtimeConfirm() {
       if (response.ok) {
         const data = await response.json()
         console.log("Go API Response (Period):", data)
-
-        // データが配列なら先頭を取得、オブジェクトならそのまま使用
-        // ※映画に対して複数の上映期間がある場合、現在有効なものを選ぶロジックが必要ですが、
-        // ここでは便宜上、最新（または最初）の期間データを使用します。
         const periodData = Array.isArray(data) ? data[0] : data
 
         if (periodData) {
@@ -116,19 +111,16 @@ export default function ShowtimeConfirm() {
           setFormData(prev => {
             if (!prev) return null
 
-            // Go側の構造体の json タグに合わせてデータを取得
-            // 例: json:"startDate" または json:"start_date"
             const start = periodData.startDate || periodData.start_date || periodData.StartDate;
             const end = periodData.endDate || periodData.end_date || periodData.EndDate;
 
-            // IDの取得 (GORMのModelを使っている場合、IDが大文字のことが多いです)
             const pId = periodData.id || periodData.ID || periodData.Model?.ID;
 
             return {
               ...prev,
               startDate: start,
               endDate: end,
-              periodId: pId // ここで確実にIDを入れる
+              periodId: pId
             }
           })
         } else {
