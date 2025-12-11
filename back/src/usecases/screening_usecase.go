@@ -26,7 +26,6 @@ func (uc *ScreeningUsecase) CreateScreening(screening *model.Screening) (*model.
 		return nil, err
 	}
 
-	// 作成されたデータを再取得（Preloadされた完全な情報を返すため）
 	result, err := uc.ScreeningRepo.FindByID(screening.ID)
 	if err != nil {
 		return nil, err
