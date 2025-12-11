@@ -228,13 +228,6 @@ export default function ShowtimeConfirm() {
 
         <div className="container-luxury py-8">
           <div className="max-w-4xl mx-auto">
-            {/* デバッグ表示エリア */}
-            <div className="bg-red-900/20 border border-red-500/50 p-4 mb-6 rounded text-red-200 font-mono text-sm">
-              <p><strong>DEBUG INFO:</strong></p>
-              <p>Period ID: {formData.periodId ?? "未取得 (null/undefined)"}</p>
-              <p>Start Date: {formData.startDate ?? "未取得"}</p>
-              <p>End Date: {formData.endDate ?? "未取得"}</p>
-            </div>
 
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-text-primary mb-4 font-jp">入力内容をご確認ください</h2>
