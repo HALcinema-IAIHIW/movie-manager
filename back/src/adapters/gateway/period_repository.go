@@ -1,9 +1,9 @@
 package gateway
 
 import (
+	"gorm.io/gorm"
 	"modules/src/database/model"
 	"time"
-	"gorm.io/gorm"
 )
 
 type GormPeriodRepository struct {
@@ -34,4 +34,11 @@ func (r *GormPeriodRepository) GetPeriodsByDate(date time.Time) ([]model.Screeni
 		return nil, err
 	}
 	return periods, nil
+}
+
+func (r *GormPeriodRepository) FindByMovieID(movieID uint) ([]model.ScreeningPeriod, error) {
+	var periods []model.ScreeningPeriod
+	// movie_id が一致するものを取得
+	err := r.DB.Where("movie_id = ?", movieID).Find(&periods).Error
+	return periods, err
 }

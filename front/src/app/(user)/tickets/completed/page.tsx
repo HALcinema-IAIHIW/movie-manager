@@ -76,7 +76,7 @@ export default function completed() {
                         <td>
                             {ticketDec.map(ticket => (
                                 <div key={ticket.seatId} className={"flex flex-row flex-nowrap justify-end"}>
-                                    <p className={"w-12　"}>{ticket.seatId}</p>
+                                    <p className={"w-12"}>{ticket.seatId}</p>
                                     <p className={"w-28 mr-5"}>{ticket.ticketTypeName}</p>
                                     <p>{ticket.price} 円</p>
 

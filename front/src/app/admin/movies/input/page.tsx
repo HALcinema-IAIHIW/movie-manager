@@ -71,7 +71,7 @@ export default function MovieInput() {
   }
 
   const validateForm = () => {
-    const requiredFields = ['title', 'description', 'releaseDate', 'genre', 'director', 'duration']
+    const requiredFields = ['title', 'description', 'releaseDate', 'endDate' , 'genre', 'director', 'duration']
 
     for (const field of requiredFields) {
       if (!formData[field as keyof MovieData]) {
@@ -98,6 +98,7 @@ export default function MovieInput() {
     // 確認ページに遷移
     sessionStorage.setItem("movieData", JSON.stringify({
       ...formData,
+      startDate: formData.releaseDate,
       posterFile: null // ファイルオブジェクトは保存できないので除外
     }))
 

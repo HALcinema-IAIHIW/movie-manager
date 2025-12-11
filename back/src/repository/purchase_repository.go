@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"gorm.io/gorm"
-	"modules/src/database/model" // ★repository パッケージをインポート！★
+	"modules/src/database/model"
 )
 
 // PurchaseRepository は modules/src/database/repository/purchase_repository.go と同じ宣言にする
@@ -59,7 +59,7 @@ func (r *GormPurchaseRepository) GetPurchasesByUserID(userID uint) ([]model.Purc
 	var purchases []model.Purchase
 	err := r.db.Where("user_id = ?", userID).
 		Preload("Screening.ScreeningPeriod.Movie").
-		Preload("Screening.ScreeningPeriod.Screen").
+		Preload("Screening.Screen").
 		Preload("ReservationSeats.Seat").
 		Preload("PurchaseDetails.Role").
 		Find(&purchases).Error

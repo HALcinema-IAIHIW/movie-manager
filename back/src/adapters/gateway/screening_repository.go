@@ -12,6 +12,30 @@ type GormScreeningRepository struct {
 	DB *gorm.DB
 }
 
+func (r *GormScreeningRepository) IsOverlap(screenID uint, date time.Time, startTime time.Time, duration int) (bool, error) {
+	var screenings []model.Screening
+
+	err := r.DB.Where("screen_id = ? AND date = ?", screenID, date).Find(&screenings).Error
+	if err != nil {
+		return false, err
+	}
+
+	newStart := startTime
+	newEnd := startTime.Add(time.Duration(duration) * time.Minute)
+
+	for _, s := range screenings {
+		existingStart := s.StartTime
+		existingEnd := s.StartTime.Add(time.Duration(s.Duration) * time.Minute)
+
+		// 重複判定: (既存開始 < 新規終了) AND (既存終了 > 新規開始)
+		if existingStart.Before(newEnd) && existingEnd.After(newStart) {
+			return true, nil // 重複あり
+		}
+	}
+
+	return false, nil // 重複なし
+}
+
 func NewGormScreeningRepository(db *gorm.DB) *GormScreeningRepository {
 	return &GormScreeningRepository{DB: db}
 }
@@ -27,9 +51,10 @@ func (r *GormScreeningRepository) FindByDate(date time.Time) ([]model.Screening,
 	startOfDay := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, jst)
 	endOfDay := startOfDay.Add(24 * time.Hour)
 
-	err := r.DB.Preload("ScreeningPeriod").
+	err := r.DB.Preload("Screen").
+		Preload("ScreeningPeriod").
 		Preload("ScreeningPeriod.Movie").
-		Preload("ScreeningPeriod.Screen").
+		Preload("Screen").
 		Where("date >= ? AND date < ?", startOfDay, endOfDay).
 		Find(&screenings).Error
 
@@ -41,7 +66,7 @@ func (r *GormScreeningRepository) FindByID(id uint) (*model.Screening, error) {
 	err := r.DB.
 		Preload("ScreeningPeriod").
 		Preload("ScreeningPeriod.Movie").
-		Preload("ScreeningPeriod.Screen").
+		Preload("Screen").
 		First(&screening, id).Error
 	if err != nil {
 		return nil, err

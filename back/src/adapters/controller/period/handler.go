@@ -7,6 +7,7 @@ import (
 	"modules/src/module"
 	"modules/src/usecases"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -46,7 +47,6 @@ func (h *PeriodHandler) CreatePeriod() gin.HandlerFunc {
 
 		period := &model.ScreeningPeriod{
 			MovieID:   req.MovieID,
-			ScreenID:  req.ScreenID,
 			StartDate: startDate,
 			EndDate:   endDate,
 		}
@@ -94,5 +94,25 @@ func (h *PeriodHandler) GetPeriodsByDate() gin.HandlerFunc {
 
 		res := presenter.ToPeriodsResponses(periods)
 		c.JSON(http.StatusOK, res)
+	}
+}
+
+func (h *PeriodHandler) GetPeriodsByMovieID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// URLパラメータ :movieid を取得
+		movieIDStr := c.Param("movieid")
+		movieID, err := strconv.ParseUint(movieIDStr, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "無効なMovie IDです"})
+			return
+		}
+
+		periods, err := h.Usecase.GetByMovieID(uint(movieID))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "取得失敗"})
+			return
+		}
+
+		c.JSON(http.StatusOK, periods)
 	}
 }
