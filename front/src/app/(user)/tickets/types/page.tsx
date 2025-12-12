@@ -4,24 +4,21 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { ArrowLeft, ArrowRight, Users, Calendar, Clock, MapPin, Ticket } from "lucide-react"
-import {parse} from "date-fns";
 
-// 券種の型定義 (roleId を含むように変更)
+// ... (型定義や initialTicketTypes はそのまま) ...
 type TicketType = {
-    id: string // これは従来のid (e.g., "general")
+    id: string
     name: string
     price: number
-    roleId?: string // バックエンドから取得するroleId
+    roleId?: string
 }
 
-// 選択された座席と券種の型定義 (seatIdStr と seatId を含むように変更)
 type SeatTicket = {
-    seatIdStr: string // "A1", "B2" などの元の座席文字列 (表示用)
-    seatId?: string // バックエンドから取得する座席ID (API送信用)
+    seatIdStr: string
+    seatId?: string
     ticketType: TicketType
 }
 
-// 券種データ (初期データとしてnameとpriceを保持)
 const initialTicketTypes: TicketType[] = [
     { id: "general", name: "一般", price: 1800 },
     { id: "university", name: "大学生等", price: 1600 },
@@ -29,77 +26,62 @@ const initialTicketTypes: TicketType[] = [
     { id: "elementary", name: "小学生以下", price: 1000 },
 ]
 
-// 映画情報の型定義
 type MovieInfo = {
     id: string
     title: string
     date: string
     time: string
-    screen: string // スクリーン名またはID
+    screen: string
     poster: string
 }
 
 export default function TicketTypeSelection() {
     const router = useRouter()
-    const [selectedSeatStrs, setSelectedSeatStrs] = useState<string[]>([]) // 選択された座席文字列 (例: "A1")
+    const [selectedSeatStrs, setSelectedSeatStrs] = useState<string[]>([])
     const [seatTickets, setSeatTickets] = useState<SeatTicket[]>([])
     const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null)
     const [totalPrice, setTotalPrice] = useState(0)
-    const [isLoading, setIsLoading] = useState(true) // ローディング状態を追加
-    const [error, setError] = useState<string | null>(null) // エラー状態を追加
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [currentScreeningId, setCurrentScreeningId] = useState<string | null>(null);
-
     const [ticketTypes, setTicketTypes] = useState<TicketType[]>(initialTicketTypes);
 
-    // APIから座席IDとロールIDをフェッチする関数
     const fetchRequiredIds = useCallback(async (screenId: string, seatStrs: string[]) => {
         try {
-            // 1. 全ての座席IDを取得
             const seatIdPromises = seatStrs.map(async (seatStr) => {
                 const response = await fetch(`http://localhost:8080/seats/find/${screenId}/${seatStr}`)
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch seat ID for ${seatStr}`)
-                }
+                if (!response.ok) throw new Error(`Failed to fetch seat ID for ${seatStr}`)
                 const data = await response.json()
-                // ここで取得したデータ構造に合わせて調整してください。
-                // 例: { seat_id: "..." } のような構造の場合
-                return { seatStr, seatId: data.seat_id || data.id } // APIレスポンスに合わせて調整
+                return { seatStr, seatId: data.seat_id || data.id }
             })
             const fetchedSeatIds = await Promise.all(seatIdPromises)
             const seatIdMap = new Map(fetchedSeatIds.map(item => [item.seatStr, item.seatId]))
 
-            // 2. 全てのロールIDを取得
             const roleIdPromises = ticketTypes.map(async (ticketType) => {
                 const response = await fetch(`http://localhost:8080/roles/${encodeURIComponent(ticketType.name)}`)
                 if (!response.ok) {
-                    // ロールが見つからない場合でもエラーにしないか、デフォルト値を設定するなど考慮
-                    console.warn(`Failed to fetch role ID for ${ticketType.name}. It might not exist.`)
-                    return { ...ticketType, roleId: undefined } // ロールIDがなくても続行
+                    console.warn(`Failed to fetch role ID for ${ticketType.name}.`)
+                    return { ...ticketType, roleId: undefined }
                 }
                 const data = await response.json()
-                const fetchedRoleId = data.role_id || data.id; // 取得したroleId
-                console.log(`Fetched roleId for ${ticketType.name} (ID: ${ticketType.id}):`, fetchedRoleId); // ⭐ ここを追加
-                return { ...ticketType, roleId: fetchedRoleId }
+                return { ...ticketType, roleId: data.role_id || data.id }
             })
             const fetchedTicketTypesWithRoleIds = await Promise.all(roleIdPromises)
             setTicketTypes(fetchedTicketTypesWithRoleIds);
-            // 取得したロールIDをticketTypesにマージ
+
             const updatedTicketTypes = ticketTypes.map(originalType => {
                 const found = fetchedTicketTypesWithRoleIds.find(f => f.id === originalType.id);
                 return found ? found : originalType;
             });
 
-
-
-            // 初期 seatTickets の作成
             const initialSeatTickets = seatStrs.map((seatStr) => ({
                 seatIdStr: seatStr,
-                seatId: seatIdMap.get(seatStr), // 取得した座席IDを設定
-                ticketType: updatedTicketTypes[0], // デフォルトで最初の券種を設定
+                seatId: seatIdMap.get(seatStr),
+                ticketType: updatedTicketTypes[0],
             }))
 
             setSeatTickets(initialSeatTickets)
-            return updatedTicketTypes; // 更新されたチケットタイプを返す
+            return updatedTicketTypes;
         } catch (err) {
             console.error("Error fetching IDs:", err)
             setError("必要な情報を取得できませんでした。再度お試しください。")
@@ -108,7 +90,6 @@ export default function TicketTypeSelection() {
             setIsLoading(false)
         }
     }, [])
-
     useEffect(() => {
         if (typeof window === "undefined") return
 
@@ -122,32 +103,57 @@ export default function TicketTypeSelection() {
         const currentSelectedSeatStrs = parsed.selectedSeats
         setSelectedSeatStrs(currentSelectedSeatStrs)
 
-        const screeningIdFromStorage = parsed.screeningId;
-        if (screeningIdFromStorage) {
-            setCurrentScreeningId(screeningIdFromStorage);
+        if (parsed.screeningId) {
+            setCurrentScreeningId(parsed.screeningId);
         }
 
-        const currentMovieInfo = {
-            id: parsed.movieId,
-            title: "インターステラー", // 本来はAPIなどから取得
-            date: parsed.date,
-            time: parsed.time,
-            screen: parsed.screen,
-            poster: "/images/movie-poster-1.jpg",
-        }
-        setMovieInfo(currentMovieInfo)
+        fetch(`http://localhost:8080/movies/${parsed.movieId}`)
+            .then(res => res.json())
+            .then(movieData => {
+                let posterUrl = "/images/movie-poster-1.jpg";
+                const rawPoster = movieData.poster_path || movieData.posterUrl;
 
-        // 座席文字列とスクリーンIDが取得できたらAPIを呼び出す
-        if (currentMovieInfo.screen && currentSelectedSeatStrs.length > 0) {
-            fetchRequiredIds(currentMovieInfo.screen, currentSelectedSeatStrs).then((updatedTypes) => {
-                // ticketTypesのstate更新は不要なため、ここで直接使用
-                // setTicketTypes(updatedTypes) のようなstateは不要
+                if (rawPoster) {
+                    if (rawPoster.includes("http")) {
+                        posterUrl = rawPoster.substring(rawPoster.lastIndexOf("http"));
+                    } else {
+                        posterUrl = rawPoster;
+                    }
+                }
+
+                setMovieInfo({
+                    id: parsed.movieId,
+                    title: movieData.title,
+                    date: parsed.date,
+                    time: parsed.time,
+                    screen: parsed.screen,
+                    poster: posterUrl,
+                })
+            })
+            .catch(err => {
+                console.error("Failed to fetch movie info:", err);
+
+                setMovieInfo({
+                    id: parsed.movieId,
+                    title: "映画情報",
+                    date: parsed.date,
+                    time: parsed.time,
+                    screen: parsed.screen,
+                    poster: "/images/movie-poster-1.jpg",
+                })
             });
+
+        if (parsed.screen && currentSelectedSeatStrs.length > 0) {
+            fetchRequiredIds(parsed.screen, currentSelectedSeatStrs);
         } else {
-            setIsLoading(false); // 情報が不足している場合はロードを終了
+            setIsLoading(false);
             setError("座席またはスクリーン情報が不足しています。");
         }
+
     }, [router, fetchRequiredIds])
+
+
+
 
     // 合計金額を計算
     useEffect(() => {
@@ -155,9 +161,7 @@ export default function TicketTypeSelection() {
         setTotalPrice(total)
     }, [seatTickets])
 
-    // 券種変更の処理
     const handleTicketTypeChange = (seatStr: string, ticketTypeId: string) => {
-        // 現在の ticketTypes に、fetchRequiredIds で取得した roleId が含まれていることを前提とします
         const ticketType = ticketTypes.find((t) => t.id === ticketTypeId)
         if (!ticketType) return
 
@@ -168,7 +172,6 @@ export default function TicketTypeSelection() {
         )
     }
 
-    // 次のページへ進む
     const handleNext = () => {
         const params = new URLSearchParams()
         params.set("movieId", movieInfo?.id || "")
@@ -179,13 +182,12 @@ export default function TicketTypeSelection() {
             params.set("screeningId", currentScreeningId);
         }
 
-        // seatTickets を、変換後の seatId と roleId を含む形式で送信
         const seatTicketsForPayment = seatTickets.map(st => {
             const roleId = ticketTypes.find(tt => tt.id === st.ticketType.id)?.roleId;
             return {
-                seatId: st.seatId, // APIから取得した座席ID
-                roleId: roleId, // APIから取得したロールID
-                seatIdStr: st.seatIdStr, // 表示用に元の文字列も残しておく
+                seatId: st.seatId,
+                roleId: roleId,
+                seatIdStr: st.seatIdStr,
                 ticketTypeName: st.ticketType.name,
                 price: st.ticketType.price
             };
@@ -197,16 +199,8 @@ export default function TicketTypeSelection() {
         router.push(`/tickets/payment?${params.toString()}`)
     }
 
-    // 前のページに戻る
     const handleBack = () => {
         const params = new URLSearchParams()
-        // この辺の情報いらないかも　座席の情報渡して選択状態にするぐらいか？
-        // params.set("movieId", movieInfo?.id || "")
-        // params.set("date", movieInfo?.date || "")
-        // params.set("time", movieInfo?.time || "")
-        // params.set("screen", movieInfo?.screen || "")
-        // screening_idがscIdとして渡されている必要がある
-
         if (currentScreeningId) {
             params.set("scId", currentScreeningId);
         }
@@ -227,7 +221,7 @@ export default function TicketTypeSelection() {
 
     return (
         <div className="min-h-screen pt-24">
-            {/* ヒーローセクション */}
+            {/* ... JSX部分は変更なし ... */}
             <section className="relative h-[20vh] md:h-[30vh] overflow-hidden">
                 <div className="absolute inset-0">
                     <Image src="/images/theater-interior.jpg" alt="劇場内観" fill className="object-cover" priority />

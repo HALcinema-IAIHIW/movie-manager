@@ -1,22 +1,47 @@
 "use client"
-import {useState} from "react";
-import {useRouter,useSearchParams} from "next/navigation";
+import {useState, useEffect} from "react";
+import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import "./payCompleted.css"
-import {Calendar, Clock, Info, MapPin, QrCode,CircleX} from "lucide-react";
-import Image from "next/image";
+import {QrCode} from "lucide-react";
 
-export default function completed() {
+type SeatTicketParam = {
+    seatId: string
+    seatIdStr: string // 表示用 (例: A1)
+    ticketTypeName: string
+    price: number
+}
+
+export default function Completed() {
     const searchParams = useSearchParams();
-    const date = searchParams.get("date")
-    const time = searchParams.get("time")
-    const totalPrice = searchParams.get("totalPrice")
-    const screen = searchParams.get("screen")
-    const seatTickets = (searchParams.get("seatTickets"))
 
-    var ticketDec =JSON.parse(seatTickets);
-    console.log(ticketDec)
+    // パラメータ取得
+    const movieId = searchParams.get("movieId");
+    const date = searchParams.get("date");
+    const time = searchParams.get("time");
+    const totalPrice = searchParams.get("totalPrice");
+    const screen = searchParams.get("screen");
+    const seatTicketsStr = searchParams.get("seatTickets");
 
+    const ticketDec: SeatTicketParam[] = seatTicketsStr ? JSON.parse(seatTicketsStr) : [];
+
+    // 映画タイトルを管理するState
+    const [movieTitle, setMovieTitle] = useState("読み込み中...");
+
+    // 映画情報を取得する
+    useEffect(() => {
+        if (movieId) {
+            fetch(`http://localhost:8080/movies/${movieId}`)
+                .then(res => res.json())
+                .then(data => {
+                    setMovieTitle(data.title);
+                })
+                .catch(err => {
+                    console.error("映画情報の取得に失敗:", err);
+                    setMovieTitle("不明な作品");
+                });
+        }
+    }, [movieId]);
 
     return(
         <div id={"completedMain"} className={"flex flex-col mt-32 items-center justify-center"}>
@@ -57,7 +82,7 @@ export default function completed() {
                             作品名
                         </th>
                         <td>
-                            作品
+                            {movieTitle}
                         </td>
                     </tr>
                     <tr className={"border-accent/30 border-b"}>
@@ -74,34 +99,25 @@ export default function completed() {
                             座席
                         </th>
                         <td>
-                            {ticketDec.map(ticket => (
-                                <div key={ticket.seatId} className={"flex flex-row flex-nowrap justify-end"}>
-                                    <p className={"w-12　"}>{ticket.seatId}</p>
-                                    <p className={"w-28 mr-5"}>{ticket.ticketTypeName}</p>
-                                    <p>{ticket.price} 円</p>
-
-
+                            {ticketDec.map((ticket, index) => (
+                                <div key={index} className={"flex flex-row flex-nowrap justify-end gap-4"}>
+                                    {/* DB ID(seatId)ではなく、表示用(seatIdStr)を使用 */}
+                                    <p className={"w-12 text-center"}>{ticket.seatIdStr || ticket.seatId}</p>
+                                    <p className={"w-28"}>{ticket.ticketTypeName}</p>
+                                    <p>{ticket.price.toLocaleString()} 円</p>
                                 </div>
                             ))}
-                            {/*<div className={"flex flex-row flex-nowrap"}> 文字数確認用*/}
-                            {/*    <p className={"w-12"}>H2</p>*/}
-                            {/*    <p className={"w-28"}>小学生、幼児</p>*/}
-                            {/*    <p>1000 円</p>*/}
-                            {/*</div>*/}
                         </td>
                     </tr>
                     </tbody>
                 </table>
-                <p className={"text-base text-center mb-10"}>合計金額 :<span
-                    className={"text-xl mx-2.5"}>{totalPrice}</span> 円</p>
+                <p className={"text-base text-center mb-10"}>合計金額 :
+                    <span className={"text-xl mx-2.5"}>{Number(totalPrice).toLocaleString()}</span> 円
+                </p>
             </div>
             <p className={"mb-5"}>マイページでもご確認いただけます</p>
             <Link className={"bg-gold py-3 px-4 rounded-lg text-darkest hover:scale-90 transition-all "}
                   href={"../mypage"}>マイページ</Link>
-
-
-
-
         </div>
     )
 }

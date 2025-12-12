@@ -6,7 +6,7 @@ import Image from "next/image"
 import "./payment.css"
 
 export default function Payment() {
-	// typesから送られてきたparamsの取得
+
 
 	type SeatTicketForPayment = {
 		seatId: string
@@ -30,10 +30,18 @@ export default function Payment() {
 	const [creditCardForm, setCreditCardForm] = useState({
 		cardNumber: "",
 		cardExpiration: "",
-		saveCard: false, // チェックボックスの状態
+		saveCard: false,
 	})
 	const [userData, setUserData] = useState<any>(null)
 	const [isUserChecked, setIsUserChecked] = useState(false) // ログイン状態のチェック完了を管理
+
+
+	const [movieInfo, setMovieInfo] = useState({
+		title: "映画情報読み込み中...",
+		poster: "/images/movie-poster-1.jpg",
+	})
+
+
 	// フォーム入力値を更新するハンドラ
 	const handleCardFormChange = (field: keyof typeof creditCardForm, value: string | boolean) => {
 		setCreditCardForm((prev) => ({...prev, [field]: value}))
@@ -66,6 +74,37 @@ export default function Payment() {
 		}
 	}, [])
 	console.log(userId)
+
+
+	useEffect(() => {
+		if (!movieId) return;
+
+		fetch(`http://localhost:8080/movies/${movieId}`)
+			.then(res => res.json())
+			.then(data => {
+
+				let posterUrl = "/images/movie-poster-1.jpg";
+				const rawPoster = data.poster_path || data.posterUrl;
+
+				if (rawPoster) {
+					if (rawPoster.includes("http")) {
+						posterUrl = rawPoster.substring(rawPoster.lastIndexOf("http"));
+					} else {
+						posterUrl = rawPoster;
+					}
+				}
+
+				setMovieInfo({
+					title: data.title,
+					poster: posterUrl,
+				});
+			})
+			.catch(err => {
+				console.error("Failed to fetch movie info:", err);
+			});
+	}, [movieId]);
+
+
 	useEffect(() => {
 		const initialize = async () => {
 			const userId = localStorage.getItem("userId")
@@ -242,6 +281,7 @@ export default function Payment() {
 			sessionStorage.removeItem("seatSelection")
 
 			const params = new URLSearchParams()
+			params.set("movieId", movieId || "")
 			params.set("date", date || "")
 			params.set("time", time || "")
 			params.set("totalPrice", totalPrice || "")
@@ -263,10 +303,11 @@ export default function Payment() {
 		router.push(`/tickets/types?`)
 	}
 
-	const movieInfo = {
-		title: "インターステラー",
-		poster: "/images/movie-poster-1.jpg",
-	}
+	// ▼▼▼ 修正: ここのハードコードは削除済み（Stateを使用するため） ▼▼▼
+	// const movieInfo = {
+	//    title: "インターステラー",
+	//    poster: "/images/movie-poster-1.jpg",
+	// }
 
 	return (
 		<div className="min-h-screen pt-24">
