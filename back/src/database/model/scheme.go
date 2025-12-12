@@ -64,24 +64,24 @@ type Seat struct {
 type ScreeningPeriod struct {
 	gorm.Model
 	MovieID   uint      `gorm:"not null"`
-	ScreenID  uint      `gorm:"not null"`
 	StartDate time.Time `gorm:"not null"`
 	EndDate   time.Time `gorm:"not null"`
 
-	Movie  Movie  `gorm:"foreignKey:MovieID"`
-	Screen Screen `gorm:"foreignKey:ScreenID"`
+	Movie Movie `gorm:"foreignKey:MovieID"`
 }
 
 // 上映スクリーン
 type Screening struct {
 	gorm.Model
+	ScreenID          uint      `gorm:"not null"`
 	ScreeningPeriodID uint      `gorm:"not null"`
 	Date              time.Time `gorm:"not null"`
 	StartTime         time.Time `gorm:"not null"`
 	Duration          int       `gorm:"not null"`
 
+	Screen          Screen          `gorm:"foreignKey:ScreenID"`
 	ScreeningPeriod ScreeningPeriod `gorm:"foreignKey:ScreeningPeriodID"`
-	Movie           Movie           `gorm:"-"` // ← 疑似フィールド（Preloadではなくマッピング用）
+	Movie           Movie           `gorm:"-"`
 }
 
 // 1回の購入トランザクション

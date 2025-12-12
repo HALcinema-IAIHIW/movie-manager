@@ -7,4 +7,5 @@ type CreateScreeningRequest struct {
 	Date              time.Time `json:"date" binding:"required"`
 	StartTime         time.Time `json:"start_time" binding:"required"`
 	Duration          int       `json:"duration" binding:"required"`
+	ScreenID          uint      `json:"screen_id" binding:"required"`
 }

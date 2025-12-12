@@ -14,11 +14,11 @@ type ScreeningUsecase struct {
 }
 
 func (uc *ScreeningUsecase) CreateScreening(screening *model.Screening) (*model.Screening, error) {
-	existing, err := uc.ScreeningRepo.FindByUniqueKey(screening.ScreeningPeriodID, screening.Date, screening.StartTime)
+	isOverlap, err := uc.ScreeningRepo.IsOverlap(screening.ScreenID, screening.Date, screening.StartTime, screening.Duration)
 	if err != nil {
 		return nil, err
 	}
-	if existing != nil {
+	if isOverlap {
 		return nil, ErrDuplicateScreening
 	}
 
