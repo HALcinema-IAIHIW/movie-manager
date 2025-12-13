@@ -99,12 +99,12 @@ export default function Completed() {
                             座席
                         </th>
                         <td>
-                            {ticketDec.map((ticket, index) => (
-                                <div key={index} className={"flex flex-row flex-nowrap justify-end gap-4"}>
-                                    {/* DB ID(seatId)ではなく、表示用(seatIdStr)を使用 */}
-                                    <p className={"w-12 text-center"}>{ticket.seatIdStr || ticket.seatId}</p>
-                                    <p className={"w-28"}>{ticket.ticketTypeName}</p>
-                                    <p>{ticket.price.toLocaleString()} 円</p>
+
+                            {ticketDec.map(ticket => (
+                                <div key={ticket.seatId} className={"flex flex-row flex-nowrap justify-end"}>
+                                    <p className={"w-12"}>{ticket.seatId}</p>
+                                    <p className={"w-28 mr-5"}>{ticket.ticketTypeName}</p>
+                                    <p>{ticket.price} 円</p>
                                 </div>
                             ))}
                         </td>

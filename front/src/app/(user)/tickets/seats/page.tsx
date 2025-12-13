@@ -37,6 +37,8 @@ type ScreenConfig = {
 }
 
 // スクリーン設定
+
+
 const screenConfigs: { [key: string]: ScreenConfig } = {
     スクリーン1: {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],

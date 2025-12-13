@@ -13,6 +13,7 @@ type PeriodRepository interface {
 	CreatePeriod(period *model.ScreeningPeriod) error
 	GetAllPeriods() ([]model.ScreeningPeriod, error)
 	GetPeriodsByDate(date time.Time) ([]model.ScreeningPeriod, error)
+	FindByMovieID(movieID uint) ([]model.ScreeningPeriod, error)
 }
 
 func (u *PeriodUsecase) CreatePeriod(period *model.ScreeningPeriod) error {
@@ -25,4 +26,8 @@ func (u *PeriodUsecase) GetAllPeriods() ([]model.ScreeningPeriod, error) {
 
 func (u *PeriodUsecase) GetPeriodsByDate(date time.Time) ([]model.ScreeningPeriod, error) {
 	return u.PeriodRepo.GetPeriodsByDate(date)
+}
+
+func (uc *PeriodUsecase) GetByMovieID(movieID uint) ([]model.ScreeningPeriod, error) {
+	return uc.PeriodRepo.FindByMovieID(movieID)
 }

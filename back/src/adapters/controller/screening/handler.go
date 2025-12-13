@@ -44,6 +44,7 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 		}
 
 		screening := &model.Screening{
+			ScreenID:          req.ScreenID,
 			ScreeningPeriodID: req.ScreeningPeriodID,
 			Date:              req.Date.In(jst),
 			StartTime:         req.StartTime.In(jst),
@@ -70,7 +71,7 @@ func (h *ScreeningHandler) CreateScreening() gin.HandlerFunc {
 				PosterPath: result.ScreeningPeriod.Movie.PosterPath,
 			},
 			Screen: response.ScreenInfo{
-				ID: result.ScreeningPeriod.Screen.ID,
+				ID: result.Screen.ID,
 			},
 			Date:      result.Date,
 			StartTime: result.StartTime,
@@ -109,7 +110,7 @@ func (h *ScreeningHandler) GetScreeningsByDate() gin.HandlerFunc {
 		for _, s := range screenings {
 			movie := s.ScreeningPeriod.Movie
 			fmt.Println(movie.Title)
-			screen := s.ScreeningPeriod.Screen
+			screen := s.Screen
 
 			endTime := s.StartTime.Add(time.Duration(s.Duration) * time.Minute)
 

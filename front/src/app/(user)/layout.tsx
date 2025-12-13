@@ -36,7 +36,7 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     return (
-        <html lang="ja" className="scroll-smooth">
+        // <html lang="ja" className="scroll-smooth">
         <body
             className={`${playfairDisplay.variable} ${shipporiMincho.variable} 
           bg-darkest text-text-primary min-h-screen flex flex-col antialiased`}
@@ -54,6 +54,6 @@ export default function RootLayout({
         {/* フッター */}
         <Footer />
         </body>
-        </html>
+        // </html>
     )
 }
