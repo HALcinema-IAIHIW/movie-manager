@@ -36,9 +36,36 @@ type ScreenConfig = {
     layout: "large" | "medium" | "small"
 }
 
+
+//1213追加 any回避用
+type DbSeat = {
+    id: number;
+    row: string;
+    column: number;
+}
+
+//1213追加:定数定義
+const API_BASE_URL = "http://localhost:8080"
+const MAX_SELECTABLE_SEATS = 4
+const DEFAULT_POSTER_IMAGE = "/images/movie-poster-1.jpg"
+const DEFAULT_SCREEN_KEY = "スクリーン1"
+
+
+//1213追加:layer/mediumレイアウト用
+const LARGE_LAYOUT = {
+    left: 4,
+    center: 12,
+    right: 4,
+}
+
+const MEDIUM_LAYOUT = {
+    left: 2,
+    center: 8,
+    right: 2,
+}
+
+
 // スクリーン設定
-
-
 const screenConfigs: { [key: string]: ScreenConfig } = {
     スクリーン1: {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
@@ -113,7 +140,10 @@ export default function SeatSelection() {
         screen: "",
         poster: "",
     })
-    const [currentConfig, setCurrentConfig] = useState<ScreenConfig>(screenConfigs["スクリーン1"])
+    //1213変更
+    const [currentConfig, setCurrentConfig] = useState<ScreenConfig>(
+    screenConfigs[DEFAULT_SCREEN_KEY]
+    )
 
     // URLパラメータから情報を取得
     const scId = searchParams.get("scId")
@@ -127,7 +157,9 @@ export default function SeatSelection() {
         }
         setScreeningId(scId); // scIdをscreeningIdステートにセット
 
-      fetch(`http://localhost:8080/screenings/${scId}`)
+        //1213変更
+        fetch(`${API_BASE_URL}/screenings/${scId}`) 
+
         .then(res => {
           if (!res.ok) throw new Error("Failed to fetch screening data");
           return res.json();
@@ -148,9 +180,14 @@ export default function SeatSelection() {
             date: new Date(data.date).toLocaleDateString(),
             time: new Date(data.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             screen: screenName,
-            poster: data.movie.posterUrl || "/images/movie-poster-1.jpg",
+            //1213変更
+            poster: data.movie.posterUrl ||  DEFAULT_POSTER_IMAGE,
           })
-          setCurrentConfig(screenConfigs[screenName] || screenConfigs["スクリーン1"])
+          //1213変更
+          setCurrentConfig(
+            screenConfigs[screenName] || screenConfigs[DEFAULT_SCREEN_KEY]
+            )
+
         })
         .catch(err => {
           console.error(err)
@@ -184,8 +221,8 @@ export default function SeatSelection() {
 
             // 2. ★予約済み座席のフェッチ★ (screeningIDベース)
             try {
-                // APIエンドポイントを /reservation-seats/screening/:screeningID に変更
-                const response = await fetch(`http://localhost:8080/reservationseats/screening/${screeningId}`);
+                // 1213変更
+                const response = await fetch(`${API_BASE_URL}/reservationseats/screening/${screeningId}`);
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`予約済み座席の取得に失敗しました: ${response.statusText} - ${errorData.error || '不明なエラー'}`);
@@ -228,11 +265,12 @@ export default function SeatSelection() {
             setSelectedSeats(selectedSeats.filter((id) => id !== seatId))
             setSeats(seats.map((s) => (s.id === seatId ? { ...s, status: "available" } : s)))
         } else {
-            // 最大4席まで選択可能
-            if (selectedSeats.length >= 4) {
-                alert("最大4席まで選択できます")
-                return
+            //1213変更 最大4席まで選択可能
+            if (selectedSeats.length >= MAX_SELECTABLE_SEATS) {
+            alert(`最大${MAX_SELECTABLE_SEATS}席まで選択できます`)
+            return
             }
+
             // 選択
             setSelectedSeats([...selectedSeats, seatId])
             setSeats(seats.map((s) => (s.id === seatId ? { ...s, status: "selected" } : s)))
@@ -267,8 +305,9 @@ export default function SeatSelection() {
 
                         {/* 座席 */}
                         <div className="flex gap-1">
-                            {/* 1-4席 */}
-                            {Array.from({ length: 4 }, (_, i) => i + 1).map((num) => {
+                            {/* 1213変更 1-4席 */}
+                            {Array.from({ length: LARGE_LAYOUT.left }, (_, i) => i + 1).map((num) => {
+
                                 if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
@@ -289,8 +328,9 @@ export default function SeatSelection() {
                             {/* 通路 */}
                             <div className="w-4" />
 
-                            {/* 5-16席 */}
-                            {Array.from({ length: 12 }, (_, i) => i + 5).map((num) => {
+                            {/*  1213変更 5-16席 */}
+                            {Array.from({ length: LARGE_LAYOUT.center }, (_, i) => i + 5).map((num) => {
+
                                 if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
@@ -311,8 +351,9 @@ export default function SeatSelection() {
                             {/* 通路 */}
                             <div className="w-4" />
 
-                            {/* 17-20席 */}
-                            {Array.from({ length: 4 }, (_, i) => i + 17).map((num) => {
+                            {/*  1213変更 17-20席 */}
+                            {Array.from({ length: LARGE_LAYOUT.right }, (_, i) => i + 17).map((num) => {
+
                                 if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
@@ -347,8 +388,9 @@ export default function SeatSelection() {
 
                         {/* 座席 */}
                         <div className="flex gap-1">
-                            {/* 1-2席 */}
-                            {Array.from({ length: 2 }, (_, i) => i + 1).map((num) => {
+                            {/*  1213変更 1-2席 */}
+                            {Array.from({ length: MEDIUM_LAYOUT.left }, (_, i) => i + 1).map((num) => {
+
                                 if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
@@ -369,8 +411,8 @@ export default function SeatSelection() {
                             {/* 通路 */}
                             <div className="w-3" />
 
-                            {/* 3-10席 */}
-                            {Array.from({ length: 8 }, (_, i) => i + 3).map((num) => {
+                            {/* 1213変更 3-10席 */}
+                            {Array.from({ length: MEDIUM_LAYOUT.center }, (_, i) => i + 3).map((num) => {
                                 if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
@@ -391,8 +433,8 @@ export default function SeatSelection() {
                             {/* 通路 */}
                             <div className="w-3" />
 
-                            {/* 11-12席 */}
-                            {Array.from({ length: 2 }, (_, i) => i + 11).map((num) => {
+                            {/*  1213変更 11-12席 */}
+                            {Array.from({ length: MEDIUM_LAYOUT.right }, (_, i) => i + 11).map((num) => {
                                 if (num > seatsInRow) return null
                                 const seatId = `${row}${num}`
                                 const seat = seats.find((s) => s.id === seatId)
@@ -467,18 +509,22 @@ export default function SeatSelection() {
 
         try {
 
-            const registeredSeats = await getSeatsByScreenId(screenId);
+            //1213変更
+            const registeredSeats: DbSeat[] = await getSeatsByScreenId(screenId);
 
             const seatsToBook = selectedSeats.map(uiSeatId => {
                 const row = uiSeatId.slice(0, 1);
                 const column = parseInt(uiSeatId.slice(1));
 
-                // DBから取得したリストの中から一致する座席を探す
-                const foundSeat = registeredSeats.find((s: any) => s.row === row && s.column === column);
+                // 1213変更 DBから取得したリストの中から一致する座席を探す
+                const foundSeat = registeredSeats.find(
+                    (s) => s.row === row && s.column === column
+                );
 
                 if (!foundSeat) {
                     throw new Error(`座席データが見つかりません: ${uiSeatId}`);
                 }
+
                 return foundSeat;
             });
 
@@ -624,7 +670,8 @@ export default function SeatSelection() {
                                 )}
 
                                 <div className="text-center text-sm text-text-muted mb-6 font-jp">
-                                    {selectedSeats.length}/4席 選択中
+                                    {/*1213変更*/}
+                                    {selectedSeats.length}/{MAX_SELECTABLE_SEATS}席 選択中
                                 </div>
 
                                 {/* ナビゲーションボタン */}
