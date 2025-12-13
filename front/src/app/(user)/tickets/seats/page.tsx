@@ -127,35 +127,46 @@ export default function SeatSelection() {
         }
         setScreeningId(scId); // scIdをscreeningIdステートにセット
 
-      fetch(`http://localhost:8080/screenings/${scId}`)
-        .then(res => {
-          if (!res.ok) throw new Error("Failed to fetch screening data");
-          return res.json();
-        })
-        .then(data => {
-          setScreenId(data.screen.id);
-          console.log("API response:", data);
-          if (!data || !data.movie || !data.screen) {
-            console.error("APIレスポンスの形式が期待と違います");
-            return;
-          }
-          const screenId = data.screen.id;
-          const screenName = `${screenId}`;
+        fetch(`http://localhost:8080/screenings/${scId}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch screening data");
+                return res.json();
+            })
+            .then(data => {
+                setScreenId(data.screen.id);
+                console.log("API response:", data);
+                if (!data || !data.movie || !data.screen) {
+                    console.error("APIレスポンスの形式が期待と違います");
+                    return;
+                }
+                const screenId = data.screen.id;
+                const screenName = `${screenId}`;
 
-          setMovieInfo({
-            id: data.movie.id.toString(),
-            title: data.movie.title,
-            date: new Date(data.date).toLocaleDateString(),
-            time: new Date(data.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            screen: screenName,
-            poster: data.movie.posterUrl || "/images/movie-poster-1.jpg",
-          })
-          setCurrentConfig(screenConfigs[screenName] || screenConfigs["スクリーン1"])
-        })
-        .catch(err => {
-          console.error(err)
-      // 必要ならエラーメッセージ表示や fallback 処理を書く
-        })
+                let posterUrl = "/images/movie-poster-1.jpg";
+                const rawPoster = data.movie.poster_path || data.movie.posterUrl || "/images/movie-poster-1.jpg";
+                if (rawPoster) {
+                    // もし "http" が含まれていたら
+                    if (rawPoster.includes("http")) {
+                        posterUrl = rawPoster.substring(rawPoster.lastIndexOf("http"));
+                    } else {
+                        // httpがない場合はそのまま使う
+                        posterUrl = rawPoster;
+                    }
+                }
+                setMovieInfo({
+                    id: data.movie.id.toString(),
+                    title: data.movie.title,
+                    date: new Date(data.date).toLocaleDateString(),
+                    time: new Date(data.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    screen: screenName,
+                    poster:posterUrl,
+                })
+                setCurrentConfig(screenConfigs[screenName] || screenConfigs["スクリーン1"])
+            })
+            .catch(err => {
+                console.error(err)
+                // 必要ならエラーメッセージ表示や fallback 処理を書く
+            })
     }, [scId])
 
 
@@ -177,7 +188,7 @@ export default function SeatSelection() {
                         row,
                         number: i,
                         status: "available" as SeatStatus,
-                        id: seatId, // ★id は表示用の文字列ID (A1) のまま★
+                        id: seatId,
                     });
                 }
             });
