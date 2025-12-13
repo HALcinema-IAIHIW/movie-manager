@@ -16,7 +16,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, type = "nowShowing" }) => 
         {/* 映画ポスター */}
         <div className="relative aspect-[2/3] overflow-hidden">
           <Image
-            src={movie.poster_path || "/placeholder.svg"}
+            src={movie.poster_path || "/placeholder.svg"} 
             alt={movie.title}
             fill
             className={`object-cover transition-all duration-500 ${
@@ -62,7 +62,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, type = "nowShowing" }) => 
 
         {/* 映画情報 */}
         <div className="p-4">
-          <h3 className="font-medium text-text-primary mb-2 line-clamp-2 font-shippori font-jp">
+          <h3 className="h-12 font-medium text-text-primary mb-2 line-clamp-2 font-shippori font-jp">
             {movie.title}
           </h3>
 
@@ -80,7 +80,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, type = "nowShowing" }) => 
 
           {type === "nowShowing" && (
             <Link
-              href={`/tickets/schedule/${movie.id}`}
+              href={`/tickets/schedule/`}
               className="block w-full text-center py-2 bg-gold/10 hover:bg-gold/20 text-gold text-sm font-medium transition-colors rounded font-shippori font-jp"
             >
               チケット購入

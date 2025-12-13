@@ -109,7 +109,7 @@ func (uc *PurchaseUsecase) GetUserReservations(userID uint) ([]response.UserRese
 		// Screening -> ScreeningPeriod -> Movie/Screen のパス
 		screeningPeriod := screening.ScreeningPeriod // Screening -> ScreeningPeriod
 		movie := screeningPeriod.Movie               // ScreeningPeriod -> Movie
-		screen := screeningPeriod.Screen             // ScreeningPeriod -> Screen
+		screen := screening.Screen                   // ScreeningPeriod -> Screen
 
 		// 上映終了時刻の計算：StartTimeにDuration（分）を加える
 		endTime := screening.StartTime.Add(time.Duration(screening.Duration) * time.Minute)

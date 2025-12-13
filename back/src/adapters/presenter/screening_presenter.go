@@ -18,7 +18,7 @@ func ToScreeningResponse(screening model.Screening) response.ScreeningResponse {
 			PosterPath: util.BuildPosterPath(screening.ScreeningPeriod.Movie.PosterPath),
 		},
 		Screen: response.ScreenInfo{
-			ID: screening.ScreeningPeriod.Screen.ID,
+			ID: screening.Screen.ID,
 		},
 		Date:      screening.Date,
 		StartTime: screening.StartTime,
@@ -49,11 +49,10 @@ func BuildMovieTLResponse(screenings []model.Screening) []response.MovieTLRespon
 		mtl, exists := movieMap[movie.ID]
 		if !exists {
 			mtl = response.MovieTLResponse{
-				MovieId: movie.ID,
-				Title:   movie.Title,
-				// PosterPath: util.BuildPosterPath(movie.PosterPath),
+				MovieId:    movie.ID,
+				Title:      movie.Title,
 				PosterPath: util.BuildPosterPath(movie.PosterPath),
-				ScreenID:   s.ScreeningPeriod.ScreenID,
+				ScreenID:   s.ScreenID,
 				Showings:   []response.ShowingInfo{},
 				Date:       s.Date.Format("2006-01-02"),
 			}

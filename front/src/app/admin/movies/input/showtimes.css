@@ -1,0 +1,15 @@
+
+/* カレンダーアイコンの変更用 */
+input[type="date"]::-webkit-calendar-picker-indicator{
+    padding: 5px;
+    background-color: white;
+    border-radius: 5px;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover{
+    background-color: #888;
+}
+
+/* タイマーアイコンの削除 */
+input[type="time"]::-webkit-calendar-picker-indicator{
+    display: none;
+}

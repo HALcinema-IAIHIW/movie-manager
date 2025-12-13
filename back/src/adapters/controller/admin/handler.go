@@ -258,7 +258,6 @@ func (h *AdminHandler) CreateScreeningPeriod() gin.HandlerFunc {
 
 		period := &model.ScreeningPeriod{
 			MovieID:   req.MovieID,
-			ScreenID:  req.ScreenID,
 			StartDate: startDate,
 			EndDate:   endDate,
 		}

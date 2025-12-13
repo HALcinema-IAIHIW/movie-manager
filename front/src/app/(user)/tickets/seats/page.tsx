@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Users, MapPin, Calendar, Clock } from "lucide-react"
-import { createSeat } from "../../../libs/api/seat"
+import { getSeatsByScreenId } from "../../../libs/api/seat"
 
 // 座席の状態を定義
 type SeatStatus = "available" | "reserved" | "selected"
@@ -60,6 +60,8 @@ const MEDIUM_LAYOUT = {
 
 
 // スクリーン設定
+
+
 const screenConfigs: { [key: string]: ScreenConfig } = {
     スクリーン1: {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
@@ -491,43 +493,50 @@ export default function SeatSelection() {
 
     // 次のページへ進む
     const handleNext = async () => {
-      if (!screenId) {
-        alert("スクリーンIDが取得できていません");
-        return;
-      }
-
-      if (selectedSeats.length === 0) {
-        alert("座席を選択してください")
-        return
-      }
-
-      try {
-        for (const seatId of selectedSeats) {
-        const row = seatId.slice(0, 1) // A〜J
-        const column = parseInt(seatId.slice(1)) // 数字部分
-        await createSeat({
-            screen_id: screenId,
-            row,
-            column,
-          })
+        if (!screenId) {
+            alert("スクリーンIDが取得できていません");
+            return;
         }
 
-        const seatSelectionData = {
-          screen_id: screenId,
-          selectedSeats,
-          movieId: movieInfo.id,
-          date: movieInfo.date,
-          time: movieInfo.time,
-          screen: movieInfo.screen,
-          screeningId: screeningId,
+        if (selectedSeats.length === 0) {
+            alert("座席を選択してください")
+            return
         }
 
-        sessionStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
-        router.push(`/tickets/types?`)
-      } catch (error) {
-        alert("座席の予約に失敗しました。")
-        console.error(error)
-      }
+        try {
+
+            const registeredSeats = await getSeatsByScreenId(screenId);
+
+            const seatsToBook = selectedSeats.map(uiSeatId => {
+                const row = uiSeatId.slice(0, 1);
+                const column = parseInt(uiSeatId.slice(1));
+
+                // DBから取得したリストの中から一致する座席を探す
+                const foundSeat = registeredSeats.find((s: any) => s.row === row && s.column === column);
+
+                if (!foundSeat) {
+                    throw new Error(`座席データが見つかりません: ${uiSeatId}`);
+                }
+                return foundSeat;
+            });
+
+            const seatSelectionData = {
+                screen_id: screenId,
+                selectedSeats: selectedSeats,
+                seatDbIds: seatsToBook.map(s => s.id),
+                movieId: movieInfo.id,
+                date: movieInfo.date,
+                time: movieInfo.time,
+                screen: movieInfo.screen,
+                screeningId: screeningId,
+            }
+
+            sessionStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
+            router.push(`/tickets/types?`)
+        } catch (error) {
+            console.error(error)
+            alert("座席情報の確認に失敗しました。管理者に問い合わせてください。")
+        }
     }
 
 

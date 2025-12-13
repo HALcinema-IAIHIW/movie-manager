@@ -9,7 +9,6 @@ func ToPeriodResponse(period model.ScreeningPeriod) response.PeriodResponse {
 	return response.PeriodResponse{
 		ID:        period.ID,
 		MovieID:   period.MovieID,
-		ScreenID:  period.ScreenID,
 		StartDate: period.StartDate,
 		EndDate:   period.EndDate,
 	}

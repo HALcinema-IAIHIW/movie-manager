@@ -4,12 +4,14 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Film, Clock, Calendar, User, FileText, Image as ImageIcon } from "lucide-react"
+import "./showtimes.css"
 
 interface MovieData {
   title: string
   subtitle: string
   description: string
   releaseDate: string
+  endDate: string
   genre: string
   director: string
   cast: string
@@ -23,6 +25,7 @@ export default function MovieInput() {
     subtitle: "",
     description: "",
     releaseDate: "",
+    endDate:"",
     genre: "",
     director: "",
     cast: "",
@@ -54,6 +57,7 @@ export default function MovieInput() {
       const reader = new FileReader()
       reader.onload = (e) => {
         const result = e.target?.result as string
+        setPosterPreview(result)
         sessionStorage.setItem("posterPreview", result)
       }
       reader.readAsDataURL(file)
@@ -67,7 +71,7 @@ export default function MovieInput() {
   }
 
   const validateForm = () => {
-    const requiredFields = ['title', 'description', 'releaseDate', 'genre', 'director', 'duration']
+    const requiredFields = ['title', 'description', 'releaseDate', 'endDate' , 'genre', 'director', 'duration']
 
     for (const field of requiredFields) {
       if (!formData[field as keyof MovieData]) {
@@ -94,6 +98,7 @@ export default function MovieInput() {
     // 確認ページに遷移
     sessionStorage.setItem("movieData", JSON.stringify({
       ...formData,
+      startDate: formData.releaseDate,
       posterFile: null // ファイルオブジェクトは保存できないので除外
     }))
 
@@ -238,15 +243,41 @@ export default function MovieInput() {
                     />
                   </div>
                 </div>
-
-                {/* ジャンル */}
+                {/* 上映終了予定日 */}
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-2 font-shippori">
-                    ジャンル <span className="text-red-400">*</span>
+                    上映終了予定日 <span className="text-red-400">*</span>
+
                   </label>
-                  <select
-                    value={formData.genre}
-                    onChange={(e) => handleInputChange("genre", e.target.value)}
+                  <div className={"relative"}>
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Calendar size={18} className="text-text-muted"/>
+                    </div>
+                    <input
+                        type="date"
+                        value={formData.endDate}
+                        onChange={(e) => handleInputChange("endDate", e.target.value)}
+
+                        required
+                        className="block w-full pl-10 pr-3 py-3 border border-accent/20 bg-darker/50
+                        rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
+                    />
+                  </div>
+
+
+                </div>
+
+              </div>
+            </div>
+
+            {/* ジャンル */}
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-2 font-shippori">
+                ジャンル <span className="text-red-400">*</span>
+              </label>
+              <select
+                  value={formData.genre}
+                  onChange={(e) => handleInputChange("genre", e.target.value)}
                     required
                     className="block w-full px-3 py-3 border border-accent/20 bg-darker/50
                       rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
@@ -322,11 +353,9 @@ export default function MovieInput() {
                     placeholder="主演俳優名、共演者名など（カンマ区切りで入力）"
                   />
                 </div>
-              </div>
-            </div>
 
             {/* ポスター画像 */}
-            <div className="card-luxury p-8">
+            <div className="card-luxury p-8 mb-10">
               <h2 className="text-2xl font-bold text-text-primary mb-6 font-jp">ポスター画像</h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

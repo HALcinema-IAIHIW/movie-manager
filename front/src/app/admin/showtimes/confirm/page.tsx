@@ -18,11 +18,13 @@ interface Screen {
   maxColumn: number
 }
 
+// APIレスポンスの型（バックエンドに合わせてください）
 interface ShowtimeData {
   movieId: string
   screenId: string
   startDate: string
   endDate: string
+  periodId?: number
   showtimes: Array<{
     date: string
     startTime: string
@@ -54,29 +56,31 @@ export default function ShowtimeConfirm() {
     const showtimeData: ShowtimeData = {
       movieId: data.period.movieID.toString(),
       screenId: data.period.screenID.toString(),
-      startDate: data.period.startDate,
-      endDate: data.period.endDate,
+      startDate: "",
+      endDate: "",
+      periodId: undefined, // 初期値
       showtimes: data.screenings.map((s: any) => ({
-        date: s.date,
-        startTime: s.start_time.split("T")[1].slice(0,5) // "HH:MM" に変換
+        date: s.date.split("T")[0],
+        startTime: s.start_time.split("T")[1].slice(0, 5)
       }))
     }
 
     setFormData(showtimeData)
+
     fetchMovieAndScreenData(showtimeData.movieId, showtimeData.screenId)
-  
+    // 期間情報の取得を実行
+    fetchPeriodData(showtimeData.movieId)
+
   }, [router])
 
   const fetchMovieAndScreenData = async (movieId: string, screenId: string) => {
     try {
-      // 映画情報を取得
       const movieResponse = await fetch(`http://localhost:8080/movies/${movieId}`)
       if (movieResponse.ok) {
         const movieData = await movieResponse.json()
         setMovie(movieData)
       }
 
-      // スクリーン情報を取得
       const screenResponse = await fetch(`http://localhost:8080/screens/${screenId}`)
       if (screenResponse.ok) {
         const screenData = await screenResponse.json()
@@ -87,75 +91,101 @@ export default function ShowtimeConfirm() {
     }
   }
 
-const handleSubmit = async () => {
-  if (!formData) return;
+  const fetchPeriodData = async (movieId: string) => {
+    if (!movieId) return;
 
-  setIsLoading(true);
-  try {
-    const token = localStorage.getItem("adminToken");
-    if (!token) throw new Error("ログイン情報がありません");
+    try {
+      const url = `http://localhost:8080/periods/${movieId}`
+      console.log(`Fetching period data from: ${url}`)
 
-    // 1. 上映期間の作成
-    const periodResponse = await fetch("http://localhost:8080/admin/screening-periods", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        movieID: parseInt(formData.movieId),
-        screenID: parseInt(formData.screenId),
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-      }),
-    });
+      const response = await fetch(url)
 
-    if (!periodResponse.ok) {
-      const err = await periodResponse.json();
-      throw new Error(`上映期間の作成に失敗しました: ${err?.error || periodResponse.statusText}`);
-    }
+      if (response.ok) {
+        const data = await response.json()
+        console.log("Go API Response (Period):", data)
+        const periodData = Array.isArray(data) ? data[0] : data
 
-    const periodData = await periodResponse.json();
-    console.log("periodData:", periodData);
-    const periodId = periodData.period_id;
-    if (!periodId) throw new Error("上映期間IDが取得できませんでした");
+        if (periodData) {
+          console.log("Selected Period Data:", periodData)
 
-    // 2. 上映スケジュールを順番に登録
-    for (const showtime of formData.showtimes) {
-      const dateOnly = showtime.date.split("T")[0]; // YYYY-MM-DD
-      const start_time = `${dateOnly}T${showtime.startTime}:00+09:00`;
+          setFormData(prev => {
+            if (!prev) return null
 
-      const screeningResponse = await fetch("http://localhost:8080/admin/screenings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          screening_period_id: periodId,
-          date: `${dateOnly}T00:00:00+09:00`,
-          start_time,
-          duration: movie?.duration || 120,
-        }),
-      });
+            const start = periodData.startDate || periodData.start_date || periodData.StartDate;
+            const end = periodData.endDate || periodData.end_date || periodData.EndDate;
 
-      if (!screeningResponse.ok) {
-        const errText = await screeningResponse.text();
-        throw new Error(`上映スケジュール ${dateOnly} ${showtime.startTime} の作成に失敗しました: ${errText}`);
+            const pId = periodData.id || periodData.ID || periodData.Model?.ID;
+
+            return {
+              ...prev,
+              startDate: start,
+              endDate: end,
+              periodId: pId
+            }
+          })
+        } else {
+          console.warn("上映期間データが見つかりませんでした (data is empty)")
+          alert("この映画の上映期間が登録されていません。先に期間登録を行ってください。");
+        }
+      } else {
+        console.error("Fetch failed with status:", response.status)
       }
+    } catch (error) {
+      console.error("上映期間の取得に失敗しました:", error)
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (!formData || !formData.periodId) {
+      alert(`上映期間情報(ID)が取得できていません。(ID: ${formData?.periodId})`);
+      return;
     }
 
-    // 3. 完了処理
-    sessionStorage.removeItem("showtimeData");
-    router.push("/admin/showtimes/complete");
-  } catch (error) {
-    alert(error instanceof Error ? error.message : "登録に失敗しました");
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) throw new Error("ログイン情報がありません");
+
+      const periodId = formData.periodId;
+
+      for (const showtime of formData.showtimes) {
+        const dateOnly = showtime.date;
+        const start_time = `${dateOnly}T${showtime.startTime}:00+09:00`;
+        const dateISO = `${dateOnly}T00:00:00+09:00`;
+
+        const screeningResponse = await fetch("http://localhost:8080/screenings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            screening_period_id: periodId,
+            screen_id: Number(formData.screenId), 
+            date: dateISO,
+            start_time: start_time,
+            duration: movie?.duration || 120,
+          }),
+        });
+
+        if (!screeningResponse.ok) {
+          const errText = await screeningResponse.text();
+          throw new Error(`作成失敗: ${errText}`);
+        }
+      }
+
+      sessionStorage.removeItem("showtimeData");
+      sessionStorage.removeItem("showtimeApiData");
+      router.push("/admin/showtimes/complete");
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "登録に失敗しました");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const formatDate = (dateString: string) => {
+    if (!dateString) return "---";
     const date = new Date(dateString)
     return date.toLocaleDateString("ja-JP", {
       year: "numeric",
@@ -167,143 +197,133 @@ const handleSubmit = async () => {
 
   const formatTime = (timeString: string) => timeString
 
-  // ←ここで null チェック
   if (!formData) {
     return (
-      <div className="min-h-screen bg-darker flex items-center justify-center">
-        <div className="text-text-muted font-shippori">読み込み中...</div>
-      </div>
+        <div className="min-h-screen bg-darker flex items-center justify-center">
+          <div className="text-text-muted font-shippori">読み込み中...</div>
+        </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-darker">
-      {/* ヘッダー */}
-      <header className="bg-darkest border-b border-accent/20">
-        <div className="container-luxury">
-          <div className="flex items-center gap-4 h-16">
-            <Link href="/admin/showtimes/input" className="text-text-muted hover:text-text-primary transition-colors">
-              <ArrowLeft size={20} />
-            </Link>
-            <h1 className="text-xl font-bold text-text-primary font-jp">上映情報確認</h1>
+      <div className="min-h-screen bg-darker">
+        <header className="bg-darkest border-b border-accent/20">
+          <div className="container-luxury">
+            <div className="flex items-center gap-4 h-16">
+              <Link href="/admin/showtimes/input" className="text-text-muted hover:text-text-primary transition-colors">
+                <ArrowLeft size={20} />
+              </Link>
+              <h1 className="text-xl font-bold text-text-primary font-jp">上映情報確認</h1>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="container-luxury py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* 確認メッセージ */}
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-text-primary mb-4 font-jp">入力内容をご確認ください</h2>
-            <p className="text-text-muted font-shippori">
-              以下の内容で上映情報を登録します。内容に間違いがないか確認してください。
-            </p>
-          </div>
+        <div className="container-luxury py-8">
+          <div className="max-w-4xl mx-auto">
 
-          {/* 基本情報 */}
-          <div className="card-luxury p-8 mb-8">
-            <h3 className="text-xl font-bold text-text-primary mb-6 font-jp">基本情報</h3>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-text-primary mb-4 font-jp">入力内容をご確認ください</h2>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 映画情報 */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <Film size={20} className="text-gold" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-text-secondary mb-1 font-shippori">映画作品</h4>
-                  <p className="text-lg text-text-primary font-jp">{movie?.title}</p>
-                  <p className="text-sm text-text-muted font-shippori">
-                    {movie?.genre} | {movie?.duration}分
-                  </p>
-                </div>
-              </div>
+            {/* 基本情報 */}
+            <div className="card-luxury p-8 mb-8">
+              <h3 className="text-xl font-bold text-text-primary mb-6 font-jp">基本情報</h3>
 
-              {/* スクリーン情報 */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <MapPin size={20} className="text-gold" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-text-secondary mb-1 font-shippori">上映スクリーン</h4>
-                  <p className="text-lg text-text-primary font-jp">スクリーン{screen?.id}</p>
-                  <p className="text-sm text-text-muted font-shippori">
-                    {screen?.maxRow}列{screen?.maxColumn}番まで
-                  </p>
-                </div>
-              </div>
-
-              {/* 上映期間 */}
-              <div className="md:col-span-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* 映画情報 */}
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Calendar size={20} className="text-gold" />
+                    <Film size={20} className="text-gold" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-text-secondary mb-1 font-shippori">上映期間</h4>
-                    <p className="text-lg text-text-primary font-jp">
-                      {formatDate(formData.startDate)} ～ {formatDate(formData.endDate)}
+                    <h4 className="font-medium text-text-secondary mb-1 font-shippori">映画作品</h4>
+                    <p className="text-lg text-text-primary font-jp">{movie?.title}</p>
+                    <p className="text-sm text-text-muted font-shippori">
+                      {movie?.genre} | {movie?.duration}分
                     </p>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          {/* 上映スケジュール */}
-          <div className="card-luxury p-8 mb-8">
-            <h3 className="text-xl font-bold text-text-primary mb-6 font-jp">上映スケジュール</h3>
-
-            <div className="space-y-4">
-              {formData.showtimes.map((showtime, index) => (
-                <div key={index} className="flex items-center gap-4 p-4 bg-darkest/50 rounded-lg">
-                  <div className="w-8 h-8 bg-gold/10 rounded-full flex items-center justify-center">
-                    <Clock size={16} className="text-gold" />
+                {/* スクリーン情報 */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <MapPin size={20} className="text-gold" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-6">
-                      <div>
-                        <span className="text-sm text-text-secondary font-shippori">上映日</span>
-                        <p className="text-text-primary font-jp">{formatDate(showtime.date)}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-text-secondary font-shippori">開始時刻</span>
-                        <p className="text-text-primary font-jp">{formatTime(showtime.startTime)}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-green-400">
-                    <Check size={20} />
+                  <div>
+                    <h4 className="font-medium text-text-secondary mb-1 font-shippori">上映スクリーン</h4>
+                    <p className="text-lg text-text-primary font-jp">スクリーン{screen?.id}</p>
+                    <p className="text-sm text-text-muted font-shippori">
+                      {screen?.maxRow}列{screen?.maxColumn}番まで
+                    </p>
                   </div>
                 </div>
-              ))}
+
+                {/* 上映期間 */}
+                <div className="md:col-span-2">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <Calendar size={20} className="text-gold" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-text-secondary mb-1 font-shippori">上映期間</h4>
+                      <p className="text-lg text-text-primary font-jp">
+                        {formatDate(formData.startDate)} ～ {formatDate(formData.endDate)}
+                      </p>
+                      <p className="text-xs text-text-muted mt-1">(ID: {formData.periodId ?? "---"})</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-6 p-4 bg-gold/5 border border-gold/20 rounded-lg">
-              <p className="text-sm text-text-muted font-shippori">
-                <strong>合計 {formData.showtimes.length} 回</strong>の上映スケジュールが登録されます。
-              </p>
+            {/* 上映スケジュール */}
+            <div className="card-luxury p-8 mb-8">
+              <h3 className="text-xl font-bold text-text-primary mb-6 font-jp">上映スケジュール</h3>
+              {/* ... (スケジュール表示部分は変更なし) ... */}
+              <div className="space-y-4">
+                {formData.showtimes.map((showtime, index) => (
+                    <div key={index} className="flex items-center gap-4 p-4 bg-darkest/50 rounded-lg">
+                      <div className="w-8 h-8 bg-gold/10 rounded-full flex items-center justify-center">
+                        <Clock size={16} className="text-gold" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-6">
+                          <div>
+                            <span className="text-sm text-text-secondary font-shippori">上映日</span>
+                            <p className="text-text-primary font-jp">{formatDate(showtime.date)}</p>
+                          </div>
+                          <div>
+                            <span className="text-sm text-text-secondary font-shippori">開始時刻</span>
+                            <p className="text-text-primary font-jp">{formatTime(showtime.startTime)}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-green-400">
+                        <Check size={20} />
+                      </div>
+                    </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* アクションボタン */}
-          <div className="flex justify-center gap-4">
-            <Link
-              href="/admin/showtimes/input"
-              className="btn-outline-luxury px-8 py-3 font-shippori"
-            >
-              内容を修正する
-            </Link>
-            <button
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="btn-luxury px-8 py-3 font-shippori disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? "登録中..." : "この内容で登録する"}
-            </button>
+            {/* アクションボタン */}
+            <div className="flex justify-center gap-4">
+              <Link
+                  href="/admin/showtimes/input"
+                  className="btn-outline-luxury px-8 py-3 font-shippori"
+              >
+                内容を修正する
+              </Link>
+              <button
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  className="btn-luxury px-8 py-3 font-shippori disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "登録中..." : "この内容で登録する"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
   )
 }

@@ -4,11 +4,15 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Calendar, Clock, ArrowLeft, Film, MapPin } from "lucide-react"
+import "../../movies/input/showtimes.css"
+import Form from "next/form";
 
 interface Movie {
   id: number
   title: string
   duration: number
+  startDate: string
+  endDate: string
   genre: string
 }
 
@@ -21,8 +25,8 @@ interface Screen {
 interface ShowtimeData {
   movieId: string
   screenId: string
-  startDate: string
-  endDate: string
+  // startDate: string
+  // endDate: string
   showtimes: Array<{
     date: string
     startTime: string
@@ -35,8 +39,8 @@ export default function ShowtimeInput() {
   const [formData, setFormData] = useState<ShowtimeData>({
     movieId: "",
     screenId: "",
-    startDate: "",
-    endDate: "",
+    // startDate: "",
+    // endDate: "",
     showtimes: [{ date: "", startTime: "" }]
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -72,6 +76,7 @@ export default function ShowtimeInput() {
       if (response.ok) {
         const data = await response.json()
         setScreens(data)
+
       }
     } catch (error) {
       console.error("スクリーンデータの取得に失敗しました:", error)
@@ -111,7 +116,7 @@ const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault(); // フォームリロード防止
 
   // バリデーション
-  if (!formData.movieId || !formData.screenId || !formData.startDate || !formData.endDate) {
+  if (!formData.movieId || !formData.screenId) {
     alert("すべての必須項目を入力してください");
     return;
   }
@@ -130,8 +135,6 @@ const handleSubmit = (e: React.FormEvent) => {
   const periodPayload = {
     movieID: Number(formData.movieId),
     screenID: Number(formData.screenId),
-    startDate: formData.startDate,
-    endDate: formData.endDate
   };
 
   // --- screenings データ ---
@@ -194,27 +197,28 @@ const handleSubmit = (e: React.FormEvent) => {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Film size={18} className="text-text-muted" />
+                      <Film size={18} className="text-text-muted"/>
                     </div>
                     <select
-                      value={formData.movieId}
-                      onChange={(e) => handleInputChange("movieId", e.target.value)}
-                      required
-                      className="block w-full pl-10 pr-3 py-3 border border-accent/20 bg-darker/50
+                        value={formData.movieId}
+                        onChange={(e) => handleInputChange("movieId", e.target.value)}
+                        required
+                        className="block w-full pl-10 pr-3 py-3 border border-accent/20 bg-darker/50
                         rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
                     >
                       <option value="">映画を選択してください</option>
                       {movies.map((movie) => (
-                        <option key={movie.id} value={movie.id}>
-                          {movie.title} ({movie.duration}分)
-                        </option>
+                          <option key={movie.id} value={movie.id}>
+                            {movie.title}
+                          </option>
                       ))}
                     </select>
                   </div>
                   {selectedMovie && (
-                    <div className="mt-2 text-sm text-text-muted font-shippori">
-                      ジャンル: {selectedMovie.genre} | 上映時間: {selectedMovie.duration}分
-                    </div>
+                      <div className="mt-2 text-sm text-text-muted font-shippori">
+                        ジャンル: {selectedMovie.genre} | 上映時間: {selectedMovie.duration}分
+                        <br/>{selectedMovie.startDate} ~ {selectedMovie.endDate}
+                      </div>
                   )}
                 </div>
 
@@ -225,55 +229,27 @@ const handleSubmit = (e: React.FormEvent) => {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <MapPin size={18} className="text-text-muted" />
+                      <MapPin size={18} className="text-text-muted"/>
                     </div>
                     <select
-                      value={formData.screenId}
-                      onChange={(e) => handleInputChange("screenId", e.target.value)}
-                      required
-                      className="block w-full pl-10 pr-3 py-3 border border-accent/20 bg-darker/50
+                        value={formData.screenId}
+                        onChange={(e) => handleInputChange("screenId", e.target.value)}
+                        required
+                        className="block w-full pl-10 pr-3 py-3 border border-accent/20 bg-darker/50
                         rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
                     >
                       <option value="">スクリーンを選択してください</option>
                       {screens.map((screen) => (
-                        <option key={screen.id} value={screen.id}>
-                          スクリーン{screen.id} ({screen.maxRow}列{screen.maxColumn}番まで)
-                        </option>
+                          <option key={screen.id} value={screen.id}>
+                            スクリーン{screen.id} ({screen.maxRow}列{screen.maxColumn}番まで)
+                          </option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                {/* 上映開始日 */}
-                <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2 font-shippori">
-                    上映開始日 <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleInputChange("startDate", e.target.value)}
-                    required
-                    className="block w-full px-3 py-3 border border-accent/20 bg-darker/50
-                      rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
-                  />
-                </div>
-
-                {/* 上映終了日 */}
-                <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2 font-shippori">
-                    上映終了日 <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => handleInputChange("endDate", e.target.value)}
-                    required
-                    className="block w-full px-3 py-3 border border-accent/20 bg-darker/50
-                      rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
-                  />
-                </div>
               </div>
+
             </div>
 
             {/* 上映時刻設定 */}
@@ -306,8 +282,8 @@ const handleSubmit = (e: React.FormEvent) => {
                             type="date"
                             value={showtime.date}
                             onChange={(e) => handleShowtimeChange(index, "date", e.target.value)}
-                            min={formData.startDate}
-                            max={formData.endDate}
+                            min={selectedMovie?.startDate}
+                            max={selectedMovie?.endDate}
                             className="block w-full pl-10 pr-3 py-2 border border-accent/20 bg-darker/50
                               rounded text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
                           />
