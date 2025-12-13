@@ -36,6 +36,14 @@ type ScreenConfig = {
     layout: "large" | "medium" | "small"
 }
 
+
+//1213追加 any回避用
+type DbSeat = {
+    id: number;
+    row: string;
+    column: number;
+}
+
 //1213追加:定数定義
 const API_BASE_URL = "http://localhost:8080"
 const MAX_SELECTABLE_SEATS = 4
@@ -57,11 +65,7 @@ const MEDIUM_LAYOUT = {
 }
 
 
-
-
 // スクリーン設定
-
-
 const screenConfigs: { [key: string]: ScreenConfig } = {
     スクリーン1: {
         rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
@@ -505,18 +509,22 @@ export default function SeatSelection() {
 
         try {
 
-            const registeredSeats = await getSeatsByScreenId(screenId);
+            //1213変更
+            const registeredSeats: DbSeat[] = await getSeatsByScreenId(screenId);
 
             const seatsToBook = selectedSeats.map(uiSeatId => {
                 const row = uiSeatId.slice(0, 1);
                 const column = parseInt(uiSeatId.slice(1));
 
-                // DBから取得したリストの中から一致する座席を探す
-                const foundSeat = registeredSeats.find((s: any) => s.row === row && s.column === column);
+                // 1213変更 DBから取得したリストの中から一致する座席を探す
+                const foundSeat = registeredSeats.find(
+                    (s) => s.row === row && s.column === column
+                );
 
                 if (!foundSeat) {
                     throw new Error(`座席データが見つかりません: ${uiSeatId}`);
                 }
+
                 return foundSeat;
             });
 
