@@ -1,11 +1,11 @@
 "use client"
-import {useEffect, useState} from "react"
+import {useEffect, useState, Suspense} from "react"
 import {useRouter, useSearchParams} from "next/navigation"
 import {CreditCard, User, ArrowLeft, Lock, Calendar, Clock, MapPin} from "lucide-react"
 import Image from "next/image"
 import "./payment.css"
 
-export default function Payment() {
+function PaymentContent() {
 
 
 	type SeatTicketForPayment = {
@@ -632,4 +632,12 @@ export default function Payment() {
 			</section>
 		</div>
 	)
+}
+
+export default function Payment() {
+    return (
+        <Suspense fallback={<div className="mt-32 text-center text-white">読み込み中...</div>}>
+            <PaymentContent />
+        </Suspense>
+    );
 }
