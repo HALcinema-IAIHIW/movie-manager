@@ -1,5 +1,5 @@
 "use client"
-import {useState, useEffect} from "react";
+import {useState, useEffect, Suspense} from "react";
 import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import "./payCompleted.css"
@@ -12,7 +12,7 @@ type SeatTicketParam = {
     price: number
 }
 
-export default function Completed() {
+function CompletedContent() {
     const searchParams = useSearchParams();
 
     // パラメータ取得
@@ -120,4 +120,12 @@ export default function Completed() {
                   href={"../mypage"}>マイページ</Link>
         </div>
     )
+}
+
+export default function Completed() {
+    return (
+        <Suspense fallback={<div className="mt-32 text-center text-white">読み込み中...</div>}>
+            <CompletedContent />
+        </Suspense>
+    );
 }

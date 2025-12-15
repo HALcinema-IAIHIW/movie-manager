@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
@@ -100,7 +100,7 @@ type ReservedSeatResponse = {
 
 
 
-export default function SeatSelection() {
+function SeatSelectionContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [selectedSeats, setSelectedSeats] = useState<string[]>([])
@@ -669,4 +669,12 @@ export default function SeatSelection() {
             </section>
         </div>
     )
+}
+
+export default function SeatSelection() {
+    return (
+        <Suspense fallback={<div className="mt-32 text-center text-white">読み込み中...</div>}>
+            <SeatSelectionContent />
+        </Suspense>
+    );
 }
