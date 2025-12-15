@@ -144,7 +144,7 @@ export default function TicketTypeSelection() {
             });
 
         if (parsed.screen && currentSelectedSeatStrs.length > 0) {
-            fetchRequiredIds(parsed.screen, currentSelectedSeatStrs);
+            fetchRequiredIds(parsed.screen_id, currentSelectedSeatStrs);
         } else {
             setIsLoading(false);
             setError("座席またはスクリーン情報が不足しています。");
