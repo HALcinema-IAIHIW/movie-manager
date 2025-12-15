@@ -14,8 +14,8 @@ interface Movie {
 
 interface Screen {
   id: number
-  maxRow: string
-  maxColumn: number
+  max_row: string
+  max_column: number
 }
 
 // APIレスポンスの型（バックエンドに合わせてください）
@@ -253,7 +253,7 @@ export default function ShowtimeConfirm() {
                     <h4 className="font-medium text-text-secondary mb-1 font-shippori">上映スクリーン</h4>
                     <p className="text-lg text-text-primary font-jp">スクリーン{screen?.id}</p>
                     <p className="text-sm text-text-muted font-shippori">
-                      {screen?.maxRow}列{screen?.maxColumn}番まで
+                      {screen?.max_row}列{screen?.max_column}番まで
                     </p>
                   </div>
                 </div>

@@ -140,7 +140,7 @@ export default function SeatSelection() {
                     return;
                 }
                 const screenId = data.screen.id;
-                const screenName = `${screenId}`;
+                const screenName = `スクリーン${screenId}`;
 
                 let posterUrl = "/images/movie-poster-1.jpg";
                 const rawPoster = data.movie.poster_path || data.movie.posterUrl || "/images/movie-poster-1.jpg";

@@ -37,7 +37,7 @@ export default function layout({
 }>) {
     return (
         // <html lang="ja" className="scroll-smooth">
-            <body
+            <div
                 className={`${playfairDisplay.variable} ${shipporiMincho.variable}
               bg-darkest text-text-primary min-h-screen flex flex-col antialiased`}
                 style={{
@@ -52,7 +52,7 @@ export default function layout({
                         className=""
                     > return to top </Link>
                 </main>
-            </body>
+            </div>
         // </html>
     )
 }

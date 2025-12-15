@@ -18,8 +18,8 @@ interface Movie {
 
 interface Screen {
   id: number
-  maxRow: string
-  maxColumn: number
+  max_row: string
+  max_column: number
 }
 
 interface ShowtimeData {
@@ -217,7 +217,7 @@ const handleSubmit = (e: React.FormEvent) => {
                   {selectedMovie && (
                       <div className="mt-2 text-sm text-text-muted font-shippori">
                         ジャンル: {selectedMovie.genre} | 上映時間: {selectedMovie.duration}分
-                        <br/>{selectedMovie.startDate} ~ {selectedMovie.endDate}
+                        <br/>{selectedMovie.startDate}{selectedMovie.endDate}
                       </div>
                   )}
                 </div>
@@ -241,7 +241,7 @@ const handleSubmit = (e: React.FormEvent) => {
                       <option value="">スクリーンを選択してください</option>
                       {screens.map((screen) => (
                           <option key={screen.id} value={screen.id}>
-                            スクリーン{screen.id} ({screen.maxRow}列{screen.maxColumn}番まで)
+                            スクリーン{screen.id} ( {screen.max_row}列{screen.max_column}番まで )
                           </option>
                       ))}
                     </select>
