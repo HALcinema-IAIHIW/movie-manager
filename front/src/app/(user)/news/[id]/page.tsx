@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Calendar, ArrowLeft } from "lucide-react"
 
 // ニュース詳細データ（実際のアプリケーションではAPIから取得）
-const newsDetailData: { [key: string]: any } = {
+const newsDetailData: { [key: string]: string } = {
     "1": {
         id: 1,
         title: "新プレミアムシート導入のお知らせ",

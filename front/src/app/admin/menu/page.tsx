@@ -127,6 +127,21 @@ export default function AdminMenu() {
               </div>
             </div>
 
+            <Link href="/admin/tickets/schedule" className="group">
+              <div className="card-luxury p-8 hover-glow transition-all duration-300 group-hover:scale-105">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mb-6
+                    group-hover:bg-gold/20 transition-colors">
+                    <Calendar size={32} className="text-gold" />
+                  </div>
+                  <h3 className="text-xl font-bold text-text-primary mb-3 font-jp">店頭購入</h3>
+                  <p className="text-text-muted text-sm font-shippori">
+                    チケットの購入処理を行います
+                  </p>
+                </div>
+              </div>
+            </Link>
+
             {/* ユーザー管理 */}
             <div className="group">
               <div className="card-luxury p-8 transition-all duration-300 opacity-50 cursor-not-allowed">
@@ -142,6 +157,7 @@ export default function AdminMenu() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
