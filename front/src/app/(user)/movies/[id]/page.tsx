@@ -27,8 +27,8 @@ const DetailMovie = ({ params }: { params: Promise<{ id: string }> }) => {
   fetchMovie()
   }, [id])
 
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+  // const [loading, setLoading] = useState(true)
+  // const [error, setError] = useState("")
   
   if (!movie) {
     return (

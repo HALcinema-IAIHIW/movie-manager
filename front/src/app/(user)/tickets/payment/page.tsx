@@ -55,17 +55,17 @@ function PaymentContent() {
 	const seatTickets = searchParams.get("seatTickets")
 	const totalPrice = searchParams.get("totalPrice")
 
-	const TestUser = {
-		name: "none",
-		email: "test@test.com",
-		password: "test",
-		RoleName: "一般",
-	}
+	// const TestUser = {
+	// 	name: "none",
+	// 	email: "test@test.com",
+	// 	password: "test",
+	// 	RoleName: "一般",
+	// }
 
 	// ユーザー情報
 	const [userId, setUserId] = useState("")
 
-	const [token, setauthToken] = useState("")
+	// const [token, setauthToken] = useState("")
 
 	useEffect(() => {
 		const getUserId = localStorage.getItem("userId")

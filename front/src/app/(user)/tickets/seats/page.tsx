@@ -485,7 +485,7 @@ function SeatSelectionContent() {
                 const column = parseInt(uiSeatId.slice(1));
 
                 // DBから取得したリストの中から一致する座席を探す
-                const foundSeat = registeredSeats.find((s: any) => s.row === row && s.column === column);
+                const foundSeat = registeredSeats.find((s:any ) => s.row === row && s.column === column);
 
                 if (!foundSeat) {
                     throw new Error(`座席データが見つかりません: ${uiSeatId}`);
