@@ -3,7 +3,6 @@ import {useEffect, useState, Suspense} from "react"
 import {useRouter, useSearchParams} from "next/navigation"
 import {CreditCard, User, ArrowLeft, Lock, Calendar, Clock, MapPin} from "lucide-react"
 import Image from "next/image"
-import "./payment.css"
 
 function PaymentContent() {
 
