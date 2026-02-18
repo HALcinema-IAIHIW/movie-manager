@@ -75,7 +75,7 @@ export default function ShowtimeInput() {
       const response = await fetch("http://localhost:8080/screens/")
       if (response.ok) {
         const data = await response.json()
-        setScreens(data)
+        setScreens(Array.isArray(data) ? data : [])
 
       }
     } catch (error) {
@@ -165,8 +165,9 @@ const handleSubmit = (e: React.FormEvent) => {
 };
 
 
+  const screenList = Array.isArray(screens) ? screens : []
   const selectedMovie = movies.find(m => m.id === parseInt(formData.movieId))
-  const selectedScreen = screens.find(s => s.id === parseInt(formData.screenId))
+  const selectedScreen = screenList.find(s => s.id === parseInt(formData.screenId))
 
   return (
     <div className="min-h-screen bg-darker">
@@ -239,7 +240,7 @@ const handleSubmit = (e: React.FormEvent) => {
                         rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold/50"
                     >
                       <option value="">スクリーンを選択してください</option>
-                      {screens.map((screen) => (
+                      {screenList.map((screen) => (
                           <option key={screen.id} value={screen.id}>
                             スクリーン{screen.id} ( {screen.max_row}列{screen.max_column}番まで )
                           </option>
