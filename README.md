@@ -52,3 +52,7 @@
 ただし、あらかじめ、メールアドレスがアドミン対象として登録されている必要があります。
 ##### アドミン管理メニューページ
 ![チケット予約ページ](./img/admin_menu.png)
+
+make reset-db
+make up
+make seed-admin
