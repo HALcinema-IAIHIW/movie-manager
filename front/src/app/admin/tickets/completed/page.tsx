@@ -3,6 +3,7 @@ import {useState, useEffect, Suspense} from "react";
 import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {QrCode} from "lucide-react";
+import { buildReceiptPdf, buildTicketPdf } from "@/lib/pdf";
 import "./admincompleted.css"
 
 type SeatTicketParam = {
@@ -42,6 +43,50 @@ function CompletedContent() {
                 });
         }
     }, [movieId]);
+
+    const buildPdfData = () => {
+        const totalNumber = totalPrice ? Number(totalPrice) : undefined;
+        const normalizedTotal =
+            typeof totalNumber === "number" && Number.isFinite(totalNumber) ? totalNumber : undefined;
+
+        return {
+            screen: screen ?? "",
+            movieTitle,
+            date: date ?? "",
+            time: time ?? "",
+            seatTickets: ticketDec,
+            totalPrice: normalizedTotal,
+        };
+    };
+
+    const openPdfInNewTab = async (builder: () => Promise<Uint8Array>) => {
+        const newTab = window.open("", "_blank");
+        if (!newTab) {
+            alert("ポップアップがブロックされました。ブラウザ設定を確認してください。");
+            return;
+        }
+
+        if (newTab.opener) {
+            newTab.opener = null;
+        }
+
+        newTab.document.write("<p style=\"font-family: sans-serif;\">PDFを生成中...</p>");
+        newTab.document.close();
+
+        try {
+            const pdfBytes = await builder();
+            const blob = new Blob([pdfBytes], { type: "application/pdf" });
+            const url = URL.createObjectURL(blob);
+            newTab.location.href = url;
+            window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+        } catch (err) {
+            console.error("PDF生成に失敗:", err);
+            newTab.document.body.innerText = "PDFの生成に失敗しました。";
+        }
+    };
+
+    const handleTicketPdf = () => openPdfInNewTab(() => buildTicketPdf(buildPdfData()));
+    const handleReceiptPdf = () => openPdfInNewTab(() => buildReceiptPdf(buildPdfData()));
 
     return(
         <div id={"completedMain"} className={"flex flex-col mt-32 items-center justify-center"}>
@@ -98,9 +143,21 @@ function CompletedContent() {
                     <span className={"text-xl mx-2.5"}>{Number(totalPrice).toLocaleString()}</span> 円
                 </p>
             </div>
-            <div id={"pdf"}　className={"flex flex-row gap-20 mb-10"}>
-                <button type={"button"} className={"py-3 px-4 rounded-lg border-2 border-dark-lighter bg-gold text-dark hover:shadow-accent"}>チケット発券</button>
-                <button type={"button"} className={"py-3 px-4 rounded-lg border-2 border-dark-lighter bg-gold text-dark hover:shadow-white"}>領収書発行</button>
+            <div id={"pdf"} className={"flex flex-row gap-20 mb-10"}>
+                <button
+                    type={"button"}
+                    onClick={handleTicketPdf}
+                    className={"py-3 px-4 rounded-lg border-2 border-dark-lighter bg-gold text-dark hover:shadow-accent"}
+                >
+                    チケット発券
+                </button>
+                <button
+                    type={"button"}
+                    onClick={handleReceiptPdf}
+                    className={"py-3 px-4 rounded-lg border-2 border-dark-lighter bg-gold text-dark hover:shadow-white"}
+                >
+                    領収書発行
+                </button>
             </div>
             <Link className={"bg-dark-lighter py-3 px-4 rounded-lg text-gold border-2 border-gold hover:scale-90 transition-all "}
                   href={"../tickets/schedule"}>上映回選択に戻る</Link>

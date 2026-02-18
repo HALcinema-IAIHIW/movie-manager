@@ -27,7 +27,11 @@ export const metadata: Metadata = {
     description: "洗練された空間で最高の映画体験をお届けする高級映画館",
     keywords: ["映画館", "高級", "シネマ", "映画", "エンターテイメント"],
     authors: [{ name: "HAL CINEMA" }],
-    viewport: "width=device-width, initial-scale=1",
+}
+
+export const viewport = {
+    width: "device-width",
+    initialScale: 1,
 }
 
 export default function layout({
