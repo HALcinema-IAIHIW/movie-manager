@@ -36,58 +36,39 @@ type ScreenConfig = {
     layout: "large" | "medium" | "small"
 }
 
-// スクリーン設定
+type ScreenResponse = {
+    id: number
+    max_row: string
+    max_column: number
+}
 
+const emptyConfig: ScreenConfig = {
+    rows: [],
+    seatsPerRow: [],
+    totalSeats: 0,
+    layout: "small",
+}
 
-const screenConfigs: { [key: string]: ScreenConfig } = {
-    スクリーン1: {
-        rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-        seatsPerRow: [20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
-        totalSeats: 200,
-        layout: "large",
-    },
-    スクリーン2: {
-        rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-        seatsPerRow: [20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
-        totalSeats: 200,
-        layout: "large",
-    },
-    スクリーン3: {
-        rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-        seatsPerRow: [20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
-        totalSeats: 200,
-        layout: "large",
-    },
-    スクリーン4: {
-        rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-        seatsPerRow: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-        totalSeats: 120,
-        layout: "medium",
-    },
-    スクリーン5: {
-        rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-        seatsPerRow: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-        totalSeats: 120,
-        layout: "medium",
-    },
-    スクリーン6: {
-        rows: ["A", "B", "C", "D", "E", "F", "G"],
-        seatsPerRow: [10, 10, 10, 10, 10, 10, 10],
-        totalSeats: 70,
-        layout: "small",
-    },
-    スクリーン7: {
-        rows: ["A", "B", "C", "D", "E", "F", "G"],
-        seatsPerRow: [10, 10, 10, 10, 10, 10, 10],
-        totalSeats: 70,
-        layout: "small",
-    },
-    スクリーン8: {
-        rows: ["A", "B", "C", "D", "E", "F", "G"],
-        seatsPerRow: [10, 10, 10, 10, 10, 10, 10],
-        totalSeats: 70,
-        layout: "small",
-    },
+const buildRowsFromMaxRow = (maxRow: string) => {
+    const trimmed = maxRow?.trim()
+    if (!trimmed) return []
+    const upper = trimmed.toUpperCase()
+    const rowChar = upper[0]
+    if (rowChar < "A" || rowChar > "Z") return []
+    const rows: string[] = []
+    for (let code = "A".charCodeAt(0); code <= rowChar.charCodeAt(0); code++) {
+        rows.push(String.fromCharCode(code))
+    }
+    return rows
+}
+
+const buildScreenConfig = (maxRow: string, maxColumn: number): ScreenConfig => {
+    const safeMaxColumn = Number.isFinite(maxColumn) && maxColumn > 0 ? maxColumn : 0
+    const rows = buildRowsFromMaxRow(maxRow)
+    const seatsPerRow = rows.map(() => safeMaxColumn)
+    const totalSeats = rows.length * safeMaxColumn
+    const layout = safeMaxColumn >= 16 ? "large" : safeMaxColumn >= 12 ? "medium" : "small"
+    return { rows, seatsPerRow, totalSeats, layout }
 }
 
 type ReservedSeatResponse = {
@@ -113,7 +94,7 @@ function SeatSelectionContent() {
         screen: "",
         poster: "",
     })
-    const [currentConfig, setCurrentConfig] = useState<ScreenConfig>(screenConfigs["スクリーン1"])
+    const [currentConfig, setCurrentConfig] = useState<ScreenConfig>(emptyConfig)
 
     // URLパラメータから情報を取得
     const scId = searchParams.get("scId")
@@ -127,46 +108,63 @@ function SeatSelectionContent() {
         }
         setScreeningId(scId); // scIdをscreeningIdステートにセット
 
-        fetch(`http://localhost:8080/screenings/${scId}`)
-            .then(res => {
-                if (!res.ok) throw new Error("Failed to fetch screening data");
-                return res.json();
-            })
-            .then(data => {
-                setScreenId(data.screen.id);
-                console.log("API response:", data);
+        const fetchScreeningAndScreen = async () => {
+            try {
+                const res = await fetch(`http://localhost:8080/screenings/${scId}`)
+                if (!res.ok) throw new Error("Failed to fetch screening data")
+                const data = await res.json()
+                setScreenId(data.screen.id)
+                console.log("API response:", data)
                 if (!data || !data.movie || !data.screen) {
-                    console.error("APIレスポンスの形式が期待と違います");
-                    return;
+                    console.error("APIレスポンスの形式が期待と違います")
+                    return
                 }
-                const screenId = data.screen.id;
-                const screenName = `スクリーン${screenId}`;
+                const screenId = data.screen.id
+                const screenName = `スクリーン${screenId}`
 
-                let posterUrl = "/images/movie-poster-1.jpg";
-                const rawPoster = data.movie.poster_path || data.movie.posterUrl || "/images/movie-poster-1.jpg";
+                let posterUrl = "/images/movie-poster-1.jpg"
+                const rawPoster = data.movie.poster_path || data.movie.posterUrl || "/images/movie-poster-1.jpg"
                 if (rawPoster) {
                     // もし "http" が含まれていたら
                     if (rawPoster.includes("http")) {
-                        posterUrl = rawPoster.substring(rawPoster.lastIndexOf("http"));
+                        posterUrl = rawPoster.substring(rawPoster.lastIndexOf("http"))
                     } else {
                         // httpがない場合はそのまま使う
-                        posterUrl = rawPoster;
+                        posterUrl = rawPoster
                     }
                 }
                 setMovieInfo({
                     id: data.movie.id.toString(),
                     title: data.movie.title,
                     date: new Date(data.date).toLocaleDateString(),
-                    time: new Date(data.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    time: new Date(data.start_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
                     screen: screenName,
-                    poster:posterUrl,
+                    poster: posterUrl,
                 })
-                setCurrentConfig(screenConfigs[screenName] || screenConfigs["スクリーン1"])
-            })
-            .catch(err => {
+
+                try {
+                    const screenRes = await fetch(`http://localhost:8080/screens/${screenId}`)
+                    if (!screenRes.ok) throw new Error("Failed to fetch screen data")
+                    const screenData: ScreenResponse = await screenRes.json()
+                    const config = buildScreenConfig(screenData.max_row, screenData.max_column)
+                    if (config.rows.length === 0 || config.totalSeats === 0) {
+                        console.warn("スクリーン設定が不正です", {
+                            screenId,
+                            maxRow: screenData.max_row,
+                            maxColumn: screenData.max_column,
+                        })
+                    }
+                    setCurrentConfig(config)
+                } catch (screenErr) {
+                    console.error(screenErr)
+                }
+            } catch (err) {
                 console.error(err)
                 // 必要ならエラーメッセージ表示や fallback 処理を書く
-            })
+            }
+        }
+
+        fetchScreeningAndScreen()
     }, [scId])
 
 
