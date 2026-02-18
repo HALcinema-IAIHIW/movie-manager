@@ -15,12 +15,13 @@
 
 ## 起動の仕方
 1. 環境変数を用意します: `cp back/.env.example back/.env` で必要に応じてポートやDB情報を調整してください。
-2. バックエンド一式を起動します: `cd back && make build`（初回のみ）→ `make up` で Postgres・Mongo・file-server・backend を立ち上げます。API は `http://localhost:8080`、ポスター配信は `http://localhost:8081/posters` で確認できます。
-3. 管理者ユーザーを作成します: `cd back && make seed-admin` を実行してください（roles投入とAPI疎通を待って自動で管理者を作成します）。必要に応じて `make reset-db` でDBとボリュームを初期化できます。
-4. フロントエンドを起動します: `cd front && npm install && npm run dev` を実行し、`http://localhost:3000` で画面を確認してください。
+2. バックエンド一式を起動します: プロジェクトルートで `make build`（初回のみ）→ `make up` を実行すると Postgres・Mongo・file-server・backend が立ち上がります。API は `http://localhost:8080`、ポスター配信は `http://localhost:8081/posters` で確認できます。
+   - ルート以外から実行する場合は `make -C .. build` / `make -C .. up` を使ってください（`Makefile` はルートにあります）。
+3. 管理者ユーザーを作成します: プロジェクトルートで `make seed-admin` を実行してください（roles投入とAPI疎通を待って自動で管理者を作成します）。必要に応じて `make reset-db` でDBとボリュームを初期化できます。
+4. フロントエンドを起動します: ルートから `cd front && npm install && npm run dev` を実行し、`http://localhost:3000` で画面を確認してください。
 
 ### 管理者作成用 make コマンド（`make seed-admin`）の手順と内部動作
-- 実行手順: `cd back && make seed-admin`
+- 実行手順: プロジェクトルートで `make seed-admin`
 - 内部動作（簡潔版）:
   - `make wait-schema` を通じて PostgreSQL が起動し、`roles` テーブルができるまでポーリングします。
   - `make seed-roles` で料金テーブルを挿入・更新します。
@@ -51,4 +52,3 @@
 ただし、あらかじめ、メールアドレスがアドミン対象として登録されている必要があります。
 ##### アドミン管理メニューページ
 ![チケット予約ページ](./img/admin_menu.png)
-
