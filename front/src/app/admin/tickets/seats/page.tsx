@@ -655,7 +655,7 @@ function SeatSelectionContent() {
                                     </button>
 
                                     <Link
-                                        href="/tickets/schedule"
+                                        href="admin/tickets/schedule"
                                         className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-accent/30
                       text-text-secondary hover:text-text-primary hover:border-accent/50 rounded-lg transition-all duration-300 font-jp"
                                     >

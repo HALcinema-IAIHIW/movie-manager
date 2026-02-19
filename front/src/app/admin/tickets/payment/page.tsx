@@ -287,7 +287,7 @@ function PaymentContent() {
             params.set("screen", screen || "")
             params.set("seatTickets", seatTickets || "")
 
-            router.push(`/tickets/completed?${params.toString()}`)
+            router.push(`/admin/tickets/completed?${params.toString()}`)
         } catch (err: any) {
             console.error("Payment failed:", err)
             setError(err.message || "決済処理中に予期せぬエラーが発生しました。")
@@ -299,7 +299,7 @@ function PaymentContent() {
     const handleBack = () => {
         // typesに必要な情報はsessionStrageにあるのでそのまま遷移で問題なさそう？
         // 後でなんか起きたら怖いかも
-        router.push(`/tickets/types?`)
+        router.push(`/admin/tickets/types?`)
     }
 
     // ▼▼▼ 修正: ここのハードコードは削除済み（Stateを使用するため） ▼▼▼

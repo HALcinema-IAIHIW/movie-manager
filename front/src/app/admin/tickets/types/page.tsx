@@ -95,7 +95,7 @@ export default function AdminTicketType() {
 
         const stored = sessionStorage.getItem("seatSelection")
         if (!stored) {
-            router.push("/tickets/seats")
+            router.push("admin/tickets/seats")
             return
         }
 
@@ -196,7 +196,7 @@ export default function AdminTicketType() {
         params.set("seatTickets", JSON.stringify(seatTicketsForPayment))
         params.set("totalPrice", totalPrice.toString())
 
-        router.push(`/tickets/payment?${params.toString()}`)
+        router.push(`/admin/tickets/payment?${params.toString()}`)
     }
 
     const handleBack = () => {
@@ -204,7 +204,7 @@ export default function AdminTicketType() {
         if (currentScreeningId) {
             params.set("scId", currentScreeningId);
         }
-        router.push(`/tickets/seats?${params.toString()}`)
+        router.push(`/admin/tickets/seats?${params.toString()}`)
     }
 
     if (isLoading) {
