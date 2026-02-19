@@ -12,6 +12,7 @@ export type MovieTLProps = {
   date: string;
   poster_path?:string;
   showings: ShowingInfo[];
+  target?: string;
 };
 
 // 将来的にrestSeatを復活させる
