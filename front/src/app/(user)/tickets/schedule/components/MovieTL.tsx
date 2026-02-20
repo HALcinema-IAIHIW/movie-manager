@@ -79,7 +79,7 @@ export default function MovieTL({ title, screen_id, date, showings,poster_path,t
                             <div key={s.screening_id}>
                                 {/* seatsに情報持って遷移 */}
                                 {/*<Link href={{pathname:"/tickets/seats",query:{scId:s.screening_id}}}>*/}
-                                    <Link href={{pathname:{target},query:{scId:s.screening_id}}}>
+                                    <Link href={{pathname:target,query:{scId:s.screening_id}}}>
                                     {/*  <Link href={`/tickets/seats/}`}>*/}
                                     <button
                                         className="w-full p-4 rounded-lg border transition-all duration-300 text-center
