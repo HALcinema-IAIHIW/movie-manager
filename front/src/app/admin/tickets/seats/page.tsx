@@ -319,7 +319,6 @@ function SeatSelectionContent() {
 
                             {/* 通路 */}
                             <div className="w-4" />
-                            <h1>ここはAdminのSeat選択です</h1>
 
                             {/* 17-20席 */}
                             {Array.from({ length: 4 }, (_, i) => i + 17).map((num) => {
@@ -504,7 +503,7 @@ function SeatSelectionContent() {
             }
 
             sessionStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
-            router.push(`/tickets/types?`)
+            router.push(`/admin/tickets/types?`)
         } catch (error) {
             console.error(error)
             alert("座席情報の確認に失敗しました。管理者に問い合わせてください。")
@@ -653,7 +652,7 @@ function SeatSelectionContent() {
                                     </button>
 
                                     <Link
-                                        href="/tickets/schedule"
+                                        href="admin/tickets/schedule"
                                         className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-accent/30
                       text-text-secondary hover:text-text-primary hover:border-accent/50 rounded-lg transition-all duration-300 font-jp"
                                     >

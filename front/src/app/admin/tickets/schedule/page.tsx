@@ -213,7 +213,7 @@ const AdminSchedule = () => {
                     <div className="space-y-8">
                         {MovieListPerDay?.map((props) => (
                             <div key={`${props.title}-${props.showings}`} className="card-luxury p-6">
-                                <MovieTL {...props} />
+                                <MovieTL {...props} target={'/admin/tickets/seats'} />
                             </div>
                         ))}
 

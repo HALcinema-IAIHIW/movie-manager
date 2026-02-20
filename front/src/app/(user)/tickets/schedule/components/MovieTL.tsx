@@ -6,7 +6,7 @@ import { Clock, MapPin } from "lucide-react"
 
 // TODO:もう１段階Component分けしたい
 
-export default function MovieTL({ title, screen_id, date, showings,poster_path }: MovieTLProps) {
+export default function MovieTL({ title, screen_id, date, showings,poster_path,target }: MovieTLProps) {
     // Day,Movieを元にリスト取得
     // 開始時間がTime型になっていないので導入時比較処理も修正する
     // 登録が必ず時系列順というわけでは無いなら並べ変え処理も入れた方が良いか？
@@ -78,7 +78,8 @@ export default function MovieTL({ title, screen_id, date, showings,poster_path }
                         {showings?.map((s) => (
                             <div key={s.screening_id}>
                                 {/* seatsに情報持って遷移 */}
-                                <Link href={{pathname:"/tickets/seats",query:{scId:s.screening_id}}}>
+                                {/*<Link href={{pathname:"/tickets/seats",query:{scId:s.screening_id}}}>*/}
+                                    <Link href={{pathname:target,query:{scId:s.screening_id}}}>
                                     {/*  <Link href={`/tickets/seats/}`}>*/}
                                     <button
                                         className="w-full p-4 rounded-lg border transition-all duration-300 text-center
