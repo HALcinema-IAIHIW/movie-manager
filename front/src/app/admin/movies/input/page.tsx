@@ -42,6 +42,32 @@ export default function MovieInput() {
       router.push("/admin/login")
       return
     }
+
+    // sessionStorageからデータを復元
+    const storedData = sessionStorage.getItem("movieData")
+    const storedPreview = sessionStorage.getItem("posterPreview")
+
+    if (storedData) {
+      const parsedData = JSON.parse(storedData)
+      setFormData(prev => ({
+        ...prev,
+        title: parsedData.title || "",
+        subtitle: parsedData.subtitle || "",
+        description: parsedData.description || "",
+        releaseDate: parsedData.releaseDate || "",
+        endDate: parsedData.endDate || "",
+        genre: parsedData.genre || "",
+        director: parsedData.director || "",
+        cast: parsedData.cast || "",
+        duration: parsedData.duration || "",
+        // posterFileは復元できないのでnullのまま
+        posterFile: null
+      }))
+    }
+
+    if (storedPreview) {
+      setPosterPreview(storedPreview)
+    }
   }, [router])
 
   const handleInputChange = (field: keyof MovieData, value: string) => {
